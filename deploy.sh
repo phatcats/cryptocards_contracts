@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-inHouseAccount=
-networkName=
+networkName="local"
 verbose=
 reset=
 
@@ -18,21 +17,6 @@ echoHeader() {
     echo " "
     echo "-----------------------------------------------------------"
     echo "-----------------------------------------------------------"
-}
-
-setEnvVars()
-{
-    if [ "$networkName" == "ropsten" ]; then
-        inHouseAccount="0xb5d35673278ee2d2b1290e700cc081eecda1fcbf"     # Account 2
-    elif [ "$networkName" == "mainnet" ]; then
-        inHouseAccount=""
-    else
-        networkName="local"
-        inHouseAccount="0x6729d17818174b92180453599789328FEe5E74Cd"     # Account ?
-    fi
-
-    export CCC_IN_HOUSE_ACCOUNT="$inHouseAccount"
-    export CCC_VERBOSE_LOGS="$verbose"
 }
 
 deploy()
@@ -89,6 +73,4 @@ while [ "$1" != "" ]; do
     shift
 done
 
-setEnvVars
 deploy
-

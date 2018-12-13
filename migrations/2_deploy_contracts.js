@@ -1,47 +1,29 @@
+/**
+ * Phat Cats - Crypto-Cards
+ *  - https://crypto-cards.io
+ *  - https://phatcats.co
+ *
+ * Copyright 2018 (c) Phat Cats, Inc.
+ */
 'use strict';
 
-require('dotenv').config();
 const _ = require('lodash');
 const Web3 = require('web3');
 const _web3 = new Web3(web3.currentProvider);
+const { networkOptions } = require('../config');
 
 const CryptoCards = artifacts.require("CryptoCards");
 const CryptoCardPacks = artifacts.require("CryptoCardPacks");
 const CryptoCardsTreasury = artifacts.require("CryptoCardsTreasury");
 const CryptoCardsController = artifacts.require("CryptoCardsController");
 
-const _inHouseAccount = process.env.CCC_IN_HOUSE_ACCOUNT;
-const _verbose = (process.env.CCC_VERBOSE_LOGS === 'yes');
+const _inHouseAccount = process.env.IN_HOUSE_ACCOUNT;
+const _verbose = (process.env.VERBOSE_LOGS === 'yes');
 
 let _cryptoCards;
 let _cryptoCardPacks;
 let _cryptoCardsTreasury;
 let _cryptoCardsController;
-
-const networkOptions = {
-    local: {
-        // https://api-local.crypto-cards.io
-        oracleApiEndpoint: 'BAUD89qAzoJsLlajETu6INZFbd5GnNfeg6ZTJbe0hq2ltEOctlwLrsDuMTMffqEUMbGoioZEzjDqhu314KVzZFw9/IVnbar5mVxS/mhmSN+NfrDRXW5Sxpsdds+epmMiSJ+URKsSCAAGljpjoesWcukFmU2UPy1apKKU5OpKpGc3AzowXOViIaG4BXG++rWZ1NMv/xVjHQKqSYTHx4qlQAJH94RcZtoQuz4+x0PwJv/RUQ==',
-        packPrices: [35, 40, 45], // finney
-        promoCodes: [5, 10, 15],
-        gasPrice: 20000000000     // (20 Gwei)
-    },
-    ropsten: {
-        // https://api-ropsten.crypto-cards.io
-        oracleApiEndpoint: 'BL5iQLuZFIoMp3mXKb/Nt4C0cq/MDtCB6cZjYxve4bsvWzcvyWjp61XaENaMlc02cvbeK2jAohabMRXhj8q8jw1pFeSx8DQxkmMU0enzCqoxA/VcX2vvxJSuq71RmBTLfqT/+gu4tlHn1y7US2lGMYTCBI23775TkCKpS4c0Qe/KoHfxYAWFsWfcbKr0hcjMihobOJA7k0/8Jb3uaxA9Qf+92I/zQPwKVxY/RSXxdIU=',
-        packPrices: [35, 40, 45], // finney
-        promoCodes: [5, 10, 15],
-        gasPrice: 20000000000   // https://ropsten.etherscan.io/gastracker  (20 Gwei)
-    },
-    mainnet: {
-        // https://api.crypto-cards.io
-        oracleApiEndpoint: '',
-        packPrices: [35, 40, 45], // finney
-        promoCodes: [],
-        gasPrice: 1000000000   // https://etherscan.io/gastracker  (1 Gwei)
-    }
-};
-
 
 module.exports = async function(deployer, network, accounts) {
     const owner = accounts[0];
@@ -211,9 +193,6 @@ const _fromFinneyToEther = (value) => _web3.utils.fromWei(_fromFinneyToWei(value
 
 const _ethTxCount = _promisify(_web3.eth.getTransactionCount);
 const _getTxCount = (owner) => _ethTxCount(owner);
-
-const _ethGasPrice = _promisify(_web3.eth.getGasPrice);
-const _getGasPrice = () => _ethGasPrice();
 
 const _ethReceipt = _promisify(_web3.eth.getTransactionReceipt);
 const _getReceipt = (hash) => _ethReceipt(hash);

@@ -1,4 +1,4 @@
-//  Copyright 2018 (c) Alabor, Inc.
+//  Copyright 2018 (c) Phat Cats, Inc.
 
 pragma solidity ^0.4.24;
 

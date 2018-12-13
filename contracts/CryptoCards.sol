@@ -10,9 +10,7 @@ pragma solidity 0.4.24;
 
 import "./Helpers.sol";
 import "./strings.sol";
-//import "github.com/Arachnid/solidity-stringutils/strings.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
-//import "github.com/OpenZeppelin/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./pausable.sol";
 import "./erc721.sol";
 
@@ -51,100 +49,60 @@ contract CryptoCards is ERC721Token, Ownable, Helpers {
     mapping(uint256 => TradeValue) internal cardTradeValueById;
     mapping(uint256 => uint256) internal cardSalePriceById;
 
-    /**
-     * @dev Throws if called by any account other than the controller contract.
-     */
     modifier onlyController() {
         require(msg.sender == contractController);
         _;
     }
 
-    /**
-     * @dev Throws if called by any account other than the packs contract.
-     */
     modifier onlyPacks() {
         require(msg.sender == contractPacks);
         _;
     }
 
-    /**
-     * @dev Initializes the Contract with the Token Symbol & Description
-     */
     constructor() ERC721Token("Crypto-Cards - Cards", "CARDS") public {
     }
 
-    /**
-     * @dev Initializes the Contract with the address to the Controller & Packs contracts
-     */
     function initialize(address _controller, address _packs) public onlyOwner {
         contractController = _controller;
         contractPacks = _packs;
     }
 
-    /**
-     * @dev Updates the internal address of the Packs Contract
-     */
     function setContractPacks(address _packs) public onlyOwner {
         contractPacks = _packs;
     }
 
-    /**
-     * @dev Updates the internal address of the Controller Contract
-     */
     function setContractController(address _controller) public onlyOwner {
         contractController = _controller;
     }
 
-    /**
-     * @dev Updates the URI end-point for the Token Metadata
-     */
     function updateEndpoint(string _endpoint) public onlyOwner {
         endpoint = _endpoint;
     }
 
-    /**
-     * @dev Returns the total count of Minted Cards
-     */
     function totalMintedCards() public view returns (uint256) {
         return mintedCards;
     }
 
-    /**
-     * @dev Returns the Signature Hash of the Card
-     * Signature hash contains the hexadecimal representation of the Card Data (rank, gen, issue) as a string
-     */
     function cardHashById(uint256 _cardId) public view returns (string) {
         require(_cardId >= 0 && _cardId < mintedCards);
         return cardDataById[_cardId].hash;
     }
 
-    /**
-     * @dev Returns the Issue Number of the Card
-     */
     function cardIssueById(uint256 _cardId) public view returns (uint16) {
         require(_cardId >= 0 && _cardId < mintedCards);
         return cardDataById[_cardId].issue;
     }
 
-    /**
-     * @dev Returns the Rank Number of the Card (0=Bitcoin, 1=Ethereum, etc..)
-     */
     function cardIndexById(uint256 _cardId) public view returns (uint8) {
         require(_cardId >= 0 && _cardId < mintedCards);
         return cardDataById[_cardId].index;
     }
 
-    /**
-     * @dev Returns the Generation of the Card
-     */
     function cardGenById(uint256 _cardId) public view returns (uint8) {
         require(_cardId >= 0 && _cardId < mintedCards);
         return cardDataById[_cardId].gen;
     }
 
-    /**
-     * @dev todo..
-     */
     function updateCardPrice(address _owner, uint256 _cardId, uint256 _cardPrice) public onlyController {
         require(_cardId >= 0 && _cardId < mintedCards);
         address cardOwner = tokenOwner[_cardId];
@@ -152,9 +110,6 @@ contract CryptoCards is ERC721Token, Ownable, Helpers {
         cardSalePriceById[_cardId] = _cardPrice;
     }
 
-    /**
-     * @dev todo..
-     */
     function updateCardTradeValue(address _owner, uint256 _cardId, uint8 _cardValue, uint8 _cardGen) public onlyController {
         require(_cardId >= 0 && _cardId < mintedCards);
         address cardOwner = tokenOwner[_cardId];
@@ -163,9 +118,6 @@ contract CryptoCards is ERC721Token, Ownable, Helpers {
         cardTradeValueById[_cardId].gen = _cardGen;
     }
 
-    /**
-     * @dev todo..
-     */
     function transferCardForBuyer(address _purchaser, address _owner, uint256 _cardId, uint256 _pricePaid) public onlyController returns (uint256) {
         require(_cardId >= 0 && _cardId < mintedCards);
         address cardOwner = tokenOwner[_cardId];
@@ -179,9 +131,6 @@ contract CryptoCards is ERC721Token, Ownable, Helpers {
         return cardPrice;
     }
 
-    /**
-     * @dev todo..
-     */
     function tradeCardForCard(address _trader, address _tradee, uint256 _traderCardId, uint256 _tradeeCardId) public onlyController {
         require(_traderCardId >= 0 && _traderCardId < mintedCards && _tradeeCardId >= 0 && _tradeeCardId < mintedCards);
         address traderCardOwner = tokenOwner[_traderCardId];
@@ -203,7 +152,7 @@ contract CryptoCards is ERC721Token, Ownable, Helpers {
     /**
      * @dev Mint card
      * @param _to The address that will own the minted card
-     * @param _cardData string String representation of the metadata of the card to be minted
+     * @param _cardData String representation of the metadata of the card to be minted
      */
     function mintCard(address _to, string _cardData) public onlyPacks returns (uint256) {
         uint cardId = mintedCards;
@@ -221,9 +170,6 @@ contract CryptoCards is ERC721Token, Ownable, Helpers {
         return cardId;
     }
 
-    /**
-     * @dev todo..
-     */
     function transferCard(address _from, address _to, uint256 _cardId) internal {
         require(_from != address(0));
         require(_to != address(0));
@@ -234,18 +180,12 @@ contract CryptoCards is ERC721Token, Ownable, Helpers {
         addTokenTo(_to, _cardId);
     }
 
-    /**
-     * @dev todo..
-     */
     function resetCardValue(uint256 _cardId) private {
         cardSalePriceById[_cardId] = 0;
         cardTradeValueById[_cardId].index = 0;
         cardTradeValueById[_cardId].gen = 0;
     }
 
-    /**
-     * @dev todo..
-     */
     function _burn() internal pure {
         revert();
     }

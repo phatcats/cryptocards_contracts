@@ -10,12 +10,9 @@ pragma solidity 0.4.24;
 
 import "./Helpers.sol";
 import "./strings.sol";
-//import "github.com/Arachnid/solidity-stringutils/strings.sol";
 import "./usingOraclize.sol";
 import "zeppelin-solidity/contracts/ReentrancyGuard.sol";
-//import "github.com/OpenZeppelin/openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
-//import "github.com/OpenZeppelin/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./pausable.sol";
 
 
@@ -77,55 +74,35 @@ contract CryptoCardsOracle is Pausable, Helpers, usingOraclize {
 
     string private apiEndpoint;
 
-    /**
-     * @dev todo..
-     */
     constructor() public payable {
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Local Only
+        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
+        oraclize_setNetwork(networkID_testnet);
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        // Local
-//        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
-//        oraclize_setNetwork(networkID_testnet);
-//        oraclize_setCustomGasPrice(10000000000); // 10 gwei
-
-        // Ropsten/Mainnet
         oraclize_setCustomGasPrice(10000000000); // 10 gwei
-
         pause();
     }
 
-    /**
-     * @dev todo..
-     */
     function initialize(address _treasury, address _packsToken, address _cardsToken) public onlyOwner {
         CryptoCardsTreasury_ = CryptoCardsTreasury(_treasury);
         CryptoCardPacks_ = CryptoCardPacks(_packsToken);
         CryptoCards_ = CryptoCards(_cardsToken);
     }
 
-    /**
-     * @dev todo..
-     */
     function updateApiEndpoint(string _endpoint) public onlyOwner {
         apiEndpoint = _endpoint;
     }
 
-    /**
-     * @dev todo..
-     */
     function updateOracleGasPrice(uint _wei) public onlyOwner payable {
         oraclize_setCustomGasPrice(_wei);
     }
 
-    /**
-     * @dev todo..
-     */
     function updateOracleGasLimit(uint _wei) public onlyOwner {
         oracleGasLimit = _wei;
     }
 
-    /**
-     * @dev todo..
-     */
     function __callback(bytes32 _queryId, string _result) public {
         require(oracleIds[_queryId]);
         require(msg.sender == oraclize_cbAddress());
@@ -159,9 +136,6 @@ contract CryptoCardsOracle is Pausable, Helpers, usingOraclize {
         delete oracleIds[_queryId];
     }
 
-    /**
-     * @dev todo..
-     */
     function getPackFromOracle(address _purchaser, bytes16 _uuid) internal returns (uint256) {
         uint256 oracleGasReserve = oraclize_getPrice("URL", oracleGasLimit);
         if (oracleGasReserve > address(this).balance) {
@@ -185,171 +159,99 @@ contract CryptoCardsController is CryptoCardsOracle, ReentrancyGuard {
     uint256[3] private referralLevels = [8, 80, 160]; // packs: 3, 10, 20
     uint256[3] private promoCodes = [0, 0, 0];
 
-    /**
-     * @dev todo..
-     */
+
     constructor() public payable {
     }
 
-    /**
-     * @dev todo..
-     */
-//    function() public payable {
-//        revert();
-//    }
-
-    /**
-     * @dev todo..
-     */
     function contractBalance() public view returns (uint256) {
         return address(this).balance;
     }
 
-    /**
-     * @dev todo..
-     */
     function transferToTreasury() public onlyOwner {
         uint256 balance = address(this).balance;
         require(balance > 0);
         CryptoCardsTreasury_.deposit.value(balance)(balance, 0, address(0));
     }
 
-    /**
-     * @dev todo..
-     */
     function getPromoCode(uint8 _index) public view returns (uint256) {
         require(_index >= 0 && _index < 3);
         return promoCodes[_index];
     }
 
-    /**
-     * @dev todo..
-     */
     function getPriceAtGeneration(uint8 _generation) public view returns (uint256) {
         require(_generation >= 0 && _generation < 3);
         return packPrices[_generation];
     }
 
-    /**
-     * @dev todo..
-     */
     function updatePricePerPack(uint8 _generation, uint256 _price) public onlyOwner {
         require(_generation >= 0 && _generation < 3);
         require(_price > 1 finney);
         packPrices[_generation] = _price;
     }
 
-    /**
-     * @dev todo..
-     */
     function updatePromoCode(uint8 _index, uint256 _code) public onlyOwner {
         require(_index >= 0 && _index < 3);
         promoCodes[_index] = _code;
     }
 
-    /**
-     * @dev todo..
-     */
     function updateReferralLevels(uint8 _level, uint256 _amount) public onlyOwner {
         require(_level >= 0 && _level < 3 && _amount > 0);
         referralLevels[_level] = _amount;
     }
 
-    /**
-     * @dev todo..
-     */
     function getTotalPacksOf(address _accountAddress) public view returns (uint256) {
         return CryptoCardPacks_.balanceOf(_accountAddress);
     }
 
-    /**
-     * @dev todo..
-     */
     function getTotalCardsOf(address _accountAddress) public view returns (uint256) {
         return CryptoCards_.balanceOf(_accountAddress);
     }
 
-    /**
-     * @dev todo..
-     */
     function packsOf(address _owner) public view returns (uint256) {
         return CryptoCardPacks_.balanceOf(_owner);
     }
 
-    /**
-     * @dev todo..
-     */
     function packIdOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
         return CryptoCardPacks_.tokenOfOwnerByIndex(_owner, _index);
     }
 
-    /**
-     * @dev todo..
-     */
     function packDataById(uint256 _packId) public view returns (string) {
         return CryptoCardPacks_.packDataById(_packId);
     }
 
-    /**
-     * @dev todo..
-     */
     function cardHashById(uint256 _cardId) public view returns (string) {
         return CryptoCards_.cardHashById(_cardId);
     }
 
-    /**
-     * @dev todo..
-     */
     function tokenizePack(uint256 _packId, bytes16 _uuid) public whenNotPaused {
         uint256[8] memory mintedCards = CryptoCardPacks_.tokenizePack(msg.sender, _packId);
         emit OpenedPack(msg.sender, _uuid, _packId, mintedCards);
     }
 
-    /**
-     * @dev todo..
-     */
     function clearPackPrice(uint256 _packId, bytes16 _uuid) public whenNotPaused {
         setPackPrice(msg.sender, _packId, 0, _uuid);
     }
 
-    /**
-     * @dev todo..
-     */
     function updatePackPrice(uint256 _packId, uint256 _packPrice, bytes16 _uuid) public whenNotPaused {
         setPackPrice(msg.sender, _packId, _packPrice, _uuid);
     }
 
-    /**
-     * @dev todo..
-     */
     function clearCardPrice(uint256 _cardId, bytes16 _uuid) public whenNotPaused {
         setCardPrice(msg.sender, _cardId, 0, _uuid);
     }
 
-    /**
-     * @dev todo..
-     */
     function updateCardPrice(uint256 _cardId, uint256 _cardPrice, bytes16 _uuid) public whenNotPaused {
         setCardPrice(msg.sender, _cardId, _cardPrice, _uuid);
     }
 
-    /**
-     * @dev todo..
-     */
     function clearCardTradeValue(uint256 _cardId, bytes16 _uuid) public whenNotPaused {
         setCardTradeValue(msg.sender, _cardId, 0, 0, _uuid);
     }
 
-    /**
-     * @dev todo..
-     */
     function updateCardTradeValue(uint256 _cardId, uint8 _cardValue, uint8 _cardGen, bytes16 _uuid) public whenNotPaused {
         setCardTradeValue(msg.sender, _cardId, _cardValue, _cardGen, _uuid);
     }
 
-    /**
-     * @dev todo..
-     */
     function buyPackFromOwner(address _owner, uint256 _packId, bytes16 _uuid) public nonReentrant whenNotPaused payable {
         require(_owner != address(0) && msg.sender != _owner);
 
@@ -369,9 +271,6 @@ contract CryptoCardsController is CryptoCardsOracle, ReentrancyGuard {
         }
     }
 
-    /**
-     * @dev todo..
-     */
     function buyCardFromOwner(address _owner, uint256 _cardId, bytes16 _uuid) public nonReentrant whenNotPaused payable {
         require(_owner != address(0) && msg.sender != _owner);
 
@@ -391,9 +290,6 @@ contract CryptoCardsController is CryptoCardsOracle, ReentrancyGuard {
         }
     }
 
-    /**
-     * @dev todo..
-     */
     function tradeCardForCard(address _owner, uint256 _ownerCardId, uint256 _tradeCardId, bytes16 _uuid) public nonReentrant whenNotPaused {
         require(_owner != address(0) && msg.sender != _owner);
 
@@ -403,9 +299,6 @@ contract CryptoCardsController is CryptoCardsOracle, ReentrancyGuard {
         emit CardTrade(_owner, msg.sender, _uuid, _tradeCardId, _ownerCardId);
     }
 
-    /**
-     * @dev todo..
-     */
     function buyPackOfCards(address _referredBy, uint256 _promoCode, bytes16 _uuid) public nonReentrant whenNotPaused payable {
         require(msg.sender != address(0));
         require(nextGeneration <= 3);
@@ -443,9 +336,6 @@ contract CryptoCardsController is CryptoCardsOracle, ReentrancyGuard {
         }
     }
 
-    /**
-     * @dev todo..
-     */
     function getPricePerPack(uint256 _promoCode, bool _hasReferral) private view returns (uint256) {
         uint256 packPrice = packPrices[nextGeneration-1];
 
@@ -469,9 +359,6 @@ contract CryptoCardsController is CryptoCardsOracle, ReentrancyGuard {
         return packPrice;
     }
 
-    /**
-     * @dev todo..
-     */
     function getAmountForReferrer(address _referredBy, uint256 _cost) private view returns (uint256) {
         uint256 packCount = CryptoCardPacks_.balanceOf(_referredBy);
         uint256 cardCount = CryptoCards_.balanceOf(_referredBy);
@@ -489,25 +376,16 @@ contract CryptoCardsController is CryptoCardsOracle, ReentrancyGuard {
         return 0;
     }
 
-    /**
-     * @dev todo..
-     */
     function setPackPrice(address _owner, uint256 _packId, uint256 _packPrice, bytes16 _uuid) private {
         CryptoCardPacks_.updatePackPrice(_owner, _packId, _packPrice);
         emit PackPriceSet(_owner, _uuid, _packId, _packPrice);
     }
 
-    /**
-     * @dev todo..
-     */
     function setCardPrice(address _owner, uint256 _cardId, uint256 _cardPrice, bytes16 _uuid) private {
         CryptoCards_.updateCardPrice(_owner, _cardId, _cardPrice);
         emit CardPriceSet(_owner, _uuid, _cardId, _cardPrice);
     }
 
-    /**
-     * @dev todo..
-     */
     function setCardTradeValue(address _owner, uint256 _cardId, uint8 _cardValue, uint8 _cardGen, bytes16 _uuid) private {
         CryptoCards_.updateCardTradeValue(_owner, _cardId, _cardValue, _cardGen);
         emit CardTradeValueSet(_owner, _uuid, _cardId, _cardValue, _cardGen);

@@ -52,16 +52,12 @@
 pragma solidity 0.4.24;
 
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
-//import "github.com/OpenZeppelin/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./pausable.sol";
 
 
 contract CryptoCardsTreasury is Ownable {
     using SafeMath for uint256;
 
-    /**
-     * @dev Throws if called by any account other than the owner.
-     */
     modifier onlyController() {
         require(msg.sender == contractController);
         _;
@@ -77,7 +73,7 @@ contract CryptoCardsTreasury is Ownable {
         uint256 limit;      // Payout Maximum
         uint256 interval;   // Payout Interval
         uint256 unpaid;     // Amount left Unpaid
-        uint256 paid;       // Amount Payed Out
+        uint256 paid;       // Amount Paid Out
         uint256 memberCount;
     }
 
@@ -101,48 +97,30 @@ contract CryptoCardsTreasury is Ownable {
     // Contract Controller
     address internal contractController;  // Points to CryptoCardsController Contract
 
-    /**
-     * @dev todo..
-     */
     constructor() public {
-        inHouseAccount = address(0x2C46170cE4436Ca1e19550228777F283c0923AdB); // Ganache Address 8 (index 7)
+//        inHouseAccount = address(0x2C46170cE4436Ca1e19550228777F283c0923AdB); // Ganache Address 8 (index 7)
         outSourcePool.limit = 500 ether;
         outSourcePool.interval = 1 ether; // cannot change once live
     }
 
-    /**
-     * @dev todo..
-     */
     function initialize(address _controller, address _account) public onlyOwner {
         contractController = _controller;
         inHouseAccount = _account;
     }
 
-    /**
-     * @dev todo..
-     */
     function contractBalance() public view returns (uint256) {
         return address(this).balance;
     }
 
-    /**
-     * @dev todo..
-     */
     function setContractController(address _controller) public onlyOwner {
         contractController = _controller;
     }
 
-    /**
-     * @dev todo..
-     */
     function setInHouseAccount(address _account) public onlyOwner {
         require(_account != address(0));
         inHouseAccount = _account;
     }
 
-    /**
-     * @dev todo..
-     */
     function addOutsourcedMember(address _account, uint256 _limit) public onlyOwner {
         updateOutsourcedMemberLimit(_account, _limit);
 
@@ -150,9 +128,6 @@ contract CryptoCardsTreasury is Ownable {
         outSourcePool.memberCount = outSourcePool.memberCount + 1;
     }
 
-    /**
-     * @dev todo..
-     */
     function updateOutsourcedMemberLimit(address _account, uint256 _limitToAdd) public onlyOwner {
         require(_account != address(0) && _limitToAdd > 0);
         require(outSourcePool.unpaid + outSourcePool.paid + _limitToAdd <= outSourcePool.limit);
@@ -292,9 +267,6 @@ contract CryptoCardsTreasury is Ownable {
     // Deposit
     //
 
-    /**
-     * @dev todo..
-     */
     function deposit(uint256 _amountDeposited, uint256 _amountForReferrer, address _referrer) public onlyController payable {
         require(_amountDeposited == msg.value);
 
