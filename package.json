@@ -1,13 +1,13 @@
 {
-  "name": "cryptocardscontracts",
-  "version": "1.2.1",
+  "name": "cryptocards_contracts",
+  "version": "0.3.2",
   "author": "Phat Cats, Inc.",
   "license": "UNLICENSED",
   "private": true,
   "description": "Ethereum Contracts for the CryptoCards DAPP",
   "keywords": [],
   "homepage": "https://crypto-cards.io",
-  "main": "truffle.js",
+  "main": "index.js",
   "directories": {
     "test": "test"
   },
@@ -15,11 +15,13 @@
     "test": "truffle test"
   },
   "dependencies": {
+    "openzeppelin-eth": "^2.0.2",
+    "openzeppelin-solidity": "^2.1.1",
     "web3": "^1.0.0-beta.37",
-    "zeppelin-solidity": "^1.9.0"
+    "zos-lib": "^2.1.0"
   },
   "devDependencies": {
-    "dotenv": "^6.1.0",
+    "dotenv": "^6.2.0",
     "eth-gas-reporter": "^0.1.12",
     "ethereumjs-wallet": "^0.6.2",
     "lodash": "^4.17.11",

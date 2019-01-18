@@ -3,7 +3,6 @@
 tmp/
 npm-debug.log
 .DS_Store
-
 .idea
 build/
 .next
@@ -12,3 +11,5 @@ node_modules/
 .coverage
 .env
 .versionFilesList.json
+.zos.session
+zos.dev-5777.json

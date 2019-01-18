@@ -1,14 +1,37 @@
 #!/usr/bin/env bash
 
+# Phat Cats - Crypto-Cards
+#  - https://crypto-cards.io
+#  - https://phatcats.co
+#
+# Copyright 2019 (c) Phat Cats, Inc.
+
+# Ganache Local Accounts
+#  - 1 = Not used
+#  - 2 = Oracle Bridge
+#  - 3 = Contract Proxy Admin
+#  - 4 = Contract Owner
+#  - 5 = Treasury In-House Account
+#  - 6 = Test User A
+#  - 7 = Test User B
+#  - 8 = Test User C
+
+freshLoad=
+initialize=
+runTransactions=
+proxyAdmin=
+ownerAccount=
+inHouseAccount=
+networkId=
 networkName="local"
 verbose=
-reset=
 
-usage()
-{
-    echo "usage: ./deploy.sh [[-v] [-n [local|ropsten|mainnet]] | [-h]]"
+usage() {
+    echo "usage: ./deploy.sh [[-n [local|ropsten|mainnet] [-f] [-v]] | [-h]]"
     echo "  -n | --network [local|ropsten|mainnet]    Deploys contracts to the specified network (default is local)"
-    echo "  -r | --reset                              Run all migrations from the beginning, instead of running from the last completed migration"
+    echo "  -f | --fresh                              Run all deployments from the beginning, instead of updating"
+    echo "  -i | --initialize                         Run Contract Initializations"
+    echo "  -t | --transactions                       Run Load-Test Transactions (Local Only)"
     echo "  -v | --verbose                            Outputs verbose logging"
     echo "  -h | --help                               Displays this help screen"
 }
@@ -19,8 +42,59 @@ echoHeader() {
     echo "-----------------------------------------------------------"
 }
 
-deploy()
-{
+setEnvVars() {
+    export $(egrep -v '^#' .env | xargs)
+
+    if [ "$networkName" == "ropsten" ]; then
+        networkId="3"
+        networkProvider="ropsten"
+        proxyAdmin="$ROPSTEN_PROXY_ADMIN"
+        ownerAccount="$ROPSTEN_OWNER_ACCOUNT"
+        inHouseAccount="$ROPSTEN_IN_HOUSE_ACCOUNT"
+    elif [ "$networkName" == "mainnet" ]; then
+        networkId="1"
+        networkProvider="mainnet"
+        proxyAdmin="$MAINNET_PROXY_ADMIN"
+        ownerAccount="$MAINNET_OWNER_ACCOUNT"
+        inHouseAccount="$MAINNET_IN_HOUSE_ACCOUNT"
+    else
+        networkName="local"
+        networkId="5777"
+        networkProvider="dev-5777"
+        proxyAdmin="$LOCAL_PROXY_ADMIN"
+        ownerAccount="$LOCAL_OWNER_ACCOUNT"
+        inHouseAccount="$LOCAL_IN_HOUSE_ACCOUNT"
+    fi
+
+    walletMnemonicType="proxy"
+    [ -n "$initialize" -o -n "$runTransactions" ] && {
+        walletMnemonicType="owner"
+    }
+
+    # Pass State to Truffle Scripts
+    export CCC_WALLET_MNEMONIC_TYPE="$walletMnemonicType"
+    export CCC_NETWORK_NAME="$networkName"
+    export CCC_NETWORK_PROVIDER="$networkProvider"
+    export CCC_NETWORK_ID="$networkId"
+    export CCC_VERBOSE_LOGS="$verbose"
+}
+
+startSession() {
+    echoHeader
+    fromAccount="Contract Owner"
+    [ "$1" == "$proxyAdmin" ] && {
+        fromAccount="Proxy Admin"
+    }
+    echo "Starting ZOS Session from $fromAccount"
+    echo " - using proxyAdmin: $proxyAdmin"
+    echo " - using owner: $ownerAccount"
+    echo " - using network: $networkName"
+    zos session --network "$networkName" --from "$1" --expires 3600
+}
+
+deployFresh() {
+    startSession "$proxyAdmin"
+
     if [ "$networkName" == "local" ]; then
         echoHeader
         echo "NOTE: Be sure to run the Oraclize Ethereum-bridge first!"
@@ -34,35 +108,116 @@ deploy()
     echoHeader
     echo "Clearing previous build..."
     rm -rf build/
+    rm -r "./zos.$networkProvider.json"
 
     echoHeader
-    echo "Compiling Contracts.."
-    truffle compile
-
-    echoHeader
-    echo "Running Contract Migrations.."
-    echo " - using network: $networkName"
-    if [ "$reset" == "yes" ]; then
-        echo " - resetting previous migrations"
-        truffle migrate --network "$networkName" --reset
+    if [ "$networkName" == "local" ]; then
+        echo "Deploying with dependencies..."
+        zos push --deploy-dependencies
     else
-        echo " - continuing from last migration"
-        truffle migrate --network "$networkName"
+        echo "Deploying without dependencies..."
+        zos push
     fi
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsOracle"
+    oracleAddress=$(zos create CryptoCardsOracle --init initialize --args "$ownerAccount")
+#    echo "oracleAddress: $oracleAddress"
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsTreasury"
+    treasuryAddress=$(zos create CryptoCardsTreasury --init initialize --args "$ownerAccount")
+#    echo "treasuryAddress: $treasuryAddress"
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsLib"
+    libAddress=$(zos create CryptoCardsLib --init initialize --args "$ownerAccount")
+#    echo "libAddress: $libAddress"
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsGum"
+    gumAddress=$(zos create CryptoCardsGum --init initialize --args "$ownerAccount")
+    echo "Creating Token: CryptoCardsGumToken - StandaloneERC20"
+    gumTokenAddress=$(zos create openzeppelin-eth/StandaloneERC20 --init initialize --args "CryptoCardsGum","GUM",18,2000000000000000000000000000,"$gumAddress",[],[])   # <-- 2 Billion, 18 Decimals
+#    echo "gumAddress: $gumAddress"
+#    echo "gumTokenAddress: $gumTokenAddress"
+
+    echoHeader
+    echo "Creating Contract: CryptoCards"
+    cardsAddress=$(zos create CryptoCards --init initialize --args "$ownerAccount")
+    echo "Creating Token: CryptoCards - StandaloneERC721"
+    cardsTokenAddress=$(zos create openzeppelin-eth/StandaloneERC721 --init initialize --args "CryptoCards","CARD",["$ownerAccount"],["$ownerAccount"])
+#    echo "cardsAddress: $cardsAddress"
+#    echo "cardsTokenAddress: $cardsTokenAddress"
+
+    echoHeader
+    echo "Creating Contract: CryptoCardPacks"
+    packsAddress=$(zos create CryptoCardPacks --init initialize --args "$ownerAccount")
+    echo "Creating Token: CryptoCardPacks - StandaloneERC721"
+    packsTokenAddress=$(zos create openzeppelin-eth/StandaloneERC721 --init initialize --args "CryptoCardPacks","PACK",["$ownerAccount"],["$ownerAccount"])
+#    echo "packsAddress: $packsAddress"
+#    echo "packsTokenAddress: $packsTokenAddress"
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsController"
+    controllerAddress=$(zos create CryptoCardsController --init initialize --args "$ownerAccount")
+#    echo "controllerAddress: $controllerAddress"
 
     echoHeader
     echo "Contract Deployment Complete!"
     echo " "
 }
 
+deployUpdate() {
+    startSession "$proxyAdmin"
+
+    echo " "
+    echo "Pushing Contract Updates.."
+    zos push
+
+    echo "Updating Logic Contracts.."
+    zos update CryptoCardsTreasury
+    zos update CryptoCardsOracle
+    zos update CryptoCardsLib
+    zos update CryptoCardsGum
+    zos update CryptoCards
+    zos update CryptoCardPacks
+    zos update CryptoCardsController
+
+    echo " "
+    echo "Contract Updates Complete!"
+    echo " "
+}
+
+runInitializations() {
+    startSession "$ownerAccount"
+
+    echoHeader
+    echo "Running Contract Initializations..."
+    truffle exec ./scripts/initializations.js --network "$networkName"
+}
+
+runTransactions() {
+    startSession "$ownerAccount"
+
+    echoHeader
+    echo "Running Load-Test Transactions..."
+    truffle exec ./scripts/transactions.js --network "$networkName"
+}
+
+
 while [ "$1" != "" ]; do
     case $1 in
-        -v | --verbose )        verbose="yes"
-                                ;;
-        -r | --reset )          reset="yes"
-                                ;;
         -n | --network )        shift
                                 networkName=$1
+                                ;;
+        -f | --fresh )          freshLoad="yes"
+                                ;;
+        -i | --initialize )     initialize="yes"
+                                ;;
+        -t | --transactions )   runTransactions="yes"
+                                ;;
+        -v | --verbose )        verbose="yes"
                                 ;;
         -h | --help )           usage
                                 exit
@@ -73,4 +228,14 @@ while [ "$1" != "" ]; do
     shift
 done
 
-deploy
+setEnvVars
+
+if [ -n "$freshLoad" ]; then
+    deployFresh
+elif [ -n "$runTransactions" ]; then
+    runTransactions
+elif [ -n "$initialize" ]; then
+    runInitializations
+else
+    deployUpdate
+fi
