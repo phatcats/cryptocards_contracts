@@ -69,13 +69,15 @@ Copyright 2019 (c) Phat Cats, Inc.
 5. Make sure the address matches the code found at "contracts/CryptoCardsOracle.sol" line 54.
     Update the code to reflect the address you received, if necessary.
 
-6. a. Deploy the Solidity Contracts to your local blockchain
+6. a. Deploy & initialize the Solidity Contracts to your local blockchain
 
         $ ./deploy.sh -f -v
+        $ ./deploy.sh -i -v
 
     b. Deploy the Solidity Contracts to Ropsten Test Net
 
         $ ./deploy.sh -f -v -n ropsten
+        $ ./deploy.sh -i -v -n ropsten
 
 7. Once they are successfully deployed, you can grab the Contract Addresses from the Output.
 
