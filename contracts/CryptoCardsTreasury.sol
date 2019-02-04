@@ -141,7 +141,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         require(_account != address(0) && _limitToAdd > 0);
         require(outSourcePool_unpaid + outSourcePool_paid + _limitToAdd <= outSourcePool_limit);
 
-        if (outsourcedMembers_paid[member] == outsourcedMembers_limit[member]) {
+        if (outsourcedMembers_paid[_account] == outsourcedMembers_limit[_account]) {
             // Previously paid out and removed from memberCount, let's add back now that member has a new limit
             outSourcePool_memberCount = outSourcePool_memberCount.add(1);
         }
