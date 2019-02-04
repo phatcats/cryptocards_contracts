@@ -131,7 +131,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         updateOutsourcedMemberLimit(_account, _limit);
 
         outsourcedMembers_payoutIndex[_account] = getCurrentPayoutIndex();
-        outSourcePool_memberCount = outSourcePool_memberCount + 1;
+        outSourcePool_memberCount = outSourcePool_memberCount.add(1);
     }
 
     /**
@@ -140,6 +140,11 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     function updateOutsourcedMemberLimit(address _account, uint256 _limitToAdd) public onlyOwner {
         require(_account != address(0) && _limitToAdd > 0);
         require(outSourcePool_unpaid + outSourcePool_paid + _limitToAdd <= outSourcePool_limit);
+
+        if (outsourcedMembers_paid[member] == outsourcedMembers_limit[member]) {
+            // Previously paid out and removed from memberCount, let's add back now that member has a new limit
+            outSourcePool_memberCount = outSourcePool_memberCount.add(1);
+        }
 
         outsourcedMembers_limit[_account] = outsourcedMembers_limit[_account].add(_limitToAdd);
         outSourcePool_unpaid = outSourcePool_unpaid.add(_limitToAdd);
@@ -245,16 +250,22 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function withdrawForMember() public {
-        uint256 amountToPay = getAvailableBalanceOfMember(msg.sender);
+        address member = msg.sender;
+        uint256 amountToPay = getAvailableBalanceOfMember(member);
         require(amountToPay > 0);
 
         outSourcePool_paid = outSourcePool_paid.add(amountToPay);
         outSourcePool_unpaid = outSourcePool_unpaid.sub(amountToPay);
 
-        outsourcedMembers_paid[msg.sender] = outsourcedMembers_paid[msg.sender].add(amountToPay);
-        outsourcedMembers_payoutIndex[msg.sender] = getCurrentPayoutIndex();
+        outsourcedMembers_paid[member] = outsourcedMembers_paid[member].add(amountToPay);
+        outsourcedMembers_payoutIndex[member] = getCurrentPayoutIndex();
 
-        msg.sender.transfer(amountToPay);
+        if (outsourcedMembers_paid[member] == outsourcedMembers_limit[member]) {
+            // No more bounty to pay out, remove from memberCount
+            outSourcePool_memberCount = outSourcePool_memberCount.sub(1);
+        }
+
+        member.transfer(amountToPay);
     }
 
     function getUnusedFundsInPool() public view returns (uint256) {
