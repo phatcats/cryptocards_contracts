@@ -232,7 +232,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         uint256 netAmount = cost.sub(oracleGasReserve);
         uint256 forReferrer = 0;
         if (hasReferral) {
-            forReferrer = cryptoCardsLib.getAmountForReferrer(getCardCount(_referredBy), netAmount);
+            forReferrer = cryptoCardsLib.getAmountForReferrer(getCardCount(_referredBy), cost);
         }
 
         // Deposit Funds to Treasury
