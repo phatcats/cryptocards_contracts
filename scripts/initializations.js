@@ -19,7 +19,7 @@ const { networkOptions } = require('../config');
 const _ = require('lodash');
 
 const StandaloneERC20 = Contracts.getFromLocal('StandaloneERC20');
-const StandaloneERC721 = Contracts.getFromLocal('StandaloneERC721');
+const CryptoCardsERC721 = Contracts.getFromLocal('CryptoCardsERC721');
 const CryptoCardsTreasury = Contracts.getFromLocal('CryptoCardsTreasury');
 const CryptoCardsOracle = Contracts.getFromLocal('CryptoCardsOracle');
 const CryptoCardsLib = Contracts.getFromLocal('CryptoCardsLib');
@@ -94,13 +94,13 @@ module.exports = async function() {
 
         const ddCryptoCards = Lib.getDeployDataFor('cryptocards_contracts/CryptoCards');
         const cryptoCards = Lib.getContractInstance(CryptoCards, ddCryptoCards.address);
-        const ddCryptoCardsERC721 = Lib.getDeployDataFor('openzeppelin-eth/StandaloneERC721');
-        const cryptoCardsToken = Lib.getContractInstance(StandaloneERC721, ddCryptoCardsERC721.address);
+        const ddCryptoCardsERC721 = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsERC721', 0);
+        const cryptoCardsToken = Lib.getContractInstance(CryptoCardsERC721, ddCryptoCardsERC721.address);
 
         const ddCryptoCardPacks = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardPacks');
         const cryptoCardPacks = Lib.getContractInstance(CryptoCardPacks, ddCryptoCardPacks.address);
-        const ddCryptoCardPacksERC721 = Lib.getDeployDataFor('openzeppelin-eth/StandaloneERC721', 1);
-        const cryptoCardPacksToken = Lib.getContractInstance(StandaloneERC721, ddCryptoCardPacksERC721.address);
+        const ddCryptoCardPacksERC721 = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsERC721', 1);
+        const cryptoCardPacksToken = Lib.getContractInstance(CryptoCardsERC721, ddCryptoCardPacksERC721.address);
 
         const ddCryptoCardsController = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsController');
         const cryptoCardsController = Lib.getContractInstance(CryptoCardsController, ddCryptoCardsController.address);
@@ -195,6 +195,13 @@ module.exports = async function() {
         totalGas += receipt.receipt.gasUsed;
 
         Lib.log({spacer: true});
+        Lib.log({msg: 'Linking Cards to Lib...'});
+        Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});
+        receipt = await cryptoCards.setLibAddress(ddCryptoCardsLib.address, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+
+        Lib.log({spacer: true});
         Lib.log({msg: 'Linking Cards to Packs...'});
         Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardPacks.address}`, indent: 1});
         receipt = await cryptoCards.setPacksAddress(ddCryptoCardPacks.address, _getTxOptions());
@@ -202,16 +209,9 @@ module.exports = async function() {
         totalGas += receipt.receipt.gasUsed;
 
         Lib.log({spacer: true});
-        Lib.log({msg: 'Linking Cards to ERC721 Token...'});
-        Lib.verbose && Lib.log({msg: `ERC721 Token: ${ddCryptoCardsERC721.address}`, indent: 1});
-        receipt = await cryptoCards.setErcToken(ddCryptoCardsERC721.address, _getTxOptions());
-        Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
-
-        Lib.log({spacer: true});
-        Lib.log({msg: 'Linking Cards to Lib...'});
-        Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});
-        receipt = await cryptoCards.setLibAddress(ddCryptoCardsLib.address, _getTxOptions());
+        Lib.log({msg: 'Linking Cards to CryptoCardsERC721 Cards Token...'});
+        Lib.verbose && Lib.log({msg: `CryptoCardsERC721 Cards Token: ${ddCryptoCardsERC721.address}`, indent: 1});
+        receipt = await cryptoCards.setErc721Token(ddCryptoCardsERC721.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
@@ -241,13 +241,6 @@ module.exports = async function() {
         totalGas += receipt.receipt.gasUsed;
 
         Lib.log({spacer: true});
-        Lib.log({msg: 'Linking Packs to ERC721 Token...'});
-        Lib.verbose && Lib.log({msg: `ERC721 Token: ${ddCryptoCardPacksERC721.address}`, indent: 1});
-        receipt = await cryptoCardPacks.setErcToken(ddCryptoCardPacksERC721.address, _getTxOptions());
-        Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
-
-        Lib.log({spacer: true});
         Lib.log({msg: 'Linking Packs to Cards...'});
         Lib.verbose && Lib.log({msg: `Cards: ${ddCryptoCards.address}`, indent: 1});
         receipt = await cryptoCardPacks.setCardsAddress(ddCryptoCards.address, _getTxOptions());
@@ -265,6 +258,13 @@ module.exports = async function() {
         Lib.log({msg: 'Linking Packs to Lib...'});
         Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});
         receipt = await cryptoCardPacks.setLibAddress(ddCryptoCardsLib.address, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+
+        Lib.log({spacer: true});
+        Lib.log({msg: 'Linking Packs to CryptoCardsERC721 Packs Token...'});
+        Lib.verbose && Lib.log({msg: `CryptoCardsERC721 Packs Token: ${ddCryptoCardPacksERC721.address}`, indent: 1});
+        receipt = await cryptoCardPacks.setErc721Token(ddCryptoCardPacksERC721.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 

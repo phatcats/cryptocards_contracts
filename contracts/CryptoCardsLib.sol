@@ -16,9 +16,9 @@ import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 contract CryptoCardsLib is Initializable, Ownable {
     using SafeMath for uint256;
 
-    uint256[3] private packPrices;
-    uint256[3] private referralLevels;
-    uint256[3] private promoCodes;
+    uint256[3] internal packPrices;
+    uint256[3] internal referralLevels;
+    uint256[3] internal promoCodes;
 
 
     function initialize(address _owner) public initializer {

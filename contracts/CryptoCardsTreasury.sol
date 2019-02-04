@@ -60,28 +60,28 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     using SafeMath for uint256;
 
     // Contract Controller
-    address private contractController;  // Points to CryptoCardsController Contract
+    address internal contractController;  // Points to CryptoCardsController Contract
 
     // In-house Escrow - 70%
-    address private inHouseAccount;
-    uint256 private inHouseEscrow_paid;
-    uint256 private inHouseEscrow_unpaid;
+    address internal inHouseAccount;
+    uint256 internal inHouseEscrow_paid;
+    uint256 internal inHouseEscrow_unpaid;
 
     // Out-sourcing - 30% up to Pool Limit
-    uint256 private outSourcePool_total;        // Payout Total Accumulated
-    uint256 private outSourcePool_limit;        // Payout Maximum
-    uint256 private outSourcePool_interval;     // Payout Interval
-    uint256 private outSourcePool_unpaid;       // Amount left Unpaid
-    uint256 private outSourcePool_paid;         // Amount Paid Out
-    uint256 private outSourcePool_memberCount;
+    uint256 internal outSourcePool_total;        // Payout Total Accumulated
+    uint256 internal outSourcePool_limit;        // Payout Maximum
+    uint256 internal outSourcePool_interval;     // Payout Interval
+    uint256 internal outSourcePool_unpaid;       // Amount left Unpaid
+    uint256 internal outSourcePool_paid;         // Amount Paid Out
+    uint256 internal outSourcePool_memberCount;
 
-    mapping(address => uint256) private outsourcedMembers_payoutIndex;
-    mapping(address => uint256) private outsourcedMembers_limit;
-    mapping(address => uint256) private outsourcedMembers_paid;
+    mapping(address => uint256) internal outsourcedMembers_payoutIndex;
+    mapping(address => uint256) internal outsourcedMembers_limit;
+    mapping(address => uint256) internal outsourcedMembers_paid;
 
     // Referral Account Escrows
-    mapping(address => uint256) private referrals_unpaid;
-    mapping(address => uint256) private referrals_paid;
+    mapping(address => uint256) internal referrals_unpaid;
+    mapping(address => uint256) internal referrals_paid;
 
     /**
      * @dev Throws if called by any account other than the owner.

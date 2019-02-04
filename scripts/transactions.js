@@ -18,7 +18,7 @@ const { Lib } = require('./common');
 const { networkOptions } = require('../config');
 const _ = require('lodash');
 
-const StandaloneERC721 = Contracts.getFromLocal('StandaloneERC721');
+const CryptoCardsERC721 = Contracts.getFromLocal('CryptoCardsERC721');
 const CryptoCardsTreasury = Contracts.getFromLocal('CryptoCardsTreasury');
 const CryptoCardsOracle = Contracts.getFromLocal('CryptoCardsOracle');
 const CryptoCardsLib = Contracts.getFromLocal('CryptoCardsLib');

@@ -145,16 +145,16 @@ deployFresh() {
     echoHeader
     echo "Creating Contract: CryptoCards"
     cardsAddress=$(zos create CryptoCards --init initialize --args "$ownerAccount")
-    echo "Creating Token: CryptoCards - StandaloneERC721"
-    cardsTokenAddress=$(zos create openzeppelin-eth/StandaloneERC721 --init initialize --args "CryptoCards","CARD",["$ownerAccount"],["$ownerAccount"])
+    echo "Creating Cards Token: CryptoCardsERC721"
+    cardsTokenAddress=$(zos create CryptoCardsERC721 --init initialize --args "CryptoCards","CARD",["$ownerAccount"],["$ownerAccount"])
 #    echo "cardsAddress: $cardsAddress"
 #    echo "cardsTokenAddress: $cardsTokenAddress"
 
     echoHeader
     echo "Creating Contract: CryptoCardPacks"
     packsAddress=$(zos create CryptoCardPacks --init initialize --args "$ownerAccount")
-    echo "Creating Token: CryptoCardPacks - StandaloneERC721"
-    packsTokenAddress=$(zos create openzeppelin-eth/StandaloneERC721 --init initialize --args "CryptoCardPacks","PACK",["$ownerAccount"],["$ownerAccount"])
+    echo "Creating Packs Token: CryptoCardsERC721"
+    packsTokenAddress=$(zos create CryptoCardsERC721 --init initialize --args "CryptoCardPacks","PACK",["$ownerAccount"],["$ownerAccount"])
 #    echo "packsAddress: $packsAddress"
 #    echo "packsTokenAddress: $packsTokenAddress"
 
@@ -176,12 +176,13 @@ deployUpdate() {
     zos push
 
     echo "Updating Logic Contracts.."
-    zos update CryptoCardsTreasury
-    zos update CryptoCardsOracle
+    zos update CryptoCardsERC721
     zos update CryptoCardsLib
     zos update CryptoCardsGum
     zos update CryptoCards
     zos update CryptoCardPacks
+    zos update CryptoCardsTreasury
+    zos update CryptoCardsOracle
     zos update CryptoCardsController
 
     echo " "

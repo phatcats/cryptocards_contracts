@@ -1,7 +1,7 @@
 {
   "zosversion": "2",
   "name": "cryptocards_contracts",
-  "version": "0.3.0",
+  "version": "0.3.6",
   "contracts": {
     "CryptoCards": "CryptoCards",
     "CryptoCardPacks": "CryptoCardPacks",
@@ -9,7 +9,8 @@
     "CryptoCardsController": "CryptoCardsController",
     "CryptoCardsOracle": "CryptoCardsOracle",
     "CryptoCardsGum": "CryptoCardsGum",
-    "CryptoCardsLib": "CryptoCardsLib"
+    "CryptoCardsLib": "CryptoCardsLib",
+    "CryptoCardsERC721": "CryptoCardsERC721"
   },
   "dependencies": {
     "openzeppelin-eth": "^2.0.2"

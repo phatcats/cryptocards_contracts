@@ -32,7 +32,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
 
     event PackPriceSet      (address indexed _owner, bytes16 _uuid, uint256 _packId, uint256 _price);
     event CardPriceSet      (address indexed _owner, bytes16 _uuid, uint256 _cardId, uint256 _price);
-    event CardTradeValueSet (address indexed _owner, bytes16 _uuid, uint256 _cardId, uint8 _cardValue, uint8 _cardGen);
+    event CardTradeValueSet (address indexed _owner, bytes16 _uuid, uint256 _cardId, uint8[] _cardValues, uint8[] _cardGens);
 
     event PackSale          (address indexed _owner, address indexed _receiver, bytes16 _uuid, uint256 _packId, uint256 _price);
     event CardSale          (address indexed _owner, address indexed _receiver, bytes16 _uuid, uint256 _cardId, uint256 _price);
@@ -85,8 +85,8 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         cryptoCardsLib = _lib;
     }
 
-    function getVersion() public view returns (string) {
-        return "v0.3.2";
+    function getVersion() public pure returns (string) {
+        return "v0.3.6";
     }
 
     function contractBalance() public view returns (uint256) {
@@ -157,11 +157,11 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     }
 
     function clearCardTradeValue(uint256 _cardId, bytes16 _uuid) public whenNotPaused {
-        setCardTradeValue(msg.sender, _cardId, 0, 0, _uuid);
+        setCardTradeValue(msg.sender, _cardId, new uint8[](0), new uint8[](0), _uuid);
     }
 
-    function updateCardTradeValue(uint256 _cardId, uint8 _cardValue, uint8 _cardGen, bytes16 _uuid) public whenNotPaused {
-        setCardTradeValue(msg.sender, _cardId, _cardValue, _cardGen, _uuid);
+    function updateCardTradeValue(uint256 _cardId, uint8[] _cardValues, uint8[] _cardGens, bytes16 _uuid) public whenNotPaused {
+        setCardTradeValue(msg.sender, _cardId, _cardValues, _cardGens, _uuid);
     }
 
     function buyPackFromOwner(address _owner, uint256 _packId, bytes16 _uuid) public nonReentrant whenNotPaused payable {
@@ -255,24 +255,24 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         emit ReceivedNewPack(_receiver, _uuid, _packId);
     }
 
-    function getCardCount(address _for) private view returns (uint256) {
+    function getCardCount(address _for) internal view returns (uint256) {
         uint256 packCount = cryptoCardPacks.balanceOf(_for);
         uint256 cardCount = cryptoCards.balanceOf(_for);
         return packCount.mul(8).add(cardCount);
     }
 
-    function setPackPrice(address _owner, uint256 _packId, uint256 _packPrice, bytes16 _uuid) private {
+    function setPackPrice(address _owner, uint256 _packId, uint256 _packPrice, bytes16 _uuid) internal {
         cryptoCardPacks.updatePackPrice(_owner, _packId, _packPrice);
         emit PackPriceSet(_owner, _uuid, _packId, _packPrice);
     }
 
-    function setCardPrice(address _owner, uint256 _cardId, uint256 _cardPrice, bytes16 _uuid) private {
+    function setCardPrice(address _owner, uint256 _cardId, uint256 _cardPrice, bytes16 _uuid) internal {
         cryptoCards.updateCardPrice(_owner, _cardId, _cardPrice);
         emit CardPriceSet(_owner, _uuid, _cardId, _cardPrice);
     }
 
-    function setCardTradeValue(address _owner, uint256 _cardId, uint8 _cardValue, uint8 _cardGen, bytes16 _uuid) private {
-        cryptoCards.updateCardTradeValue(_owner, _cardId, _cardValue, _cardGen);
-        emit CardTradeValueSet(_owner, _uuid, _cardId, _cardValue, _cardGen);
+    function setCardTradeValue(address _owner, uint256 _cardId, uint8[] _cardValues, uint8[] _cardGens, bytes16 _uuid) internal {
+        cryptoCards.updateCardTradeValue(_owner, _cardId, _cardValues, _cardGens);
+        emit CardTradeValueSet(_owner, _uuid, _cardId, _cardValues, _cardGens);
     }
 }

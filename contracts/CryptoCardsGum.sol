@@ -21,9 +21,9 @@ import "./CryptoCardsTreasury.sol";
 contract CryptoCardsGum is Initializable, Ownable {
     using SafeMath for uint256;
 
-    StandaloneERC20 private gumToken;
-    CryptoCardsTreasury private cryptoCardsTreasury;
-    address private cryptoCardPacks;
+    StandaloneERC20 internal gumToken;
+    CryptoCardsTreasury internal cryptoCardsTreasury;
+    address internal cryptoCardPacks;
 
     // [0] = In-House               (Sent to In-House Account)
     // [1] = Bounty Rewards         (Sent to Bounty-Rewards Account)
@@ -31,18 +31,18 @@ contract CryptoCardsGum is Initializable, Ownable {
     // [3] = Exchanges              (Sent to Exchange-Handler Account)
     // [4] = Sales from Contract    (Stays in Contract, distributed via buyGum or fallback function)
     // [5] = Packs                  (Stays in Contract, distributed via giveGumWithPack function)
-    address[4] private reserveAccounts;
-    uint256[6] private reserveRatios;
+    address[4] internal reserveAccounts;
+    uint256[6] internal reserveRatios;
 
-    uint256 private baseSalePrice;
+    uint256 internal baseSalePrice;
 
-    uint256 private saleGumAvailable;
-    uint256 private packGumAvailable;
-    uint256 private saleGumSold;
+    uint256 internal saleGumAvailable;
+    uint256 internal packGumAvailable;
+    uint256 internal saleGumSold;
 
-    bool private purchasesEnabled;
-    bool private tokensDistributed;
-    bool private reserveAccountsSet;
+    bool internal purchasesEnabled;
+    bool internal tokensDistributed;
+    bool internal reserveAccountsSet;
 
     modifier onlyPacks() {
         require(msg.sender == cryptoCardPacks);
@@ -152,7 +152,7 @@ contract CryptoCardsGum is Initializable, Ownable {
         return tokens;
     }
 
-    function _buyGum(address _to, uint256 _etherPaid) private {
+    function _buyGum(address _to, uint256 _etherPaid) internal {
         require(purchasesEnabled && tokensDistributed);
         require(_to != address(0) && _etherPaid > 0 && saleGumAvailable > 0);
 
