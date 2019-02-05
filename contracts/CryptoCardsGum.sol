@@ -14,9 +14,12 @@ import "openzeppelin-eth/contracts/token/ERC20/StandaloneERC20.sol";
 
 import "./CryptoCardsTreasury.sol";
 
-/**
- * @title Crypto-Cards Gum Controller
- */
+
+//
+// NOTE on Ownable:
+//   Owner Account is attached to a Multi-Sig wallet controlled by a minimum of 3 C-Level Executives.
+//
+
 contract CryptoCardsGum is Initializable, Ownable {
     StandaloneERC20 internal gumToken;
     CryptoCardsTreasury internal cryptoCardsTreasury;

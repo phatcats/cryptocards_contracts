@@ -20,6 +20,11 @@ import "./CryptoCardsGum.sol";
 import "./CryptoCards.sol";
 
 
+//
+// NOTE on Ownable:
+//   Owner Account is attached to a Multi-Sig wallet controlled by a minimum of 3 C-Level Executives.
+//
+
 contract CryptoCardPacks is Initializable, Ownable {
     using strings for *;
 

@@ -18,9 +18,12 @@ import "./CryptoCardsLib.sol";
 import "./CryptoCardsERC721.sol";
 import "./CryptoCardPacks.sol";
 
-/**
- * @title Crypto-Cards Card Contract
- */
+
+//
+// NOTE on Ownable:
+//   Owner Account is attached to a Multi-Sig wallet controlled by a minimum of 3 C-Level Executives.
+//
+
 contract CryptoCards is Initializable, Ownable {
     using strings for *;
 

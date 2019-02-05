@@ -12,6 +12,11 @@ import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 
+//
+// NOTE on Ownable:
+//   Owner Account is attached to a Multi-Sig wallet controlled by a minimum of 3 C-Level Executives.
+//
+
 contract CryptoCardsLib is Initializable, Ownable {
     uint256[3] internal packPrices;
     uint256[3] internal referralLevels;

@@ -21,6 +21,11 @@ import "./CryptoCardPacks.sol";
 import "./CryptoCards.sol";
 
 
+//
+// NOTE on Ownable:
+//   Owner Account is attached to a Multi-Sig wallet controlled by a minimum of 3 C-Level Executives.
+//
+
 contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGuard {
     event BuyNewPack        (address indexed _receiver, bytes16 _uuid, uint256 _pricePaid, address _referredBy, uint256 _promoCode);
     event ReceivedNewPack   (address indexed _receiver, bytes16 _uuid, uint256 _packId);

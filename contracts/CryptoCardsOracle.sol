@@ -21,6 +21,11 @@ import "./CryptoCardsTreasury.sol";
 import "./CryptoCardsController.sol";
 
 
+//
+// NOTE on Ownable:
+//   Owner Account is attached to a Multi-Sig wallet controlled by a minimum of 3 C-Level Executives.
+//
+
 contract CryptoCardsOracle is Ownable, usingOraclize {
     using strings for *;
 
@@ -100,15 +105,15 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
         cryptoCardsTreasury.deposit.value(balance)(balance, 0, address(0));
     }
 
-    function isValidUuid(bytes16 _uuid) public view returns (bool) {
+    function isValidUuid(bytes16 _uuid) public view onlyController returns (bool) {
         return !uuids[_uuid];
     }
 
-    function getNextGeneration() public view returns (uint256) {
+    function getNextGeneration() public view onlyController returns (uint256) {
         return nextGeneration;
     }
 
-    function getGasReserve() public returns (uint256) {
+    function getGasReserve() public onlyController returns (uint256) {
         return oraclize_getPrice("URL", oracleGasLimit);
     }
 
