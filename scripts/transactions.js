@@ -86,10 +86,10 @@ module.exports = async function() {
     try {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Contract Deployments
-        const ddCryptoCardsController = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsController');
+        const ddCryptoCardsController = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsController');
         const cryptoCardsController = Lib.getContractInstance(CryptoCardsController, ddCryptoCardsController.address);
 
-        const ddCryptoCardsOracle = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsOracle');
+        const ddCryptoCardsOracle = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsOracle');
         const cryptoCardsOracle = Lib.getContractInstance(CryptoCardsOracle, ddCryptoCardsOracle.address);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

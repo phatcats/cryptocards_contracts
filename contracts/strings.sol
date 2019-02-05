@@ -34,7 +34,7 @@
  *      corresponding to the left and right parts of the string.
  */
 
-pragma solidity ^0.4.14;
+pragma solidity 0.4.24;
 
 library strings {
     struct slice {
@@ -693,21 +693,22 @@ library strings {
      *         joined with `self`.
      */
     function join(slice self, slice[] parts) internal pure returns (string) {
-        if (parts.length == 0)
+        uint plen = parts.length;
+        if (plen == 0)
             return "";
 
-        uint length = self._len * (parts.length - 1);
-        for(uint i = 0; i < parts.length; i++)
+        uint length = self._len * (plen - 1);
+        for(uint i = 0; i < plen; i++)
             length += parts[i]._len;
 
         string memory ret = new string(length);
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        for(i = 0; i < parts.length; i++) {
+        for(i = 0; i < plen; i++) {
             memcpy(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
-            if (i < parts.length - 1) {
+            if (i < plen - 1) {
                 memcpy(retptr, self._ptr, self._len);
                 retptr += self._len;
             }

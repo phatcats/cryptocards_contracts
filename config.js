@@ -17,7 +17,7 @@ module.exports = {
             accountIndex: 0
         },
         mainnet: {
-            apiEndpoint: `https://ropsten.infura.io/v3/${process.env.MAINNET_INFURA_API_KEY}`,
+            apiEndpoint: `https://mainnet.infura.io/v3/${process.env.MAINNET_INFURA_API_KEY}`,
             mnemonic: {
                 proxy: process.env.MAINNET_WALLET_MNEMONIC_PROXY,
                 owner: process.env.MAINNET_WALLET_MNEMONIC_OWNER
@@ -40,9 +40,9 @@ module.exports = {
             gasPrice: 20000000000   // https://ropsten.etherscan.io/gastracker  (20 Gwei)
         },
         mainnet: {
-            oracleApiEndpoint: '',
+            oracleApiEndpoint: 'BP00gRkhrJdkE9+lyEJmZZcmK1Pq1R6WpyZM1ZislsSxFhGo+YzxSOFT4/a9jfEbFlwKMog53Z6wMzem14mKXfvSQOklp1WpCit2KZ6nmTvGBx/96cpTXvtuH90eZglas5F9qPcv75tqSexG2Yb6zWVIwVV0C0sFXsElfg75Sf9tjyPgqaQuQOGxKhza1SUESziEYDy2onUbM12LBlL7H75nnyAoVpcdiMfGgMEGSrGZnsgM29uIxJmG',
             packPrices: [30, 35, 40], // finney
-            promoCodes: [],
+            promoCodes: [1812, 1979, 1985],
             gasPrice: 1000000000   // https://etherscan.io/gastracker  (1 Gwei)
         }
     }

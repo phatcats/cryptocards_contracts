@@ -12,7 +12,6 @@ import "./strings.sol";
 //import "github.com/Arachnid/solidity-stringutils/strings.sol";
 
 import "zos-lib/contracts/Initializable.sol";
-import "openzeppelin-eth/contracts/math/SafeMath.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 import "./CryptoCardsLib.sol";
@@ -23,7 +22,6 @@ import "./CryptoCardPacks.sol";
  * @title Crypto-Cards Card Contract
  */
 contract CryptoCards is Initializable, Ownable {
-    using SafeMath for uint256;
     using strings for *;
 
     CryptoCardsERC721 internal token;
@@ -168,16 +166,18 @@ contract CryptoCards is Initializable, Ownable {
 
         // Add New Trade Values
         uint i;
-        for (i = 0; i < _cardValues.length; i++) {
+        uint vn = _cardValues.length;
+        uint gn = _cardGens.length;
+        for (i = 0; i < vn; i++) {
             // _cardValues are 1-based, but our storage is 0-based
             cardAllowedTradesByTokenId[_cardId][ _cardValues[i]-1 ] = true;
         }
-        if (_cardGens.length > 0) {
-            for (i = 0; i < _cardGens.length; i++) {
+        if (gn > 0) {
+            for (i = 0; i < gn; i++) {
                 cardAllowedTradeGensByTokenId[_cardId][ _cardGens[i] ] = true;
             }
         } else {
-            if (_cardValues.length > 0) {
+            if (vn > 0) {
                 cardAllowedTradeGensByTokenId[_cardId][0] = true; // Any Generation
             }
         }

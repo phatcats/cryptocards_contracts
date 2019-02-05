@@ -78,31 +78,31 @@ module.exports = async function() {
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Get Deployed Contracts
-        const ddCryptoCardsOracle = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsOracle');
+        const ddCryptoCardsOracle = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsOracle');
         const cryptoCardsOracle = Lib.getContractInstance(CryptoCardsOracle, ddCryptoCardsOracle.address);
 
-        const ddCryptoCardsTreasury = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsTreasury');
+        const ddCryptoCardsTreasury = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsTreasury');
         const cryptoCardsTreasury = Lib.getContractInstance(CryptoCardsTreasury, ddCryptoCardsTreasury.address);
 
-        const ddCryptoCardsLib = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsLib');
+        const ddCryptoCardsLib = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsLib');
         const cryptoCardsLib = Lib.getContractInstance(CryptoCardsLib, ddCryptoCardsLib.address);
 
-        const ddCryptoCardsGum = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsGum');
+        const ddCryptoCardsGum = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsGum');
         const cryptoCardsGum = Lib.getContractInstance(CryptoCardsGum, ddCryptoCardsGum.address);
         const ddCryptoCardsGumToken = Lib.getDeployDataFor('openzeppelin-eth/StandaloneERC20');
         const cryptoCardsGumToken = Lib.getContractInstance(StandaloneERC20, ddCryptoCardsGumToken.address);
 
-        const ddCryptoCards = Lib.getDeployDataFor('cryptocards_contracts/CryptoCards');
+        const ddCryptoCards = Lib.getDeployDataFor('cryptocardscontracts/CryptoCards');
         const cryptoCards = Lib.getContractInstance(CryptoCards, ddCryptoCards.address);
-        const ddCryptoCardsERC721 = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsERC721', 0);
+        const ddCryptoCardsERC721 = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsERC721', 0);
         const cryptoCardsToken = Lib.getContractInstance(CryptoCardsERC721, ddCryptoCardsERC721.address);
 
-        const ddCryptoCardPacks = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardPacks');
+        const ddCryptoCardPacks = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardPacks');
         const cryptoCardPacks = Lib.getContractInstance(CryptoCardPacks, ddCryptoCardPacks.address);
-        const ddCryptoCardPacksERC721 = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsERC721', 1);
+        const ddCryptoCardPacksERC721 = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsERC721', 1);
         const cryptoCardPacksToken = Lib.getContractInstance(CryptoCardsERC721, ddCryptoCardPacksERC721.address);
 
-        const ddCryptoCardsController = Lib.getDeployDataFor('cryptocards_contracts/CryptoCardsController');
+        const ddCryptoCardsController = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsController');
         const cryptoCardsController = Lib.getContractInstance(CryptoCardsController, ddCryptoCardsController.address);
 
 

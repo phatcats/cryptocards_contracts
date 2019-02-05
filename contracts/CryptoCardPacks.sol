@@ -12,7 +12,6 @@ import "./strings.sol";
 //import "github.com/Arachnid/solidity-stringutils/strings.sol";
 
 import "zos-lib/contracts/Initializable.sol";
-import "openzeppelin-eth/contracts/math/SafeMath.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 import "./CryptoCardsERC721.sol";
@@ -22,7 +21,6 @@ import "./CryptoCards.sol";
 
 
 contract CryptoCardPacks is Initializable, Ownable {
-    using SafeMath for uint256;
     using strings for *;
 
     CryptoCardsERC721 internal token;
@@ -115,8 +113,10 @@ contract CryptoCardPacks is Initializable, Ownable {
         require(_to != address(0));
         require(packGumByOwner[_to] > 0, 'No GUM to Claim');
 
-        gum.claimPackGum(_to, packGumByOwner[_to]);
+        uint256 quantity = packGumByOwner[_to];
+        gum.claimPackGum(_to, quantity);
         packGumByOwner[_to] = 0;
+        return quantity;
     }
 
     function updatePackPrice(address _owner, uint256 _packId, uint256 _packPrice) public onlyController {
@@ -149,7 +149,7 @@ contract CryptoCardPacks is Initializable, Ownable {
         string memory packInfo = lib.uintToHexStr(packId);
         token.mintWithTokenURI(_to, packId, endpoint.toSlice().concat(packInfo.toSlice()));
         packsDataById[packId] = _packData;
-        packGumByOwner[_to] = packGumByOwner[_to].add(packGumPerGeneration[_packGeneration-1]);
+        packGumByOwner[_to] = packGumByOwner[_to] + packGumPerGeneration[_packGeneration-1];
     }
 
     /**

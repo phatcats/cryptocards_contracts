@@ -9,13 +9,10 @@
 pragma solidity 0.4.24;
 
 import "zos-lib/contracts/Initializable.sol";
-import "openzeppelin-eth/contracts/math/SafeMath.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 
 contract CryptoCardsLib is Initializable, Ownable {
-    using SafeMath for uint256;
-
     uint256[3] internal packPrices;
     uint256[3] internal referralLevels;
     uint256[3] internal promoCodes;
@@ -60,18 +57,18 @@ contract CryptoCardsLib is Initializable, Ownable {
 
         // Promo Codes
         if (promoCodes[0] == _promoCode) {
-            return packPrice.sub(packPrice.mul(5).div(100));    // 5% off
+            return packPrice - (packPrice * 5 / 100);    // 5% off
         }
         if (promoCodes[1] == _promoCode) {
-            return packPrice.sub(packPrice.div(10));            // 10% off
+            return packPrice - (packPrice / 10);         // 10% off
         }
         if (promoCodes[2] == _promoCode) {
-            return packPrice.sub(packPrice.mul(15).div(100));   // 15% off
+            return packPrice - (packPrice * 15 / 100);   // 15% off
         }
 
         // Referrals
         if (_hasReferral) {
-            return packPrice.sub(packPrice.mul(5).div(100));    // 5% off
+            return packPrice - (packPrice * 5 / 100);    // 5% off
         }
 
         // Default (Full) Price
@@ -80,13 +77,13 @@ contract CryptoCardsLib is Initializable, Ownable {
 
     function getAmountForReferrer(uint256 _cardCount, uint256 _cost) public view returns (uint256) {
         if (_cardCount >= referralLevels[2]) {
-            return _cost.mul(15).div(100);    // 15%
+            return _cost * 15 / 100;     // 15%
         }
         if (_cardCount >= referralLevels[1]) {
-            return _cost.div(10);             // 10%
+            return _cost / 10;           // 10%
         }
         if (_cardCount >= referralLevels[0]) {
-            return _cost.div(20);             // 5%
+            return _cost / 20;           // 5%
         }
         return 0;
     }
@@ -100,7 +97,8 @@ contract CryptoCardsLib is Initializable, Ownable {
     function strToUint(string s) public pure returns (uint) {
         bytes memory b = bytes(s);
         uint result = 0;
-        for (uint i = 0; i < b.length; i++) {
+        uint len = b.length;
+        for (uint i = 0; i < len; i++) {
             if (b[i] >= 48 && b[i] <= 57) {
                 result = result * 10 + (uint(b[i]) - 48);
             }
@@ -144,9 +142,10 @@ contract CryptoCardsLib is Initializable, Ownable {
     // @dev from https://ethereum.stackexchange.com/questions/39989/solidity-convert-hex-string-to-bytes
     function fromHex(string s) public pure returns (bytes) {
         bytes memory ss = bytes(s);
-        require(ss.length%2 == 0, 'fromHex: length must be even');
-        bytes memory r = new bytes(ss.length/2);
-        for (uint i=0; i<ss.length/2; ++i) {
+        uint len = ss.length;
+        require(len%2 == 0, 'fromHex: length must be even');
+        bytes memory r = new bytes(len/2);
+        for (uint i=0; i<len/2; ++i) {
             r[i] = byte(fromHexChar(uint(ss[2*i])) * 16 + fromHexChar(uint(ss[2*i+1])));
         }
         return r;
@@ -155,8 +154,9 @@ contract CryptoCardsLib is Initializable, Ownable {
     // @dev from https://ethereum.stackexchange.com/questions/51229/how-to-convert-bytes-to-uint-in-solidity
     function bytesToUint(bytes b) public pure returns (uint256) {
         uint256 number;
-        for(uint i=0;i<b.length;i++){
-            number = number + uint(b[i])*(2**(8*(b.length-(i+1))));
+        uint len = b.length;
+        for(uint i=0;i<len;i++){
+            number = number + uint(b[i])*(2**(8*(len-(i+1))));
         }
         return number;
     }

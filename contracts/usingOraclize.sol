@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 // This api is currently targeted at 0.4.18, please import oraclizeAPI_pre0.4.sol or oraclizeAPI_0.4 where necessary
 
-pragma solidity >=0.4.18;// Incompatible compiler version... please select one stated within pragma solidity or use different oraclizeAPI version
+pragma solidity 0.4.24;
 
 contract OraclizeI {
     address public cbAddress;
@@ -136,7 +136,7 @@ contract usingOraclize {
         return oraclize.setCustomGasPrice(gasPrice);
     }
 
-    function getCodeSize(address _addr) constant internal returns(uint _size) {
+    function getCodeSize(address _addr) view internal returns(uint _size) {
         assembly {
             _size := extcodesize(_addr)
         }

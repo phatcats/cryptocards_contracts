@@ -52,13 +52,10 @@
 pragma solidity 0.4.24;
 
 import "zos-lib/contracts/Initializable.sol";
-import "openzeppelin-eth/contracts/math/SafeMath.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 
 contract CryptoCardsTreasury is Initializable, Ownable {
-    using SafeMath for uint256;
-
     // Contract Controller
     address internal contractController;  // Points to CryptoCardsController Contract
 
@@ -131,7 +128,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         updateOutsourcedMemberLimit(_account, _limit);
 
         outsourcedMembers_payoutIndex[_account] = getCurrentPayoutIndex();
-        outSourcePool_memberCount = outSourcePool_memberCount.add(1);
+        outSourcePool_memberCount = outSourcePool_memberCount + 1;
     }
 
     /**
@@ -143,11 +140,11 @@ contract CryptoCardsTreasury is Initializable, Ownable {
 
         if (outsourcedMembers_paid[_account] == outsourcedMembers_limit[_account]) {
             // Previously paid out and removed from memberCount, let's add back now that member has a new limit
-            outSourcePool_memberCount = outSourcePool_memberCount.add(1);
+            outSourcePool_memberCount = outSourcePool_memberCount + 1;
         }
 
-        outsourcedMembers_limit[_account] = outsourcedMembers_limit[_account].add(_limitToAdd);
-        outSourcePool_unpaid = outSourcePool_unpaid.add(_limitToAdd);
+        outsourcedMembers_limit[_account] = outsourcedMembers_limit[_account] + _limitToAdd;
+        outSourcePool_unpaid = outSourcePool_unpaid + _limitToAdd;
     }
 
     //
@@ -165,8 +162,8 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     function withdrawFromEscrow() public onlyOwner {
         require(inHouseEscrow_unpaid > 0 && inHouseAccount != address(0));
         uint256 amount = inHouseEscrow_unpaid;
-        inHouseEscrow_paid = inHouseEscrow_paid.add(amount);
-        inHouseEscrow_unpaid = inHouseEscrow_unpaid.sub(amount);
+        inHouseEscrow_paid = inHouseEscrow_paid + amount;
+        inHouseEscrow_unpaid = inHouseEscrow_unpaid - amount;
         inHouseAccount.transfer(amount);
     }
 
@@ -187,8 +184,8 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         require(referrals_unpaid[msg.sender] > 0);
 
         uint256 amount = referrals_unpaid[msg.sender];
-        referrals_paid[msg.sender] = referrals_paid[msg.sender].add(amount);
-        referrals_unpaid[msg.sender] = referrals_unpaid[msg.sender].sub(amount);
+        referrals_paid[msg.sender] = referrals_paid[msg.sender] + amount;
+        referrals_unpaid[msg.sender] = referrals_unpaid[msg.sender] - amount;
 
         msg.sender.transfer(amount);
     }
@@ -253,16 +250,18 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         address member = msg.sender;
         uint256 amountToPay = getAvailableBalanceOfMember(member);
         require(amountToPay > 0);
+        require(outSourcePool_unpaid - amountToPay >= 0);
 
-        outSourcePool_paid = outSourcePool_paid.add(amountToPay);
-        outSourcePool_unpaid = outSourcePool_unpaid.sub(amountToPay);
+        outSourcePool_paid = outSourcePool_paid + amountToPay;
+        outSourcePool_unpaid = outSourcePool_unpaid - amountToPay;
 
-        outsourcedMembers_paid[member] = outsourcedMembers_paid[member].add(amountToPay);
+        outsourcedMembers_paid[member] = outsourcedMembers_paid[member] + amountToPay;
         outsourcedMembers_payoutIndex[member] = getCurrentPayoutIndex();
 
         if (outsourcedMembers_paid[member] == outsourcedMembers_limit[member]) {
             // No more bounty to pay out, remove from memberCount
-            outSourcePool_memberCount = outSourcePool_memberCount.sub(1);
+            require(outSourcePool_memberCount - 1 >= 0);
+            outSourcePool_memberCount = outSourcePool_memberCount - 1;
         }
 
         member.transfer(amountToPay);
@@ -275,12 +274,13 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     function transferUnusedFundsFromPool() public onlyOwner {
         uint256 unusedFunds = getUnusedFundsInPool();
         require(unusedFunds > 0);
+        require(outSourcePool_total - unusedFunds >= 0);
 
         // Remove from Outsource Pool
-        outSourcePool_total = outSourcePool_total.sub(unusedFunds);
+        outSourcePool_total = outSourcePool_total - unusedFunds;
 
         // Transfer to In-house Escrow
-        inHouseEscrow_unpaid = inHouseEscrow_unpaid.add(unusedFunds);
+        inHouseEscrow_unpaid = inHouseEscrow_unpaid + unusedFunds;
     }
 
     //
@@ -292,24 +292,25 @@ contract CryptoCardsTreasury is Initializable, Ownable {
      */
     function deposit(uint256 _amountDeposited, uint256 _amountForReferrer, address _referrer) public onlyController payable {
         require(_amountDeposited == msg.value);
+        require(_amountDeposited - _amountForReferrer >= 0);
 
         // Referrals
         if (_referrer != address(0) && _amountForReferrer > 0) {
-            referrals_unpaid[_referrer] = referrals_unpaid[_referrer].add(_amountForReferrer);
-            _amountDeposited = _amountDeposited.sub(_amountForReferrer);
+            referrals_unpaid[_referrer] = referrals_unpaid[_referrer] + _amountForReferrer;
+            _amountDeposited = _amountDeposited - _amountForReferrer;
         }
 
         // Out-sourcing
-        uint256 outsourcePortion = _amountDeposited.div(30);
+        uint256 outsourcePortion = _amountDeposited / 30;
         if (outSourcePool_total < outSourcePool_limit) {
             if (outSourcePool_total + outsourcePortion > outSourcePool_limit) {
                 outsourcePortion = outSourcePool_limit - outSourcePool_total;
             }
-            outSourcePool_total = outSourcePool_total.add(outsourcePortion);
-            _amountDeposited = _amountDeposited.sub(outsourcePortion);
+            outSourcePool_total = outSourcePool_total + outsourcePortion;
+            _amountDeposited = _amountDeposited - outsourcePortion;
         }
 
         // In-house
-        inHouseEscrow_unpaid = inHouseEscrow_unpaid.add(_amountDeposited);
+        inHouseEscrow_unpaid = inHouseEscrow_unpaid + _amountDeposited;
     }
 }

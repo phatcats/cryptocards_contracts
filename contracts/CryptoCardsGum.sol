@@ -9,7 +9,6 @@
 pragma solidity 0.4.24;
 
 import "zos-lib/contracts/Initializable.sol";
-import "openzeppelin-eth/contracts/math/SafeMath.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 import "openzeppelin-eth/contracts/token/ERC20/StandaloneERC20.sol";
 
@@ -19,8 +18,6 @@ import "./CryptoCardsTreasury.sol";
  * @title Crypto-Cards Gum Controller
  */
 contract CryptoCardsGum is Initializable, Ownable {
-    using SafeMath for uint256;
-
     StandaloneERC20 internal gumToken;
     CryptoCardsTreasury internal cryptoCardsTreasury;
     address internal cryptoCardPacks;
@@ -113,13 +110,14 @@ contract CryptoCardsGum is Initializable, Ownable {
 
         uint256 totalSupply = gumToken.totalSupply();
         uint256 amount;
-        for (uint256 i = 0; i < reserveAccounts.length; ++i) {
-            amount = totalSupply.mul(reserveRatios[i]).div(10000);
+        uint len = reserveAccounts.length;
+        for (uint256 i = 0; i < len; ++i) {
+            amount = totalSupply * reserveRatios[i] / 10000;
             gumToken.transfer(reserveAccounts[i], amount);
         }
 
-        saleGumAvailable = totalSupply.mul(reserveRatios[4]).div(10000);
-        packGumAvailable = totalSupply.mul(reserveRatios[5]).div(10000);
+        saleGumAvailable = totalSupply * reserveRatios[4] / 10000;
+        packGumAvailable = totalSupply * reserveRatios[5] / 10000;
 
         tokensDistributed = true;
     }
@@ -145,7 +143,7 @@ contract CryptoCardsGum is Initializable, Ownable {
         }
 
         // Track Gum Supplies
-        packGumAvailable = packGumAvailable.sub(tokens);
+        packGumAvailable = packGumAvailable - tokens;
 
         // Transfer Gum Tokens
         gumToken.transfer(_to, tokens);
@@ -158,21 +156,21 @@ contract CryptoCardsGum is Initializable, Ownable {
 
         // Calculate tokens to sell
         uint256 amountPaid = _etherPaid;
-        uint256 tokens = amountPaid.mul(baseSalePrice).div(1 ether);
+        uint256 tokens = amountPaid * baseSalePrice / (1 ether);
         uint256 refund = 0;
 
         // Sell only tokens that are available
         if (tokens > saleGumAvailable) {
             uint256 newTokens = saleGumAvailable;
-            uint256 newAmount = newTokens.div(baseSalePrice).mul(1 ether);
-            refund = amountPaid.sub(newAmount);
+            uint256 newAmount = newTokens * (1 ether) / baseSalePrice;
+            refund = amountPaid - newAmount;
             amountPaid = newAmount;
             tokens = newTokens;
         }
 
         // Track Gum Sales
-        saleGumSold = saleGumSold.add(tokens);
-        saleGumAvailable = saleGumAvailable.sub(tokens);
+        saleGumSold = saleGumSold + tokens;
+        saleGumAvailable = saleGumAvailable - tokens;
 
         // Transfer Gum Tokens
         gumToken.transfer(_to, tokens);

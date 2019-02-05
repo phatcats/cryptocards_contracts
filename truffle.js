@@ -43,7 +43,7 @@ module.exports = {
             network_id    : 1,                                  // Mainnet
             gas           : 8000000,                            // https://etherscan.io/blocks
             gasPrice      : networkOptions.local.gasPrice,      // https://etherscan.io/gastracker  (1 Gwei)
-            confirmations : 3,                                  // # of confs to wait between deployments. (default: 0)
+            confirmations : 1,                                  // # of confs to wait between deployments. (default: 0)
             timeoutBlocks : 200,                                // # of blocks before a deployment times out  (minimum/default: 50)
             skipDryRun    : false                               // Skip dry run before migrations? (default: false for public nets)
         }

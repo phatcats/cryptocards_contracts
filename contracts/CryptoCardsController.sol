@@ -9,7 +9,6 @@
 pragma solidity 0.4.24;
 
 import "zos-lib/contracts/Initializable.sol";
-import "openzeppelin-eth/contracts/math/SafeMath.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 import "openzeppelin-eth/contracts/lifecycle/Pausable.sol";
 import "openzeppelin-eth/contracts/utils/ReentrancyGuard.sol";
@@ -23,8 +22,6 @@ import "./CryptoCards.sol";
 
 
 contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGuard {
-    using SafeMath for uint256;
-
     event BuyNewPack        (address indexed _receiver, bytes16 _uuid, uint256 _pricePaid, address _referredBy, uint256 _promoCode);
     event ReceivedNewPack   (address indexed _receiver, bytes16 _uuid, uint256 _packId);
     event OpenedPack        (address indexed _receiver, bytes16 _uuid, uint256 _packId, uint256[8] _cards);
@@ -132,7 +129,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     }
 
     function claimPackGum(address _owner) public returns (uint256) {
-        cryptoCardPacks.claimPackGum(_owner);
+        return cryptoCardPacks.claimPackGum(_owner);
     }
 
     function tokenizePack(uint256 _packId, bytes16 _uuid) public whenNotPaused {
@@ -179,7 +176,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
 
         // Refund over-spend
         if (pricePaid > packPrice) {
-            msg.sender.transfer(pricePaid.sub(packPrice));
+            msg.sender.transfer(pricePaid - packPrice);
         }
     }
 
@@ -198,7 +195,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
 
         // Refund over-spend
         if (pricePaid > cardPrice) {
-            msg.sender.transfer(pricePaid.sub(cardPrice));
+            msg.sender.transfer(pricePaid - cardPrice);
         }
     }
 
@@ -227,9 +224,10 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         // Get Pack of Cards and Assign to Receiver
         uint256 oracleGasReserve = cryptoCardsOracle.getGasReserve();
         cryptoCardsOracle.getNewPack.value(oracleGasReserve)(msg.sender, oracleGasReserve, _uuid);
+        require(cost - oracleGasReserve > 0);
 
         // Distribute Payment for Pack
-        uint256 netAmount = cost.sub(oracleGasReserve);
+        uint256 netAmount = cost - oracleGasReserve;
         uint256 forReferrer = 0;
         if (hasReferral) {
             forReferrer = cryptoCardsLib.getAmountForReferrer(getCardCount(_referredBy), cost);
@@ -243,7 +241,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
 
         // Refund over-spend
         if (pricePaid > cost) {
-            msg.sender.transfer(pricePaid.sub(cost));
+            msg.sender.transfer(pricePaid - cost);
         }
     }
 
@@ -258,7 +256,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     function getCardCount(address _for) internal view returns (uint256) {
         uint256 packCount = cryptoCardPacks.balanceOf(_for);
         uint256 cardCount = cryptoCards.balanceOf(_for);
-        return packCount.mul(8).add(cardCount);
+        return (packCount * 8) + cardCount;
     }
 
     function setPackPrice(address _owner, uint256 _packId, uint256 _packPrice, bytes16 _uuid) internal {
