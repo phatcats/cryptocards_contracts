@@ -4,6 +4,10 @@
  *  - https://phatcats.co
  *
  * Copyright 2019 (c) Phat Cats, Inc.
+ *
+ * Contract Audits:
+ *   - SmartDEC International - https://smartcontracts.smartdec.net
+ *   - Callisto Security Department - https://callisto.network/
  */
 /*
     - when receiving funds:

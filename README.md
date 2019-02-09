@@ -1,4 +1,4 @@
-# Crypto-Cards Contracts v0.3.7
+# Crypto-Cards Contracts v0.3.8
 Homepage: https://crypto-cards.io
 Ropsten:  https://ropsten.crypto-cards.io
 PhatCats: https://phatcats.co

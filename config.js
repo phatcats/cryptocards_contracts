@@ -45,5 +45,13 @@ module.exports = {
             promoCodes: [1812, 1979, 1985],
             gasPrice: 1000000000   // https://etherscan.io/gastracker  (1 Gwei)
         }
+    },
+
+    // OpenSea proxy registry addresses for rinkeby and mainnet.
+    opensea: {
+        proxyRegistryAddress: {
+            rinkby: '0xf57b2c51ded3a29e6891aba85459d600256cf317',
+            mainnet: '0xa5409ec958c83c3f309868babaca7c86dcb077c1'
+        }
     }
 };

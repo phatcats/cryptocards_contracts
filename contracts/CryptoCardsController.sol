@@ -4,6 +4,10 @@
  *  - https://phatcats.co
  *
  * Copyright 2019 (c) Phat Cats, Inc.
+ *
+ * Contract Audits:
+ *   - SmartDEC International - https://smartcontracts.smartdec.net
+ *   - Callisto Security Department - https://callisto.network/
  */
 
 pragma solidity 0.4.24;
@@ -88,7 +92,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     }
 
     function getVersion() public pure returns (string) {
-        return "v0.3.7";
+        return "v0.3.8";
     }
 
     function contractBalance() public view returns (uint256) {

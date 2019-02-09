@@ -146,7 +146,7 @@ deployFresh() {
     echo "Creating Contract: CryptoCards"
     cardsAddress=$(zos create CryptoCards --init initialize --args "$ownerAccount")
     echo "Creating Cards Token: CryptoCardsERC721"
-    cardsTokenAddress=$(zos create CryptoCardsERC721 --init initialize --args "CryptoCards","CARD",["$ownerAccount"],["$ownerAccount"])
+    cardsTokenAddress=$(zos create CryptoCardsERC721 --init initialize --args "$ownerAccount","CryptoCards","CARD",["$ownerAccount"],["$ownerAccount"])
 #    echo "cardsAddress: $cardsAddress"
 #    echo "cardsTokenAddress: $cardsTokenAddress"
 
@@ -154,7 +154,7 @@ deployFresh() {
     echo "Creating Contract: CryptoCardPacks"
     packsAddress=$(zos create CryptoCardPacks --init initialize --args "$ownerAccount")
     echo "Creating Packs Token: CryptoCardsERC721"
-    packsTokenAddress=$(zos create CryptoCardsERC721 --init initialize --args "CryptoCardPacks","PACK",["$ownerAccount"],["$ownerAccount"])
+    packsTokenAddress=$(zos create CryptoCardsERC721 --init initialize --args "$ownerAccount","CryptoCardPacks","PACK",["$ownerAccount"],["$ownerAccount"])
 #    echo "packsAddress: $packsAddress"
 #    echo "packsTokenAddress: $packsTokenAddress"
 

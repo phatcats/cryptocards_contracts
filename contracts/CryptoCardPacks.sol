@@ -4,12 +4,15 @@
  *  - https://phatcats.co
  *
  * Copyright 2019 (c) Phat Cats, Inc.
+ *
+ * Contract Audits:
+ *   - SmartDEC International - https://smartcontracts.smartdec.net
+ *   - Callisto Security Department - https://callisto.network/
  */
 
 pragma solidity 0.4.24;
 
 import "./strings.sol";
-//import "github.com/Arachnid/solidity-stringutils/strings.sol";
 
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";

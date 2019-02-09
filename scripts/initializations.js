@@ -15,7 +15,7 @@ global.web3 = web3;
 
 const { Contracts } = require('zos-lib');
 const { Lib } = require('./common');
-const { networkOptions } = require('../config');
+const { networkOptions, opensea } = require('../config');
 const _ = require('lodash');
 
 const StandaloneERC20 = Contracts.getFromLocal('StandaloneERC20');
@@ -50,6 +50,7 @@ module.exports = async function() {
     const bountyAccount = process.env[`${_.toUpper(Lib.network)}_BOUNTY_ACCOUNT`];
     const marketingAccount = process.env[`${_.toUpper(Lib.network)}_MARKETING_ACCOUNT`];
     const exchangeAccount = process.env[`${_.toUpper(Lib.network)}_EXCHANGE_ACCOUNT`];
+    const proxyRegistryAddress = opensea.proxyRegistryAddress[Lib.network] || '';
 
     Lib.deployData = require(`../zos.${Lib.networkProvider}.json`);
 
@@ -222,6 +223,15 @@ module.exports = async function() {
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
+        if (!_.isEmpty(proxyRegistryAddress)) {
+            Lib.log({spacer: true});
+            Lib.log({msg: 'Updating Cards with Proxy Registry Address for OpenSea...'});
+            Lib.verbose && Lib.log({msg: `Proxy Registry: ${proxyRegistryAddress}`, indent: 1});
+            receipt = await cryptoCardsToken.setProxyRegistryAddress(proxyRegistryAddress, _getTxOptions());
+            Lib.logTxResult(receipt);
+            totalGas += receipt.receipt.gasUsed;
+        }
+
         //
         // CryptoCardPacks
         //
@@ -274,6 +284,15 @@ module.exports = async function() {
         receipt = await cryptoCardPacksToken.addMinter(ddCryptoCardPacks.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
+
+        if (!_.isEmpty(proxyRegistryAddress)) {
+            Lib.log({spacer: true});
+            Lib.log({msg: 'Updating Packs with Proxy Registry Address for OpenSea...'});
+            Lib.verbose && Lib.log({msg: `Proxy Registry: ${proxyRegistryAddress}`, indent: 1});
+            receipt = await cryptoCardPacksToken.setProxyRegistryAddress(proxyRegistryAddress, _getTxOptions());
+            Lib.logTxResult(receipt);
+            totalGas += receipt.receipt.gasUsed;
+        }
 
         //
         // CryptoCardsController
@@ -434,6 +453,15 @@ module.exports = async function() {
             Lib.log({spacer: true});
             Lib.log({msg: 'NOTE: Controller Contract is PAUSED!  You must unpause manually when ready!'});
             Lib.log({msg: 'NOTE: GUM Token Purchases are Disabled!  You must enable manually when ready!'});
+            Lib.log({msg: 'NOTE: OWNER has SuperUser Privileges! You must point the OWNER of ALL Contracts to a MultiSig Wallet!'});
+
+            // All Contracts:
+            // <contract>.transferOwnership(<multiSigWalletAddress>)            // MultiSig:  To maintain contract functionality
+
+            // All ERC-721 Contracts
+            // <CryptoCardsERC721>.addMinter(<multiSigWalletAddress>)           // MultiSig:  To maintain ability to change minter (Packs/Cards Contract) when updated
+            // <CryptoCardsERC721>.renounceMinter(<ownerAddress>)               // SuperUser: Removed as minter (only required during initialization)
+            // <CryptoCardsERC721>.transferOwnership(<multiSigWalletAddress>)   // MultiSig:  To maintain Proxy-Registry-Address
         }
 
         Lib.log({spacer: true});

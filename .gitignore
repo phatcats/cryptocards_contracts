@@ -5,6 +5,7 @@ npm-debug.log
 .DS_Store
 .idea
 build/
+merged/
 .next
 .vscode/
 node_modules/
