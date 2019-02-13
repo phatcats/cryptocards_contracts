@@ -69,7 +69,7 @@ setEnvVars() {
     fi
 
     walletMnemonicType="proxy"
-    [ -n "$initialize" -o -n "$runTransactions" ] && {
+    [ -n "$initialize" -o -n "$runTransactions" -o -n "$linkContracts" ] && {
         walletMnemonicType="owner"
     }
 
