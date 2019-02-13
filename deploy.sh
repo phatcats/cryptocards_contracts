@@ -18,6 +18,7 @@
 
 freshLoad=
 initialize=
+linkContracts=
 runTransactions=
 proxyAdmin=
 ownerAccount=
@@ -31,6 +32,7 @@ usage() {
     echo "  -n | --network [local|ropsten|mainnet]    Deploys contracts to the specified network (default is local)"
     echo "  -f | --fresh                              Run all deployments from the beginning, instead of updating"
     echo "  -i | --initialize                         Run Contract Initializations"
+    echo "  -l | --link                               Run Contract Linking"
     echo "  -t | --transactions                       Run Load-Test Transactions (Local Only)"
     echo "  -v | --verbose                            Outputs verbose logging"
     echo "  -h | --help                               Displays this help screen"
@@ -101,7 +103,7 @@ deployFresh() {
         echo "CMD: ethereum-bridge -H localhost:7545 -a 1 --dev"
     else
         echoHeader
-        echo "NOTE: Be sure to remove the Oraclize Address Resolver from the Controller Contract!"
+        echo "NOTE: Be sure to remove the Oraclize Address Resolver from the Oracle Contract!"
         echo "LINE: OAR = OraclizeAddrResolverI( ... )"
     fi
 
@@ -122,46 +124,40 @@ deployFresh() {
     echoHeader
     echo "Creating Contract: CryptoCardsOracle"
     oracleAddress=$(zos create CryptoCardsOracle --init initialize --args "$ownerAccount")
-#    echo "oracleAddress: $oracleAddress"
 
     echoHeader
     echo "Creating Contract: CryptoCardsTreasury"
     treasuryAddress=$(zos create CryptoCardsTreasury --init initialize --args "$ownerAccount")
-#    echo "treasuryAddress: $treasuryAddress"
 
     echoHeader
     echo "Creating Contract: CryptoCardsLib"
     libAddress=$(zos create CryptoCardsLib --init initialize --args "$ownerAccount")
-#    echo "libAddress: $libAddress"
 
     echoHeader
     echo "Creating Contract: CryptoCardsGum"
     gumAddress=$(zos create CryptoCardsGum --init initialize --args "$ownerAccount")
-    echo "Creating Token: CryptoCardsGumToken - StandaloneERC20"
-    gumTokenAddress=$(zos create openzeppelin-eth/StandaloneERC20 --init initialize --args "CryptoCardsGum","GUM",18,2000000000000000000000000000,"$gumAddress",[],[])   # <-- 2 Billion, 18 Decimals
-#    echo "gumAddress: $gumAddress"
-#    echo "gumTokenAddress: $gumTokenAddress"
 
     echoHeader
     echo "Creating Contract: CryptoCards"
     cardsAddress=$(zos create CryptoCards --init initialize --args "$ownerAccount")
-    echo "Creating Cards Token: CryptoCardsERC721"
-    cardsTokenAddress=$(zos create CryptoCardsERC721 --init initialize --args "$ownerAccount","CryptoCards","CARD",["$ownerAccount"],["$ownerAccount"])
-#    echo "cardsAddress: $cardsAddress"
-#    echo "cardsTokenAddress: $cardsTokenAddress"
 
     echoHeader
     echo "Creating Contract: CryptoCardPacks"
     packsAddress=$(zos create CryptoCardPacks --init initialize --args "$ownerAccount")
-    echo "Creating Packs Token: CryptoCardsERC721"
-    packsTokenAddress=$(zos create CryptoCardsERC721 --init initialize --args "$ownerAccount","CryptoCardPacks","PACK",["$ownerAccount"],["$ownerAccount"])
-#    echo "packsAddress: $packsAddress"
-#    echo "packsTokenAddress: $packsTokenAddress"
 
     echoHeader
     echo "Creating Contract: CryptoCardsController"
     controllerAddress=$(zos create CryptoCardsController --init initialize --args "$ownerAccount")
-#    echo "controllerAddress: $controllerAddress"
+
+    echoHeader
+    echo "Contract Addresses: "
+    echo " - controllerAddress: $controllerAddress"
+    echo " - oracleAddress:     $oracleAddress"
+    echo " - treasuryAddress:   $treasuryAddress"
+    echo " - packsAddress:      $packsAddress"
+    echo " - cardsAddress:      $cardsAddress"
+    echo " - gumAddress:        $gumAddress"
+    echo " - libAddress:        $libAddress"
 
     echoHeader
     echo "Contract Deployment Complete!"
@@ -171,12 +167,16 @@ deployFresh() {
 deployUpdate() {
     startSession "$proxyAdmin"
 
+    # Recompile All Contracts to avoid "No AST nodes ..." error
+    echo " "
+    echo "Clearing previous build..."
+    rm -rf build/
+
     echo " "
     echo "Pushing Contract Updates.."
     zos push
 
     echo "Updating Logic Contracts.."
-    zos update CryptoCardsERC721
     zos update CryptoCardsLib
     zos update CryptoCardsGum
     zos update CryptoCards
@@ -194,8 +194,16 @@ runInitializations() {
     startSession "$ownerAccount"
 
     echoHeader
-    echo "Running Contract Initializations..."
+    echo "Initializing Contracts..."
     truffle exec ./scripts/initializations.js --network "$networkName"
+}
+
+runContractLinking() {
+    startSession "$ownerAccount"
+
+    echoHeader
+    echo "Linking Token Contracts..."
+    truffle exec ./scripts/link_tokens.js --network "$networkName"
 }
 
 runTransactions() {
@@ -216,6 +224,8 @@ while [ "$1" != "" ]; do
                                 ;;
         -i | --initialize )     initialize="yes"
                                 ;;
+        -l | --link )           linkContracts="yes"
+                                ;;
         -t | --transactions )   runTransactions="yes"
                                 ;;
         -v | --verbose )        verbose="yes"
@@ -233,6 +243,8 @@ setEnvVars
 
 if [ -n "$freshLoad" ]; then
     deployFresh
+elif [ -n "$linkContracts" ]; then
+    runContractLinking
 elif [ -n "$runTransactions" ]; then
     runTransactions
 elif [ -n "$initialize" ]; then

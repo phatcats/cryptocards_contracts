@@ -14,8 +14,8 @@ pragma solidity 0.4.24;
 
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
-import "openzeppelin-eth/contracts/token/ERC20/StandaloneERC20.sol";
 
+import "./CryptoCardsERC20.sol";
 import "./CryptoCardsTreasury.sol";
 
 
@@ -25,7 +25,7 @@ import "./CryptoCardsTreasury.sol";
 //
 
 contract CryptoCardsGum is Initializable, Ownable {
-    StandaloneERC20 internal gumToken;
+    CryptoCardsERC20 internal gumToken;
     CryptoCardsTreasury internal cryptoCardsTreasury;
     address internal cryptoCardPacks;
 
@@ -38,13 +38,13 @@ contract CryptoCardsGum is Initializable, Ownable {
     address[4] internal reserveAccounts;
     uint256[6] internal reserveRatios;
 
-    uint256 internal baseSalePrice;
+    uint256 public baseSalePrice;
 
-    uint256 internal saleGumAvailable;
-    uint256 internal packGumAvailable;
-    uint256 internal saleGumSold;
+    uint256 public saleGumAvailable;
+    uint256 public packGumAvailable;
+    uint256 public saleGumSold;
 
-    bool internal purchasesEnabled;
+    bool public purchasesEnabled;
     bool internal tokensDistributed;
     bool internal reserveAccountsSet;
 
@@ -58,19 +58,27 @@ contract CryptoCardsGum is Initializable, Ownable {
 
         baseSalePrice = 40000 * (10**18); // tokens per 1 ether
 
-        // dist = (total * ratio) / 10,000
+        // dist = (total * ratio) / 100
         reserveRatios = [
-            1750,   // 17.5% of Total
-             375,   // 3.75%
-             375,   // 3.75%
-            2000,   // 20%
-             500,   // 5%
-            5000    // 50%
-        ];
+            31,   // % of Total         930,000,000
+             5,   //                    150,000,000
+             5,   //                    150,000,000
+            20,   //                    600,000,000
+             5,   //                    150,000,000
+            34    //                  1,020,000,000
+        ];        //                -----------------
+                  // Total            3,000,000,000
     }
 
-    function contractBalance() public view returns (uint256) {
-        return address(this).balance;
+    function setContractAddresses(
+        address _packs,
+        CryptoCardsTreasury _treasury
+    ) public onlyOwner {
+        require(_packs != address(0));
+        require(_treasury != address(0));
+
+        cryptoCardPacks = _packs;
+        cryptoCardsTreasury = _treasury;
     }
 
     function setPacksAddress(address _packs) public onlyOwner {
@@ -83,9 +91,13 @@ contract CryptoCardsGum is Initializable, Ownable {
         cryptoCardsTreasury = _treasury;
     }
 
-    function setGumToken(StandaloneERC20 _token) public onlyOwner {
+    function setGumToken(CryptoCardsERC20 _token) public onlyOwner {
         require(_token != address(0));
         gumToken = _token;
+    }
+
+    function contractBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 
     function enablePurchases() public onlyOwner {
@@ -108,7 +120,6 @@ contract CryptoCardsGum is Initializable, Ownable {
         for (uint256 i = 0; i < 4; ++i) {
             reserveAccounts[i] = _accounts[i];
         }
-//        reserveAccounts = _accounts;
         reserveAccountsSet = true;
     }
 
@@ -119,18 +130,14 @@ contract CryptoCardsGum is Initializable, Ownable {
         uint256 amount;
         uint len = reserveAccounts.length;
         for (uint256 i = 0; i < len; ++i) {
-            amount = totalSupply * reserveRatios[i] / 10000;
+            amount = totalSupply * reserveRatios[i] / 100;
             gumToken.transfer(reserveAccounts[i], amount);
         }
 
-        saleGumAvailable = totalSupply * reserveRatios[4] / 10000;
-        packGumAvailable = totalSupply * reserveRatios[5] / 10000;
+        saleGumAvailable = totalSupply * reserveRatios[4] / 100;
+        packGumAvailable = totalSupply * reserveRatios[5] / 100;
 
         tokensDistributed = true;
-    }
-
-    function() public payable {
-        _buyGum(msg.sender, msg.value);
     }
 
     function buyGum() public payable {
@@ -144,7 +151,7 @@ contract CryptoCardsGum is Initializable, Ownable {
     function claimPackGum(address _to, uint256 _amountOfGum) public onlyPacks returns (uint256) {
         require(tokensDistributed && _amountOfGum > 0);
 
-        uint256 tokens = _amountOfGum * (10**18);
+        uint256 tokens = _amountOfGum;
         if (tokens > packGumAvailable) {
             tokens = packGumAvailable;
         }
@@ -163,13 +170,13 @@ contract CryptoCardsGum is Initializable, Ownable {
 
         // Calculate tokens to sell
         uint256 amountPaid = _etherPaid;
-        uint256 tokens = amountPaid * baseSalePrice / (1 ether);
+        uint256 tokens = amountPaid * (baseSalePrice / (10**18));
         uint256 refund = 0;
 
         // Sell only tokens that are available
         if (tokens > saleGumAvailable) {
             uint256 newTokens = saleGumAvailable;
-            uint256 newAmount = newTokens * (1 ether) / baseSalePrice;
+            uint256 newAmount = newTokens * (baseSalePrice / (10**18));
             refund = amountPaid - newAmount;
             amountPaid = newAmount;
             tokens = newTokens;

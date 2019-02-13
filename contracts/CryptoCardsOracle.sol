@@ -57,13 +57,30 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Local Only
-//        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
-//        oraclize_setNetwork(networkID_testnet);
+        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
+        oraclize_setNetwork(networkID_testnet);
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         oraclize_setCustomGasPrice(10000000000); // 10 gwei
         oracleGasLimit = 400000;                 // wei
         nextGeneration = 1;                      // Valid gens: 1, 2, or 3.   4 = Sold Out
+    }
+
+    function setContractAddresses(
+        CryptoCardsController _controller,
+        CryptoCardsTreasury _treasury,
+        CryptoCardPacks _packs,
+        CryptoCardsLib _lib
+    ) public onlyOwner {
+        require(_controller != address(0));
+        require(_treasury != address(0));
+        require(_packs != address(0));
+        require(_lib != address(0));
+
+        cryptoCardsController = _controller;
+        cryptoCardsTreasury = _treasury;
+        cryptoCardPacks = _packs;
+        cryptoCardsLib = _lib;
     }
 
     function setContractController(CryptoCardsController _controller) public onlyOwner {

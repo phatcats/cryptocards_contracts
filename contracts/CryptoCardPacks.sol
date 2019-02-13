@@ -62,8 +62,28 @@ contract CryptoCardPacks is Initializable, Ownable {
 
     function initialize(address _owner) public initializer {
         Ownable.initialize(_owner);
-        packGumPerGeneration = [555, 725, 1000];
+        packGumPerGeneration = [555, 725, 1000]; // 1,000,000,000 Reserved for Pack Gum
         endpoint = "https://crypto-cards.io/pack-info/";
+    }
+
+    function setContractAddresses(
+        address _controller,
+        address _oracle,
+        CryptoCards _cards,
+        CryptoCardsGum _gum,
+        CryptoCardsLib _lib
+    ) public onlyOwner {
+        require(_controller != address(0));
+        require(_oracle != address(0));
+        require(_cards != address(0));
+        require(_gum != address(0));
+        require(_lib != address(0));
+
+        cryptoCardsController = _controller;
+        cryptoCardsOracle = _oracle;
+        cards = _cards;
+        gum = _gum;
+        lib = _lib;
     }
 
     function setContractController(address _controller) public onlyOwner {
@@ -117,6 +137,10 @@ contract CryptoCardPacks is Initializable, Ownable {
         return token.tokenOfOwnerByIndex(_owner, _index);
     }
 
+    function unclaimedGumOf(address _owner) public view returns (uint256) {
+        return packGumByOwner[_owner];
+    }
+
     function claimPackGum(address _to) public onlyController returns (uint256) {
         require(_to != address(0));
         require(packGumByOwner[_to] > 0, 'No GUM to Claim');
@@ -157,7 +181,7 @@ contract CryptoCardPacks is Initializable, Ownable {
         string memory packInfo = lib.uintToHexStr(packId);
         token.mintWithTokenURI(_to, packId, endpoint.toSlice().concat(packInfo.toSlice()));
         packsDataById[packId] = _packData;
-        packGumByOwner[_to] = packGumByOwner[_to] + packGumPerGeneration[_packGeneration-1];
+        packGumByOwner[_to] = packGumByOwner[_to] + (packGumPerGeneration[_packGeneration-1] * (10**18));
     }
 
     /**
@@ -179,7 +203,7 @@ contract CryptoCardPacks is Initializable, Ownable {
 
         // Destroy owned pack
         delete packsDataById[_packId];
-//        _burn(owner, _packId);             TODO
+        token.burnToken(owner, _packId);
         return mintedCards;
     }
 

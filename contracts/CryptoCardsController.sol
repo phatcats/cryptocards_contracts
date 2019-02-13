@@ -43,6 +43,9 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     event PackSale          (address indexed _owner, address indexed _receiver, bytes16 _uuid, uint256 _packId, uint256 _price);
     event CardSale          (address indexed _owner, address indexed _receiver, bytes16 _uuid, uint256 _cardId, uint256 _price);
     event CardTrade         (address indexed _owner, address indexed _receiver, bytes16 _uuid, uint256 _ownerCardId, uint256 _tradeCardId);
+    event CardBurn          (address indexed _owner, uint256[] _ownerCardIds);
+
+    event TokenTransfer     (address indexed _owner, address indexed _receiver, uint256 _tokenId, string _symbol); // Off-Dapp Transfers (Manual, OpenSea, Etc..)
 
     CryptoCardsLib internal cryptoCardsLib;
     CryptoCardsGum internal cryptoCardsGum;
@@ -51,14 +54,48 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     CryptoCardPacks internal cryptoCardPacks;
     CryptoCards internal cryptoCards;
 
+    // Token Addresses
+    address internal cardsToken;
+    address internal packsToken;
+
+    mapping(address => uint256) internal purchasedPackCount;
+
     modifier onlyOracle() {
         require(msg.sender == address(cryptoCardsOracle));
+        _;
+    }
+
+    modifier onlyTokens() {
+        require(msg.sender == cardsToken || msg.sender == packsToken);
         _;
     }
 
     function initialize(address _owner) public initializer {
         Ownable.initialize(_owner);
         Pausable.initialize(_owner);
+    }
+
+    function setContractAddresses(
+        CryptoCardsOracle _oracle,
+        CryptoCards _cards,
+        CryptoCardPacks _packs,
+        CryptoCardsTreasury _treasury,
+        CryptoCardsGum _gum,
+        CryptoCardsLib _lib
+    ) public onlyOwner {
+        require(_oracle != address(0));
+        require(_cards != address(0));
+        require(_packs != address(0));
+        require(_treasury != address(0));
+        require(_gum != address(0));
+        require(_lib != address(0));
+
+        cryptoCardsOracle = _oracle;
+        cryptoCards = _cards;
+        cryptoCardPacks = _packs;
+        cryptoCardsTreasury = _treasury;
+        cryptoCardsGum = _gum;
+        cryptoCardsLib = _lib;
     }
 
     function setOracleAddress(CryptoCardsOracle _oracle) public onlyOwner {
@@ -91,8 +128,18 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         cryptoCardsLib = _lib;
     }
 
+    function setCardsTokenAddress(address _token) public onlyOwner {
+        require(_token != address(0));
+        cardsToken = _token;
+    }
+
+    function setPacksTokenAddress(address _token) public onlyOwner {
+        require(_token != address(0));
+        packsToken = _token;
+    }
+
     function getVersion() public pure returns (string) {
-        return "v0.3.8";
+        return "v0.4.0";
     }
 
     function contractBalance() public view returns (uint256) {
@@ -107,6 +154,14 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
 
     function getPromoCode(uint8 _index) public view returns (uint256) {
         return cryptoCardsLib.getPromoCode(_index);
+    }
+
+    function getReferralLevel(uint8 _index) public view returns (uint256) {
+        return cryptoCardsLib.getReferralLevel(_index);
+    }
+
+    function getPurchasedPackCount(address _owner) public view returns (uint256) {
+        return purchasedPackCount[_owner];
     }
 
     function getPriceAtGeneration(uint8 _generation) public view returns (uint256) {
@@ -125,6 +180,26 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         return cryptoCardsGum.balanceOf(_owner);
     }
 
+    function unclaimedGumOf(address _owner) public view returns (uint256) {
+        return cryptoCardPacks.unclaimedGumOf(_owner);
+    }
+
+    function paidReferralBalanceOf(address _account) public view returns (uint256) {
+        return cryptoCardsTreasury.getPaidBalanceOfReferrer(_account);
+    }
+
+    function unpaidReferralBalanceOf(address _account) public view returns (uint256) {
+        return cryptoCardsTreasury.getUnpaidBalanceOfReferrer(_account);
+    }
+
+    function paidBountyBalanceOf(address _account) public view returns (uint256) {
+        return cryptoCardsTreasury.getPaidBalanceOfMember(_account);
+    }
+
+    function unpaidBountyBalanceOf(address _account) public view returns (uint256) {
+        return cryptoCardsTreasury.getUnpaidBalanceOfMember(_account);
+    }
+
     function packIdOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
         return cryptoCardPacks.tokenOfOwnerByIndex(_owner, _index);
     }
@@ -137,8 +212,16 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         return cryptoCards.cardHashById(_cardId);
     }
 
-    function claimPackGum(address _owner) public returns (uint256) {
-        return cryptoCardPacks.claimPackGum(_owner);
+    function claimPackGum() public returns (uint256) {
+        return cryptoCardPacks.claimPackGum(msg.sender);
+    }
+
+    function claimReferralRewards() public returns (uint256) {
+        return cryptoCardsTreasury.withdrawForReferrer(msg.sender);
+    }
+
+    function claimBountyRewards() public returns (uint256) {
+        return cryptoCardsTreasury.withdrawForMember(msg.sender);
     }
 
     function tokenizePack(uint256 _packId, bytes16 _uuid) public whenNotPaused {
@@ -208,6 +291,17 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         }
     }
 
+    function burnCardsForOwner(uint256[] _cardIds) public whenNotPaused {
+        address owner = msg.sender;
+        uint n = _cardIds.length;
+        for (uint i = 0; i < n; i++) {
+            cryptoCards.burnCard(owner, _cardIds[i]);
+        }
+
+        // Emit Event to DApp
+        emit CardBurn(owner, _cardIds);
+    }
+
     function tradeCardForCard(address _owner, uint256 _ownerCardId, uint256 _tradeCardId, bytes16 _uuid) public nonReentrant whenNotPaused {
         require(_owner != address(0) && msg.sender == _owner);
 
@@ -233,13 +327,12 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         // Get Pack of Cards and Assign to Receiver
         uint256 oracleGasReserve = cryptoCardsOracle.getGasReserve();
         cryptoCardsOracle.getNewPack.value(oracleGasReserve)(msg.sender, oracleGasReserve, _uuid);
-        require(cost - oracleGasReserve > 0);
 
         // Distribute Payment for Pack
         uint256 netAmount = cost - oracleGasReserve;
         uint256 forReferrer = 0;
         if (hasReferral) {
-            forReferrer = cryptoCardsLib.getAmountForReferrer(getCardCount(_referredBy), cost);
+            forReferrer = cryptoCardsLib.getAmountForReferrer(getPurchasedPackCount(_referredBy), cost);
         }
 
         // Deposit Funds to Treasury
@@ -247,6 +340,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
 
         // Emit Event to DApp
         emit BuyNewPack(msg.sender, _uuid, pricePaid, _referredBy, _promoCode);
+        purchasedPackCount[msg.sender] = purchasedPackCount[msg.sender] + 1;
 
         // Refund over-spend
         if (pricePaid > cost) {
@@ -262,10 +356,8 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         emit ReceivedNewPack(_receiver, _uuid, _packId);
     }
 
-    function getCardCount(address _for) internal view returns (uint256) {
-        uint256 packCount = cryptoCardPacks.balanceOf(_for);
-        uint256 cardCount = cryptoCards.balanceOf(_for);
-        return (packCount * 8) + cardCount;
+    function offDappTransfer(address _from, address _to, uint256 _tokenId, string _symbol) public onlyTokens {
+        emit TokenTransfer(_from, _to, _tokenId, _symbol);
     }
 
     function setPackPrice(address _owner, uint256 _packId, uint256 _packPrice, bytes16 _uuid) internal {

@@ -67,7 +67,7 @@ module.exports = async function() {
             params : [_zeroAddress, '', '__rnd__'], // referrer, promoCode, uuid
             tx : {
                 from  : _testAccounts[i].address,
-                value : Lib.fromFinneyToWei(options.packPrices[0])
+                value : Lib.fromFinneyToWei(30) // 30 finney, generation 1 pack price
             }
         });
     }

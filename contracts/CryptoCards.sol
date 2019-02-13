@@ -37,8 +37,8 @@ contract CryptoCards is Initializable, Ownable {
     // Info-URI Endpoint
     string internal endpoint;
 
-    // Contract Controller
-    address internal contractController; // Points to CryptoCardsController Contract
+    // Contract Reference Addresses
+    address internal cryptoCardsController;
 
     // Mapping from token ID to sell-value
     mapping(uint256 => uint256) internal cardSalePriceById;
@@ -53,17 +53,11 @@ contract CryptoCards is Initializable, Ownable {
     mapping(uint256 => bool[256]) internal cardAllowedTradesByTokenId;  // tokenId => bool[cardIndex]
     mapping(uint256 => bool[4]) internal cardAllowedTradeGensByTokenId; // [0] = Any, [1, 2, 3] = Gen
 
-    /**
-     * @dev Throws if called by any account other than the controller contract.
-     */
     modifier onlyController() {
-        require(msg.sender == contractController);
+        require(msg.sender == cryptoCardsController);
         _;
     }
 
-    /**
-     * @dev Throws if called by any account other than the packs contract.
-     */
     modifier onlyPacks() {
         require(msg.sender == address(packs));
         _;
@@ -77,12 +71,26 @@ contract CryptoCards is Initializable, Ownable {
         endpoint = "https://crypto-cards.io/card-info/";
     }
 
+    function setContractAddresses(
+        address _controller,
+        CryptoCardPacks _packs,
+        CryptoCardsLib _lib
+    ) public onlyOwner {
+        require(_controller != address(0));
+        require(_packs != address(0));
+        require(_lib != address(0));
+
+        cryptoCardsController = _controller;
+        packs = _packs;
+        lib = _lib;
+    }
+
     /**
      * @dev Updates the internal address of the Controller Contract
      */
     function setContractController(address _controller) public onlyOwner {
         require(_controller != address(0));
-        contractController = _controller;
+        cryptoCardsController = _controller;
     }
 
     function setPacksAddress(CryptoCardPacks _packs) public onlyOwner {
@@ -234,6 +242,18 @@ contract CryptoCards is Initializable, Ownable {
         cardIndexByTokenId[cardId] = uint8(lib.readBits(cardData, 22, 8));
         cardGenByTokenId[cardId] = uint8(lib.readBits(cardData, 30, 2));
         return cardId;
+    }
+
+    function burnCard(address _owner, uint256 _cardId) public onlyController {
+        // Reset card mapping data
+        cardHashByTokenId[_cardId] = "";
+        cardIssueByTokenId[_cardId] = 0;
+        cardIndexByTokenId[_cardId] = 0;
+        cardGenByTokenId[_cardId] = 0;
+
+        resetCardValue(_cardId);
+
+        token.burnToken(_owner, _cardId);
     }
 
     function transferCard(address _from, address _to, uint256 _cardId) internal {

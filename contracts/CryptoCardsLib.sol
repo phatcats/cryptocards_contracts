@@ -30,8 +30,8 @@ contract CryptoCardsLib is Initializable, Ownable {
     function initialize(address _owner) public initializer {
         Ownable.initialize(_owner);
 
-        packPrices = [15 finney, 17 finney, 20 finney];
-        referralLevels = [8, 60, 180]; // packs: 1, 5, 15
+        packPrices = [30 finney, 35 finney, 40 finney];
+        referralLevels = [1, 5, 15];
         promoCodes = [5, 10, 15];
     }
 
@@ -54,6 +54,11 @@ contract CryptoCardsLib is Initializable, Ownable {
     function getPromoCode(uint8 _index) public view returns (uint256) {
         require(_index >= 0 && _index < 3);
         return promoCodes[_index];
+    }
+
+    function getReferralLevel(uint8 _index) public view returns (uint256) {
+        require(_index >= 0 && _index < 3);
+        return referralLevels[_index];
     }
 
     function getPriceAtGeneration(uint8 _generation) public view returns (uint256) {
@@ -84,14 +89,14 @@ contract CryptoCardsLib is Initializable, Ownable {
         return packPrice;
     }
 
-    function getAmountForReferrer(uint256 _cardCount, uint256 _cost) public view returns (uint256) {
-        if (_cardCount >= referralLevels[2]) {
+    function getAmountForReferrer(uint256 _packCount, uint256 _cost) public view returns (uint256) {
+        if (_packCount >= referralLevels[2]) {
             return _cost * 15 / 100;     // 15%
         }
-        if (_cardCount >= referralLevels[1]) {
+        if (_packCount >= referralLevels[1]) {
             return _cost / 10;           // 10%
         }
-        if (_cardCount >= referralLevels[0]) {
+        if (_packCount >= referralLevels[0]) {
             return _cost / 20;           // 5%
         }
         return 0;
