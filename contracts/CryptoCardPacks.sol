@@ -60,6 +60,11 @@ contract CryptoCardPacks is Initializable, Ownable {
         _;
     }
 
+    modifier onlyUnopenedPacks(uint256 _packId) {
+        require(token.isTokenFrozen(_packId) != true);
+        _;
+    }
+
     function initialize(address _owner) public initializer {
         Ownable.initialize(_owner);
         packGumPerGeneration = [555, 725, 1000]; // 1,000,000,000 Reserved for Pack Gum
@@ -133,6 +138,10 @@ contract CryptoCardPacks is Initializable, Ownable {
         return packsDataById[_packId];
     }
 
+    function isPackOpened(uint256 _packId) public view returns (bool) {
+        return token.isTokenFrozen(_packId);
+    }
+
     function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {
         return token.tokenOfOwnerByIndex(_owner, _index);
     }
@@ -151,14 +160,14 @@ contract CryptoCardPacks is Initializable, Ownable {
         return quantity;
     }
 
-    function updatePackPrice(address _owner, uint256 _packId, uint256 _packPrice) public onlyController {
+    function updatePackPrice(address _owner, uint256 _packId, uint256 _packPrice) public onlyController onlyUnopenedPacks(_packId) {
         require(_packId >= 0 && _packId < token.totalSupply());
         address packOwner = token.ownerOf(_packId);
         require(packOwner != address(0) && _owner == packOwner);
         packSalePriceById[_packId] = _packPrice;
     }
 
-    function transferPackForBuyer(address _receiver, address _owner, uint256 _packId, uint256 _pricePaid) public onlyController returns (uint256) {
+    function transferPackForBuyer(address _receiver, address _owner, uint256 _packId, uint256 _pricePaid) public onlyController onlyUnopenedPacks(_packId) returns (uint256) {
         require(_packId >= 0 && _packId < token.totalSupply());
         address packOwner = token.ownerOf(_packId);
         require(packOwner != address(0) && _owner == packOwner && _receiver != packOwner);
@@ -188,7 +197,7 @@ contract CryptoCardPacks is Initializable, Ownable {
      * @dev Tokenize a pack by minting the card tokens within the pack
      * @param _packId uint256 Pack ID of the pack to be minted
      */
-    function tokenizePack(address _opener, uint256 _packId) public onlyController returns (uint256[8]) {
+    function tokenizePack(address _opener, uint256 _packId) public onlyController onlyUnopenedPacks(_packId) returns (uint256[8]) {
         require(_packId >= 0 && _packId < token.totalSupply());
         address owner = token.ownerOf(_packId);
         require(owner != address(0) && _opener == owner);
@@ -201,9 +210,9 @@ contract CryptoCardPacks is Initializable, Ownable {
             mintedCards[i] = cards.mintCard(owner, s.split(d).toString());
         }
 
-        // Destroy owned pack
-        delete packsDataById[_packId];
-        token.burnToken(owner, _packId);
+        // Mark Pack as Opened
+        token.freezeToken(_packId);
+
         return mintedCards;
     }
 

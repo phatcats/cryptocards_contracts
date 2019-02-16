@@ -212,6 +212,14 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         return cryptoCards.cardHashById(_cardId);
     }
 
+    function isPackOpened(uint256 _packId) public view returns (bool) {
+        return cryptoCardPacks.isPackOpened(_packId);
+    }
+
+    function isCardPrinted(uint256 _cardId) public view returns (bool) {
+        return cryptoCards.isCardPrinted(_cardId);
+    }
+
     function claimPackGum() public returns (uint256) {
         return cryptoCardPacks.claimPackGum(msg.sender);
     }
@@ -291,17 +299,6 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         }
     }
 
-    function burnCardsForOwner(uint256[] _cardIds) public whenNotPaused {
-        address owner = msg.sender;
-        uint n = _cardIds.length;
-        for (uint i = 0; i < n; i++) {
-            cryptoCards.burnCard(owner, _cardIds[i]);
-        }
-
-        // Emit Event to DApp
-        emit CardBurn(owner, _cardIds);
-    }
-
     function tradeCardForCard(address _owner, uint256 _ownerCardId, uint256 _tradeCardId, bytes16 _uuid) public nonReentrant whenNotPaused {
         require(_owner != address(0) && msg.sender == _owner);
 
@@ -312,8 +309,8 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     }
 
     function buyPackOfCards(address _referredBy, uint256 _promoCode, bytes16 _uuid) public nonReentrant whenNotPaused payable {
-        uint256 nextGeneration = cryptoCardsOracle.getNextGeneration();
-        require(msg.sender != address(0) && nextGeneration <= 3 && cryptoCardsOracle.isValidUuid(_uuid));
+        uint256 currentGeneration = cryptoCardsOracle.getNextGeneration();
+        require(msg.sender != address(0) && currentGeneration <= 3 && cryptoCardsOracle.isValidUuid(_uuid));
 
         bool hasReferral = false;
         if (_referredBy != address(0) && _referredBy != address(this)) {
@@ -321,7 +318,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         }
 
         uint256 pricePaid = msg.value;
-        uint256 cost = cryptoCardsLib.getPricePerPack(nextGeneration-1, _promoCode, hasReferral);
+        uint256 cost = cryptoCardsLib.getPricePerPack(currentGeneration-1, _promoCode, hasReferral);
         require(pricePaid >= cost);
 
         // Get Pack of Cards and Assign to Receiver
@@ -346,6 +343,11 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         if (pricePaid > cost) {
             msg.sender.transfer(pricePaid - cost);
         }
+    }
+
+    function freezePrintedCards_DoNotCallDirectly(uint256[] _cardIds) public {
+        // Mark Cards as Printed
+        cryptoCards.freezePrintedCards(msg.sender, _cardIds);
     }
 
     function receivedPackError(address _receiver, bytes16 _uuid, string _errorCode) public onlyOracle {

@@ -31,7 +31,7 @@ contract CryptoCardsLib is Initializable, Ownable {
         Ownable.initialize(_owner);
 
         packPrices = [30 finney, 35 finney, 40 finney];
-        referralLevels = [1, 5, 15];
+        referralLevels = [1, 10, 20];
         promoCodes = [5, 10, 15];
     }
 

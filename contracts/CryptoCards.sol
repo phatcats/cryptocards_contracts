@@ -63,9 +63,11 @@ contract CryptoCards is Initializable, Ownable {
         _;
     }
 
-    /**
-     * @dev Initializes the Contract with the Token Symbol & Description
-     */
+    modifier onlyUnprintedCards(uint256 _cardId) {
+        require(token.isTokenFrozen(_cardId) != true);
+        _;
+    }
+
     function initialize(address _owner) public initializer {
         Ownable.initialize(_owner);
         endpoint = "https://crypto-cards.io/card-info/";
@@ -85,9 +87,6 @@ contract CryptoCards is Initializable, Ownable {
         lib = _lib;
     }
 
-    /**
-     * @dev Updates the internal address of the Controller Contract
-     */
     function setContractController(address _controller) public onlyOwner {
         require(_controller != address(0));
         cryptoCardsController = _controller;
@@ -108,68 +107,50 @@ contract CryptoCards is Initializable, Ownable {
         lib = _lib;
     }
 
-    /**
-     * @dev Updates the URI end-point for the Token Metadata
-     */
     function updateEndpoint(string _endpoint) public onlyOwner {
         endpoint = _endpoint;
     }
 
-    /**
-     * @dev Returns the total count of Minted Cards
-     */
     function totalMintedCards() public view returns (uint256) {
         return token.totalSupply();
     }
 
-    /**
-     * @dev Returns the number of Cards for a specific Owner
-     */
     function balanceOf(address _owner) public view returns (uint256) {
         return token.balanceOf(_owner);
     }
 
-    /**
-     * @dev Returns the Signature Hash of the Card
-     * Signature hash contains the hexadecimal representation of the Card Data (rank, gen, issue) as a string
-     */
     function cardHashById(uint256 _cardId) public view returns (string) {
         require(_cardId >= 0 && _cardId < token.totalSupply());
         return cardHashByTokenId[_cardId];
     }
 
-    /**
-     * @dev Returns the Issue Number of the Card
-     */
     function cardIssueById(uint256 _cardId) public view returns (uint16) {
         require(_cardId >= 0 && _cardId < token.totalSupply());
         return cardIssueByTokenId[_cardId];
     }
 
-    /**
-     * @dev Returns the Rank Number of the Card (0=Bitcoin, 1=Ethereum, etc..)
-     */
     function cardIndexById(uint256 _cardId) public view returns (uint8) {
         require(_cardId >= 0 && _cardId < token.totalSupply());
         return cardIndexByTokenId[_cardId];
     }
 
-    /**
-     * @dev Returns the Generation of the Card
-     */
     function cardGenById(uint256 _cardId) public view returns (uint8) {
         require(_cardId >= 0 && _cardId < token.totalSupply());
         return cardGenByTokenId[_cardId];
     }
 
-    function updateCardPrice(address _owner, uint256 _cardId, uint256 _cardPrice) public onlyController {
+    function isCardPrinted(uint256 _cardId) public view returns (bool) {
+        return token.isTokenFrozen(_cardId);
+    }
+
+    function updateCardPrice(address _owner, uint256 _cardId, uint256 _cardPrice) public onlyController onlyUnprintedCards(_cardId) {
         require(_cardId >= 0 && _cardId < token.totalSupply());
         address cardOwner = token.ownerOf(_cardId);
         require(cardOwner != address(0) && _owner == cardOwner);
         cardSalePriceById[_cardId] = _cardPrice;
     }
 
-    function updateCardTradeValue(address _owner, uint256 _cardId, uint8[] _cardValues, uint8[] _cardGens) public onlyController {
+    function updateCardTradeValue(address _owner, uint256 _cardId, uint8[] _cardValues, uint8[] _cardGens) public onlyController onlyUnprintedCards(_cardId) {
         require(_cardId >= 0 && _cardId < token.totalSupply());
         address cardOwner = token.ownerOf(_cardId);
         require(cardOwner != address(0) && _owner == cardOwner);
@@ -197,7 +178,7 @@ contract CryptoCards is Initializable, Ownable {
         }
     }
 
-    function transferCardForBuyer(address _receiver, address _owner, uint256 _cardId, uint256 _pricePaid) public onlyController returns (uint256) {
+    function transferCardForBuyer(address _receiver, address _owner, uint256 _cardId, uint256 _pricePaid) public onlyController onlyUnprintedCards(_cardId) returns (uint256) {
         require(_cardId >= 0 && _cardId < token.totalSupply());
         address cardOwner = token.ownerOf(_cardId);
         require(cardOwner != address(0) && _owner == cardOwner && _receiver != cardOwner);
@@ -210,7 +191,7 @@ contract CryptoCards is Initializable, Ownable {
         return cardPrice;
     }
 
-    function tradeCardForCard(address _owner, uint256 _ownerCardId, uint256 _tradeCardId) public onlyController returns (address) {
+    function tradeCardForCard(address _owner, uint256 _ownerCardId, uint256 _tradeCardId) public onlyController onlyUnprintedCards(_ownerCardId) returns (address) {
         require(_tradeCardId >= 0 && _tradeCardId < token.totalSupply() && _ownerCardId >= 0 && _ownerCardId < token.totalSupply());
         address ownerCardRealOwner = token.ownerOf(_ownerCardId);
         address tradeCardRealOwner = token.ownerOf(_tradeCardId);
@@ -226,11 +207,6 @@ contract CryptoCards is Initializable, Ownable {
         return tradeCardRealOwner;
     }
 
-    /**
-     * @dev Mint card
-     * @param _to The address that will own the minted card
-     * @param _cardData string String representation of the metadata of the card to be minted
-     */
     function mintCard(address _to, string _cardData) public onlyPacks returns (uint256) {
         uint cardId = token.totalSupply();
         strings.slice memory cardDataSlice = _cardData.toSlice();
@@ -244,16 +220,15 @@ contract CryptoCards is Initializable, Ownable {
         return cardId;
     }
 
-    function burnCard(address _owner, uint256 _cardId) public onlyController {
-        // Reset card mapping data
-        cardHashByTokenId[_cardId] = "";
-        cardIssueByTokenId[_cardId] = 0;
-        cardIndexByTokenId[_cardId] = 0;
-        cardGenByTokenId[_cardId] = 0;
-
-        resetCardValue(_cardId);
-
-        token.burnToken(_owner, _cardId);
+    function freezePrintedCards(address _owner, uint256[] _cardIds) public onlyController {
+        // Mark Cards as Printed
+        uint n = _cardIds.length;
+        for (uint i = 0; i < n; i++) {
+            if (token.ownerOf(_cardIds[i]) == _owner) {
+                resetCardValue(_cardIds[i]);
+                token.freezeToken(_cardIds[i]);
+            }
+        }
     }
 
     function transferCard(address _from, address _to, uint256 _cardId) internal {

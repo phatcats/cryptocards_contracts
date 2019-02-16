@@ -20,5 +20,6 @@ contract CryptoCardsERC721 {
     function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256);
     function mintWithTokenURI(address to, uint256 tokenId, string memory tokenURI) public returns (bool);
     function tokenTransfer(address _from, address _to, uint256 _tokenId) public;
-    function burnToken(address _owner, uint256 _tokenId) public;
+    function isTokenFrozen(uint256 _tokenId) public view returns (bool);
+    function freezeToken(uint256 _tokenId) public;
 }
