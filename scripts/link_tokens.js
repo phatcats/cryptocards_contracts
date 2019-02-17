@@ -40,9 +40,9 @@ const _tokenAddress = {
         gum   : '0xF70B61E3800dFFDA57cf167051CAa0Fb6bA1B0B3'
     },
     ropsten: {
-        packs : '0x67D5F8e759570EA152B78A04a1fFA0db5802c145',
-        cards : '0x5e0f9E0e8242476e731783bbeFFB6C577f2dc621',
-        gum   : '0x480372ee334B849E8d4Dee3aa57660b441741AA1'
+        packs : '0x82B5D71cF9E7a19CCBABEC1D89FCEb61428e470A',
+        cards : '0x6eeAa019F492C1330e67e2243e0C8820c3B63EDd',
+        gum   : '0x7fD2A13DEa03972a03079365383B32be42591937'
     },
     mainnet: {
         packs : '',
