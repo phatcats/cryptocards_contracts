@@ -98,36 +98,6 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         cryptoCardsLib = _lib;
     }
 
-    function setOracleAddress(CryptoCardsOracle _oracle) public onlyOwner {
-        require(_oracle != address(0));
-        cryptoCardsOracle = _oracle;
-    }
-
-    function setCardsAddress(CryptoCards _cards) public onlyOwner {
-        require(_cards != address(0));
-        cryptoCards = _cards;
-    }
-
-    function setPacksAddress(CryptoCardPacks _packs) public onlyOwner {
-        require(_packs != address(0));
-        cryptoCardPacks = _packs;
-    }
-
-    function setTreasuryAddress(CryptoCardsTreasury _treasury) public onlyOwner {
-        require(_treasury != address(0));
-        cryptoCardsTreasury = _treasury;
-    }
-
-    function setGumAddress(CryptoCardsGum _gum) public onlyOwner {
-        require(_gum != address(0));
-        cryptoCardsGum = _gum;
-    }
-
-    function setLibAddress(CryptoCardsLib _lib) public onlyOwner {
-        require(_lib != address(0));
-        cryptoCardsLib = _lib;
-    }
-
     function setCardsTokenAddress(address _token) public onlyOwner {
         require(_token != address(0));
         cardsToken = _token;
@@ -139,7 +109,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     }
 
     function getVersion() public pure returns (string) {
-        return "v0.4.0";
+        return "v0.4.1";
     }
 
     function contractBalance() public view returns (uint256) {
@@ -198,6 +168,18 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
 
     function unpaidBountyBalanceOf(address _account) public view returns (uint256) {
         return cryptoCardsTreasury.getUnpaidBalanceOfMember(_account);
+    }
+
+    function availableBountyBalanceOf(address _account) public view returns (uint256) {
+        return cryptoCardsTreasury.getAvailableBalanceOfMember(_account);
+    }
+
+    function bountyPayoutInterval() public view returns (uint256) {
+        return cryptoCardsTreasury.getOutsourcedPayoutInterval();
+    }
+
+    function totalBalanceOfBountyPool() public view returns (uint256) {
+        return cryptoCardsTreasury.getTotalBalanceOfPool();
     }
 
     function packIdOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256) {

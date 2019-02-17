@@ -138,15 +138,14 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         updateOutsourcedMemberLimit(_account, _limit);
 
         outsourcedMembers_payoutIndex[_account] = getCurrentPayoutIndex();
-        outSourcePool_memberCount = outSourcePool_memberCount + 1;
     }
 
     function updateOutsourcedMemberLimit(address _account, uint256 _limitToAdd) public onlyOwner {
         require(_account != address(0) && _limitToAdd > 0);
         require(outSourcePool_unpaid + outSourcePool_paid + _limitToAdd <= outSourcePool_limit);
 
+        // New Member, or previously paid out and removed from memberCount
         if (outsourcedMembers_paid[_account] == outsourcedMembers_limit[_account]) {
-            // Previously paid out and removed from memberCount, let's add back now that member has a new limit
             outSourcePool_memberCount = outSourcePool_memberCount + 1;
         }
 
@@ -285,7 +284,9 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function getUnusedFundsInPool() public view returns (uint256) {
-        return outSourcePool_total - (outSourcePool_paid + outSourcePool_unpaid);
+        uint256 payouts = (outSourcePool_paid + outSourcePool_unpaid);
+        if (payouts > outSourcePool_total) { return 0; }
+        return outSourcePool_total - payouts;
     }
 
     function transferUnusedFundsFromPool() public onlyOwner {
