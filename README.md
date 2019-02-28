@@ -5,6 +5,9 @@ PhatCats: https://phatcats.co
 
 Copyright 2019 (c) Phat Cats, Inc.
 
+Token Contracts:
+    https://github.com/phatcats/cryptocards_token_contracts
+
 ## Recommended Wallet Test Accounts:
 - 1 = Not used
 - 2 = Oracle Bridge
