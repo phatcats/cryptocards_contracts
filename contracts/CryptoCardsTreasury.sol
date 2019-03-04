@@ -134,6 +134,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function setOutSourcePoolPercentOnDeposit(uint256 _percent) public onlyOwner {
+        require(_percent >= 0 && _percent < 100);
         outSourcePool_percentOnDeposit = _percent;
     }
 
@@ -324,7 +325,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         }
 
         // Out-sourcing
-        uint256 outsourcePortion = _amountDeposited * (outSourcePool_percentOnDeposit / 100);
+        uint256 outsourcePortion = _amountDeposited * outSourcePool_percentOnDeposit / 100;
         if (outSourcePool_total < outSourcePool_limit) {
             if (outSourcePool_total + outsourcePortion > outSourcePool_limit) {
                 outsourcePortion = outSourcePool_limit - outSourcePool_total;

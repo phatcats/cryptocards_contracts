@@ -75,7 +75,7 @@ module.exports = async function() {
         _testTransactions.push({
             method : 'buyPackOfCards',
             count  : _testAccounts[i].packs,
-            params : [_zeroAddress, '', '__rnd__'], // referrer, promoCode, uuid
+            params : [!i ? _zeroAddress : _testAccounts[0].address, '', '__rnd__'], // referrer, promoCode, uuid
             tx : {
                 from  : _testAccounts[i].address,
                 value : Lib.fromFinneyToWei(30) // 30 finney, generation 1 pack price
