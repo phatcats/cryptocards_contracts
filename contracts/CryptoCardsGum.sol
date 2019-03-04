@@ -116,8 +116,10 @@ contract CryptoCardsGum is Initializable, Ownable {
 
     function setReserveAccounts(address[] _accounts) public onlyOwner {
         require(!reserveAccountsSet);
+        require(_accounts.length == 4);
 
         for (uint256 i = 0; i < 4; ++i) {
+            require(_accounts[i] != address(0));
             reserveAccounts[i] = _accounts[i];
         }
         reserveAccountsSet = true;
@@ -149,7 +151,7 @@ contract CryptoCardsGum is Initializable, Ownable {
     }
 
     function claimPackGum(address _to, uint256 _amountOfGum) public onlyPacks returns (uint256) {
-        require(tokensDistributed && _amountOfGum > 0);
+        require(_to != address(0) && tokensDistributed && _amountOfGum > 0);
 
         uint256 tokens = _amountOfGum;
         if (tokens > packGumAvailable) {
@@ -176,7 +178,7 @@ contract CryptoCardsGum is Initializable, Ownable {
         // Sell only tokens that are available
         if (tokens > saleGumAvailable) {
             uint256 newTokens = saleGumAvailable;
-            uint256 newAmount = newTokens * (baseSalePrice / (10**18));
+            uint256 newAmount = newTokens / tokens * amountPaid;
             refund = amountPaid - newAmount;
             amountPaid = newAmount;
             tokens = newTokens;

@@ -80,6 +80,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     uint256 internal outSourcePool_unpaid;       // Amount left Unpaid
     uint256 internal outSourcePool_paid;         // Amount Paid Out
     uint256 internal outSourcePool_memberCount;
+    uint256 internal outSourcePool_percentOnDeposit;
 
     mapping(address => uint256) internal outsourcedMembers_payoutIndex;
     mapping(address => uint256) internal outsourcedMembers_limit;
@@ -99,14 +100,12 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         _;
     }
 
-    /**
-     * @dev todo..
-     */
     function initialize(address _owner) public initializer {
         Ownable.initialize(_owner);
 
         outSourcePool_limit = 500 ether;
-        outSourcePool_interval = 1 ether; // cannot change once live
+        outSourcePool_interval = 250 finney; // cannot change once live
+        outSourcePool_percentOnDeposit = 30; // 30%
     }
 
     function setContractAddresses(
@@ -130,13 +129,22 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         inHouseAccount = _account;
     }
 
+    function getOutSourcePoolPercentOnDeposit() public view returns (uint256) {
+        return outSourcePool_percentOnDeposit;
+    }
+
+    function setOutSourcePoolPercentOnDeposit(uint256 _percent) public onlyOwner {
+        outSourcePool_percentOnDeposit = _percent;
+    }
+
     function contractBalance() public view returns (uint256) {
         return address(this).balance;
     }
 
     function addOutsourcedMember(address _account, uint256 _limit) public onlyOwner {
-        updateOutsourcedMemberLimit(_account, _limit);
+        require(outsourcedMembers_limit[_account] == 0);
 
+        updateOutsourcedMemberLimit(_account, _limit);
         outsourcedMembers_payoutIndex[_account] = getCurrentPayoutIndex();
     }
 
@@ -186,7 +194,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function withdrawMyReferralBalance() public {
-        withdrawForReferrer(msg.sender);
+        this.withdrawForReferrer(msg.sender);
     }
 
     function withdrawForReferrer(address _account) public onlySelfOrController returns (uint256) {
@@ -258,7 +266,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function withdrawMyMemberBalance() public {
-        withdrawForMember(msg.sender);
+        this.withdrawForMember(msg.sender);
     }
 
     function withdrawForMember(address _account) public onlySelfOrController returns (uint256) {
@@ -305,9 +313,6 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     // Deposit
     //
 
-    /**
-     * @dev todo..
-     */
     function deposit(uint256 _amountDeposited, uint256 _amountForReferrer, address _referrer) public onlyController payable {
         require(_amountDeposited == msg.value);
         require(_amountDeposited - _amountForReferrer >= 0);
@@ -319,7 +324,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         }
 
         // Out-sourcing
-        uint256 outsourcePortion = _amountDeposited / 30;
+        uint256 outsourcePortion = _amountDeposited * (outSourcePool_percentOnDeposit / 100);
         if (outSourcePool_total < outSourcePool_limit) {
             if (outSourcePool_total + outsourcePortion > outSourcePool_limit) {
                 outsourcePortion = outSourcePool_limit - outSourcePool_total;
