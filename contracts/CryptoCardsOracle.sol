@@ -57,8 +57,8 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Local Only
-        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
-        oraclize_setNetwork(networkID_testnet);
+//        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
+//        oraclize_setNetwork(networkID_testnet);
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         oraclize_setCustomGasPrice(10000000000); // 10 gwei
