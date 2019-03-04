@@ -18,19 +18,21 @@ const { Lib } = require('./common');
 const { networkOptions } = require('../config');
 const _ = require('lodash');
 
+const CryptoCardsERC20 = Contracts.getFromLocal('CryptoCardsERC20');
 const CryptoCardsERC721 = Contracts.getFromLocal('CryptoCardsERC721');
 const CryptoCardsTreasury = Contracts.getFromLocal('CryptoCardsTreasury');
 const CryptoCardsOracle = Contracts.getFromLocal('CryptoCardsOracle');
 const CryptoCardsLib = Contracts.getFromLocal('CryptoCardsLib');
+const CryptoCardsGum = Contracts.getFromLocal('CryptoCardsGum');
 const CryptoCards = Contracts.getFromLocal('CryptoCards');
 const CryptoCardPacks = Contracts.getFromLocal('CryptoCardPacks');
 const CryptoCardsController = Contracts.getFromLocal('CryptoCardsController');
 
 const _zeroAddress = '0x0000000000000000000000000000000000000000';
 const _testAccounts = [
-    {address: '0x7002FF8d83625DC59A2C23bCAb9e8939A201B0d6', packs: 3}, // Ganache Account 6
-    {address: '0x4DE7C0BEEdD7286074fE2b9CeA08774ba55C991b', packs: 3}, // Ganache Account 7
-    {address: '0x2C46170cE4436Ca1e19550228777F283c0923AdB', packs: 3}, // Ganache Account 8
+    {address: '0x7002FF8d83625DC59A2C23bCAb9e8939A201B0d6', packs: 3, bounty: 2}, // Ganache Account 6
+    {address: '0x4DE7C0BEEdD7286074fE2b9CeA08774ba55C991b', packs: 3, bounty: 3}, // Ganache Account 7
+    {address: '0x2C46170cE4436Ca1e19550228777F283c0923AdB', packs: 3, bounty: 5}, // Ganache Account 8
 ];
 const _txDelay = 1000;
 
@@ -57,6 +59,15 @@ module.exports = async function() {
     }
     const owner = process.env[`${_.toUpper(Lib.network)}_OWNER_ACCOUNT`];
 
+    if (Lib.verbose) {
+        Lib.log({separator: true});
+        Lib.log({msg: `Network:   ${Lib.network}`});
+        Lib.log({msg: `Web3:      ${web3.version}`});
+        Lib.log({msg: `Gas Price: ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
+        Lib.log({msg: `Owner:     ${owner}`});
+        Lib.log({separator: true});
+    }
+
     Lib.deployData = require(`../zos.${Lib.networkProvider}.json`);
 
     const _testTransactions = [];
@@ -79,11 +90,14 @@ module.exports = async function() {
         }, txData);
     };
 
-    Lib.log({msg: 'Running Load-Test Transactions...'});
+    Lib.log({msg: 'Running Test Transactions...'});
     Lib.log({spacer: true});
     Lib.log({spacer: true});
 
     try {
+        let testTx;
+        let testParams;
+
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Contract Deployments
         const ddCryptoCardsController = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsController');
@@ -91,6 +105,9 @@ module.exports = async function() {
 
         const ddCryptoCardsOracle = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsOracle');
         const cryptoCardsOracle = Lib.getContractInstance(CryptoCardsOracle, ddCryptoCardsOracle.address);
+
+        const ddCryptoCardsTreasury = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsTreasury');
+        const cryptoCardsTreasury = Lib.getContractInstance(CryptoCardsTreasury, ddCryptoCardsTreasury.address);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Update Oracle Gas Limit for Testing
@@ -103,10 +120,26 @@ module.exports = async function() {
         // totalGas += receipt.receipt.gasUsed;
         // await Lib.delay(_txDelay * 3);
 
+
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // Initial Test Transactions
-        let testTx;
-        let testParams;
+        // Initial Bounties
+        currentAccountNonce = (await Lib.getTxCount(owner)) || 0;
+        let bounty;
+        for (let i = 0; i < _testAccounts.length; i++) {
+            currentAccount = _testAccounts[i].address;
+            bounty = _testAccounts[i].bounty * 1e18;
+
+            Lib.log({spacer: true});
+            Lib.log({msg: `Adding Bounty Reward of ${bounty} ETH..`});
+            receipt = await cryptoCardsTreasury.addOutsourcedMember(currentAccount, bounty, _getTxOptions({from: owner}));
+            Lib.logTxResult(receipt);
+            totalGas += receipt.receipt.gasUsed;
+            await Lib.delay(_txDelay);
+        }
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Initial Pack Purchases
         for (let i = 0; i < _testTransactions.length; i++) {
             testTx = _.assignIn({}, _testTransactions[i]);
 

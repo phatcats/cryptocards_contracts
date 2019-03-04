@@ -33,7 +33,7 @@ usage() {
     echo "  -f | --fresh                              Run all deployments from the beginning, instead of updating"
     echo "  -i | --initialize                         Run Contract Initializations"
     echo "  -l | --link                               Run Contract Linking"
-    echo "  -t | --transactions                       Run Load-Test Transactions (Local Only)"
+    echo "  -t | --transactions                       Run Test Transactions (Local Only)"
     echo "  -v | --verbose                            Outputs verbose logging"
     echo "  -h | --help                               Displays this help screen"
 }
@@ -210,7 +210,7 @@ runTransactions() {
     startSession "$ownerAccount"
 
     echoHeader
-    echo "Running Load-Test Transactions..."
+    echo "Running Test Transactions..."
     truffle exec ./scripts/transactions.js --network "$networkName"
 }
 
