@@ -95,17 +95,12 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         _;
     }
 
-    modifier onlySelfOrController() {
-        require(msg.sender == address(this) || msg.sender == contractController);
-        _;
-    }
-
     function initialize(address _owner) public initializer {
         Ownable.initialize(_owner);
 
         outSourcePool_limit = 500 ether;
         outSourcePool_interval = 250 finney; // cannot change once live
-        outSourcePool_percentOnDeposit = 30; // 30%
+        outSourcePool_percentOnDeposit = 30; // As percentage of deposit
     }
 
     function setContractAddresses(
@@ -178,7 +173,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         require(inHouseEscrow_unpaid > 0 && inHouseAccount != address(0));
         uint256 amount = inHouseEscrow_unpaid;
         inHouseEscrow_paid = inHouseEscrow_paid + amount;
-        inHouseEscrow_unpaid = inHouseEscrow_unpaid - amount;
+        inHouseEscrow_unpaid = 0;
         inHouseAccount.transfer(amount);
     }
 
@@ -195,19 +190,11 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function withdrawMyReferralBalance() public {
-        this.withdrawForReferrer(msg.sender);
+        _withdrawForReferrer(address(msg.sender));
     }
 
-    function withdrawForReferrer(address _account) public onlySelfOrController returns (uint256) {
-        require(_account != address(0));
-        require(referrals_unpaid[_account] > 0);
-
-        uint256 amount = referrals_unpaid[_account];
-        referrals_paid[_account] = referrals_paid[_account] + amount;
-        referrals_unpaid[_account] = referrals_unpaid[_account] - amount;
-
-        _account.transfer(amount);
-        return amount;
+    function withdrawForReferrer(address _account) public onlyController returns (uint256) {
+        return _withdrawForReferrer(_account);
     }
 
     //
@@ -267,29 +254,11 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function withdrawMyMemberBalance() public {
-        this.withdrawForMember(msg.sender);
+        _withdrawForMember(address(msg.sender));
     }
 
-    function withdrawForMember(address _account) public onlySelfOrController returns (uint256) {
-        require(_account != address(0));
-        uint256 amountToPay = getAvailableBalanceOfMember(_account);
-        require(amountToPay > 0);
-        require(outSourcePool_unpaid - amountToPay >= 0);
-
-        outSourcePool_paid = outSourcePool_paid + amountToPay;
-        outSourcePool_unpaid = outSourcePool_unpaid - amountToPay;
-
-        outsourcedMembers_paid[_account] = outsourcedMembers_paid[_account] + amountToPay;
-        outsourcedMembers_payoutIndex[_account] = getCurrentPayoutIndex();
-
-        if (outsourcedMembers_paid[_account] == outsourcedMembers_limit[_account]) {
-            // No more bounty to pay out, remove from memberCount
-            require(outSourcePool_memberCount - 1 >= 0);
-            outSourcePool_memberCount = outSourcePool_memberCount - 1;
-        }
-
-        _account.transfer(amountToPay);
-        return amountToPay;
+    function withdrawForMember(address _account) public onlyController returns (uint256) {
+        return _withdrawForMember(_account);
     }
 
     function getUnusedFundsInPool() public view returns (uint256) {
@@ -336,5 +305,39 @@ contract CryptoCardsTreasury is Initializable, Ownable {
 
         // In-house
         inHouseEscrow_unpaid = inHouseEscrow_unpaid + _amountDeposited;
+    }
+
+    function _withdrawForReferrer(address _account) internal returns (uint256) {
+        require(_account != address(0));
+        require(referrals_unpaid[_account] > 0);
+
+        uint256 amount = referrals_unpaid[_account];
+        referrals_paid[_account] = referrals_paid[_account] + amount;
+        referrals_unpaid[_account] = 0;
+
+        _account.transfer(amount);
+        return amount;
+    }
+
+    function _withdrawForMember(address _account) internal returns (uint256) {
+        require(_account != address(0));
+        uint256 amountToPay = getAvailableBalanceOfMember(_account);
+        require(amountToPay > 0);
+        require(outSourcePool_unpaid - amountToPay >= 0);
+
+        outSourcePool_paid = outSourcePool_paid + amountToPay;
+        outSourcePool_unpaid = outSourcePool_unpaid - amountToPay;
+
+        outsourcedMembers_paid[_account] = outsourcedMembers_paid[_account] + amountToPay;
+        outsourcedMembers_payoutIndex[_account] = getCurrentPayoutIndex();
+
+        if (outsourcedMembers_paid[_account] == outsourcedMembers_limit[_account]) {
+            // No more bounty to pay out, remove from memberCount
+            require(outSourcePool_memberCount - 1 >= 0);
+            outSourcePool_memberCount = outSourcePool_memberCount - 1;
+        }
+
+        _account.transfer(amountToPay);
+        return amountToPay;
     }
 }
