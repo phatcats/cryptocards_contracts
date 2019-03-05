@@ -29,15 +29,21 @@ module.exports = {
     networkOptions: {
         local: {
             oracleApiEndpoint: 'BAUD89qAzoJsLlajETu6INZFbd5GnNfeg6ZTJbe0hq2ltEOctlwLrsDuMTMffqEUMbGoioZEzjDqhu314KVzZFw9/IVnbar5mVxS/mhmSN+NfrDRXW5Sxpsdds+epmMiSJ+URKsSCAAGljpjoesWcukFmU2UPy1apKKU5OpKpGc3AzowXOViIaG4BXG++rWZ1NMv/xVjHQKqSYTHx4qlQAJH94RcZtoQuz4+x0PwJv/RUQ==',
-            gasPrice: 20000000000     // (20 Gwei)
+            gas      : 6721975,
+            gasPrice : 20000000000          // (20 Gwei)
         },
         ropsten: {
             oracleApiEndpoint: 'BL5iQLuZFIoMp3mXKb/Nt4C0cq/MDtCB6cZjYxve4bsvWzcvyWjp61XaENaMlc02cvbeK2jAohabMRXhj8q8jw1pFeSx8DQxkmMU0enzCqoxA/VcX2vvxJSuq71RmBTLfqT/+gu4tlHn1y7US2lGMYTCBI23775TkCKpS4c0Qe/KoHfxYAWFsWfcbKr0hcjMihobOJA7k0/8Jb3uaxA9Qf+92I/zQPwKVxY/RSXxdIU=',
-            gasPrice: 20000000000   // https://ropsten.etherscan.io/gastracker  (20 Gwei)
+            gas      : 8000000,
+            gasPrice : 20000000000          // https://ropsten.etherscan.io/gastracker  (20 Gwei)
         },
         mainnet: {
             oracleApiEndpoint: 'BP00gRkhrJdkE9+lyEJmZZcmK1Pq1R6WpyZM1ZislsSxFhGo+YzxSOFT4/a9jfEbFlwKMog53Z6wMzem14mKXfvSQOklp1WpCit2KZ6nmTvGBx/96cpTXvtuH90eZglas5F9qPcv75tqSexG2Yb6zWVIwVV0C0sFXsElfg75Sf9tjyPgqaQuQOGxKhza1SUESziEYDy2onUbM12LBlL7H75nnyAoVpcdiMfGgMEGSrGZnsgM29uIxJmG',
-            gasPrice: 1000000000   // https://etherscan.io/gastracker  (1 Gwei)
+            // For contract deployments
+            // gas     : 8000000,           // https://etherscan.io/blocks
+            // For contract interactions
+            gas      : 1000000,             // https://etherscan.io/blocks
+            gasPrice : 1000000000           // https://etherscan.io/gastracker  (1 Gwei)
         }
     }
 };

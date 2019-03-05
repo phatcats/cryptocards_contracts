@@ -45,9 +45,9 @@ const _tokenAddress = {
         gum   : '0x1FdA6f4B52c6E06D5C471a4c1979ee2f32F4FD5a'
     },
     mainnet: {
-        packs : '',
-        cards : '',
-        gum   : ''
+        packs : '0x0683e840ea22b089dafa0bf8c59f1a9690de7c12',
+        cards : '0xcb35d14759e2931022c7315f53e37cdcd38e570c',
+        gum   : '0xaAFa4Bf1696732752a4AD4D27DD1Ea6793F24Fc0'
     }
 };
 
