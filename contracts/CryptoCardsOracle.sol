@@ -20,7 +20,6 @@ import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 import "./CryptoCardsLib.sol";
 import "./CryptoCardPacks.sol";
-import "./CryptoCardsTreasury.sol";
 import "./CryptoCardsController.sol";
 
 
@@ -34,7 +33,6 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
 
     CryptoCardsLib internal cryptoCardsLib;
     CryptoCardPacks internal cryptoCardPacks;
-    CryptoCardsTreasury internal cryptoCardsTreasury;
     CryptoCardsController internal cryptoCardsController;
 
     uint256 internal oracleGasLimit;
@@ -48,7 +46,7 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
     string internal apiEndpoint;
 
     modifier onlyController() {
-        require(msg.sender == address(cryptoCardsController));
+        require(msg.sender == address(cryptoCardsController), "Action only allowed by Controller contract");
         _;
     }
 
@@ -68,38 +66,30 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
 
     function setContractAddresses(
         CryptoCardsController _controller,
-        CryptoCardsTreasury _treasury,
         CryptoCardPacks _packs,
         CryptoCardsLib _lib
     ) public onlyOwner {
-        require(_controller != address(0));
-        require(_treasury != address(0));
-        require(_packs != address(0));
-        require(_lib != address(0));
+        require(_controller != address(0), "Invalid controller address supplied");
+        require(_packs != address(0), "Invalid packs address supplied");
+        require(_lib != address(0), "Invalid lib address supplied");
 
         cryptoCardsController = _controller;
-        cryptoCardsTreasury = _treasury;
         cryptoCardPacks = _packs;
         cryptoCardsLib = _lib;
     }
 
     function setContractController(CryptoCardsController _controller) public onlyOwner {
-        require(_controller != address(0));
+        require(_controller != address(0), "Invalid address supplied");
         cryptoCardsController = _controller;
     }
 
-    function setTreasuryAddress(CryptoCardsTreasury _treasury) public onlyOwner {
-        require(_treasury != address(0));
-        cryptoCardsTreasury = _treasury;
-    }
-
     function setPacksAddress(CryptoCardPacks _packs) public onlyOwner {
-        require(_packs != address(0));
+        require(_packs != address(0), "Invalid address supplied");
         cryptoCardPacks = _packs;
     }
 
     function setLibAddress(CryptoCardsLib _lib) public onlyOwner {
-        require(_lib != address(0));
+        require(_lib != address(0), "Invalid address supplied");
         cryptoCardsLib = _lib;
     }
 
@@ -119,10 +109,11 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
         return address(this).balance;
     }
 
-    function transferToTreasury() public onlyOwner {
+    function sweepUnusedOracleGas() public onlyOwner {
+        address owner = msg.sender;
         uint256 balance = address(this).balance;
-        require(balance > 0);
-        cryptoCardsTreasury.deposit.value(balance)(balance, 0, address(0));
+        require(balance > 0, "Contract balance must be greater than zero");
+        owner.transfer(balance);
     }
 
     function isValidUuid(bytes16 _uuid) public view onlyController returns (bool) {
@@ -150,9 +141,9 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
     }
 
     function __callback(bytes32 _queryId, string _result) public {
-        require(oracleIds[_queryId]);
-        require(msg.sender == oraclize_cbAddress());
-        require(bytes(_result).length > 0);
+        require(oracleIds[_queryId], "Invalid oracle id");
+        require(msg.sender == oraclize_cbAddress(), "Invalid oracle origin");
+        require(bytes(_result).length > 0, "Invalid oracle response");
 
         address receiver = oracleIdToOwner[_queryId];
 

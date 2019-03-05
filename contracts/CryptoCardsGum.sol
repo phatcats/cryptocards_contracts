@@ -16,7 +16,6 @@ import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 import "./CryptoCardsERC20.sol";
-import "./CryptoCardsTreasury.sol";
 
 
 //
@@ -26,7 +25,6 @@ import "./CryptoCardsTreasury.sol";
 
 contract CryptoCardsGum is Initializable, Ownable {
     CryptoCardsERC20 internal gumToken;
-    CryptoCardsTreasury internal cryptoCardsTreasury;
     address internal cryptoCardPacks;
 
     // [0] = In-House               (Sent to In-House Account)
@@ -49,7 +47,7 @@ contract CryptoCardsGum is Initializable, Ownable {
     bool internal reserveAccountsSet;
 
     modifier onlyPacks() {
-        require(msg.sender == cryptoCardPacks);
+        require(msg.sender == cryptoCardPacks, "Action only allowed by Packs contract");
         _;
     }
 
@@ -70,29 +68,13 @@ contract CryptoCardsGum is Initializable, Ownable {
                   // Total            3,000,000,000
     }
 
-    function setContractAddresses(
-        address _packs,
-        CryptoCardsTreasury _treasury
-    ) public onlyOwner {
-        require(_packs != address(0));
-        require(_treasury != address(0));
-
-        cryptoCardPacks = _packs;
-        cryptoCardsTreasury = _treasury;
-    }
-
     function setPacksAddress(address _packs) public onlyOwner {
-        require(_packs != address(0));
+        require(_packs != address(0), "Invalid address supplied");
         cryptoCardPacks = _packs;
-    }
-
-    function setTreasuryAddress(CryptoCardsTreasury _treasury) public onlyOwner {
-        require(_treasury != address(0));
-        cryptoCardsTreasury = _treasury;
     }
 
     function setGumToken(CryptoCardsERC20 _token) public onlyOwner {
-        require(_token != address(0));
+        require(_token != address(0), "Invalid address supplied");
         gumToken = _token;
     }
 
@@ -108,25 +90,27 @@ contract CryptoCardsGum is Initializable, Ownable {
         purchasesEnabled = false;
     }
 
-    function transferToTreasury() public onlyOwner {
+    function transferGumRevenueToInHouse() public onlyOwner {
+        require(reserveAccounts[0] != address(0), "In-House Reserve Account is not set");
         uint256 balance = address(this).balance;
-        require(balance > 0);
-        cryptoCardsTreasury.deposit.value(balance)(balance, 0, address(0));
+        require(balance > 0, "Contract balance is zero");
+        reserveAccounts[0].transfer(balance);
     }
 
     function setReserveAccounts(address[] _accounts) public onlyOwner {
-        require(!reserveAccountsSet);
-        require(_accounts.length == 4);
+        require(!reserveAccountsSet, "Reserve Accounts already set");
+        require(_accounts.length == 4, "Invalid accounts supplied; must be an array of length 4");
 
         for (uint256 i = 0; i < 4; ++i) {
-            require(_accounts[i] != address(0));
+            require(_accounts[i] != address(0), "Invalid address supplied for reserve account");
             reserveAccounts[i] = _accounts[i];
         }
         reserveAccountsSet = true;
     }
 
     function distributeInitialGum() public onlyOwner {
-        require(reserveAccountsSet && !tokensDistributed);
+        require(reserveAccountsSet, "Reserve accounts are not set");
+        require(!tokensDistributed, "Tokens have already been distributed to reserve accounts");
 
         uint256 totalSupply = gumToken.totalSupply();
         uint256 amount;
@@ -151,7 +135,9 @@ contract CryptoCardsGum is Initializable, Ownable {
     }
 
     function claimPackGum(address _to, uint256 _amountOfGum) public onlyPacks returns (uint256) {
-        require(_to != address(0) && tokensDistributed && _amountOfGum > 0);
+        require(_to != address(0), "Invalid address supplied");
+        require(tokensDistributed, "Tokens have not yet been distributed");
+        require(_amountOfGum > 0, "amountOfGum must be greater than zero");
 
         uint256 tokens = _amountOfGum;
         if (tokens > packGumAvailable) {
@@ -167,8 +153,11 @@ contract CryptoCardsGum is Initializable, Ownable {
     }
 
     function _buyGum(address _to, uint256 _etherPaid) internal {
-        require(purchasesEnabled && tokensDistributed);
-        require(_to != address(0) && _etherPaid > 0 && saleGumAvailable > 0);
+        require(purchasesEnabled, "Purchases are not enabled");
+        require(tokensDistributed, "Tokens have not yet been distributed");
+        require(_to != address(0), "Invalid address supplied");
+        require(_etherPaid > 0, "etherPaid must be greater than zero");
+        require(saleGumAvailable > 0, "No Sale-Gum available");
 
         // Calculate tokens to sell
         uint256 amountPaid = _etherPaid;

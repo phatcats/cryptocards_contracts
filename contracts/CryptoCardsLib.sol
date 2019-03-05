@@ -36,33 +36,34 @@ contract CryptoCardsLib is Initializable, Ownable {
     }
 
     function updatePricePerPack(uint8 _generation, uint256 _price) public onlyOwner {
-        require(_generation >= 0 && _generation < 3);
-        require(_price > 1 finney);
+        require(_generation >= 0 && _generation < 3, "Invalid generation supplied");
+        require(_price > 1 finney, "price must be higher than 0.001 ETH");
         packPrices[_generation] = _price;
     }
 
     function updatePromoCode(uint8 _index, uint256 _code) public onlyOwner {
-        require(_index >= 0 && _index < 3);
+        require(_index >= 0 && _index < 3, "Invalid index supplied");
         promoCodes[_index] = _code;
     }
 
     function updateReferralLevels(uint8 _level, uint256 _amount) public onlyOwner {
-        require(_level >= 0 && _level < 3 && _amount > 0);
+        require(_level >= 0 && _level < 3, "Invalid level supplied");
+        require(_amount > 0, "amount must be greater than zero");
         referralLevels[_level] = _amount;
     }
 
     function getPromoCode(uint8 _index) public view returns (uint256) {
-        require(_index >= 0 && _index < 3);
+        require(_index >= 0 && _index < 3, "Invalid index supplied");
         return promoCodes[_index];
     }
 
     function getReferralLevel(uint8 _index) public view returns (uint256) {
-        require(_index >= 0 && _index < 3);
+        require(_index >= 0 && _index < 3, "Invalid index supplied");
         return referralLevels[_index];
     }
 
     function getPriceAtGeneration(uint8 _generation) public view returns (uint256) {
-        require(_generation >= 0 && _generation < 3);
+        require(_generation >= 0 && _generation < 3, "Invalid generation supplied");
         return packPrices[_generation];
     }
 

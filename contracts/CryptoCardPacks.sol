@@ -51,17 +51,17 @@ contract CryptoCardPacks is Initializable, Ownable {
     mapping(address => uint256) internal packGumByOwner;  // Unclaimed
 
     modifier onlyController() {
-        require(msg.sender == cryptoCardsController);
+        require(msg.sender == cryptoCardsController, "Action only allowed by Controller contract");
         _;
     }
 
     modifier onlyOracle() {
-        require(msg.sender == cryptoCardsOracle);
+        require(msg.sender == cryptoCardsOracle, "Action only allowed by Oracle contract");
         _;
     }
 
     modifier onlyUnopenedPacks(uint256 _packId) {
-        require(token.isTokenFrozen(_packId) != true);
+        require(token.isTokenFrozen(_packId) != true, "Action only allowed Unopened Packs");
         _;
     }
 
@@ -78,11 +78,11 @@ contract CryptoCardPacks is Initializable, Ownable {
         CryptoCardsGum _gum,
         CryptoCardsLib _lib
     ) public onlyOwner {
-        require(_controller != address(0));
-        require(_oracle != address(0));
-        require(_cards != address(0));
-        require(_gum != address(0));
-        require(_lib != address(0));
+        require(_controller != address(0), "Invalid controller address supplied");
+        require(_oracle != address(0), "Invalid oracle address supplied");
+        require(_cards != address(0), "Invalid cards address supplied");
+        require(_gum != address(0), "Invalid gum address supplied");
+        require(_lib != address(0), "Invalid lib address supplied");
 
         cryptoCardsController = _controller;
         cryptoCardsOracle = _oracle;
@@ -92,32 +92,32 @@ contract CryptoCardPacks is Initializable, Ownable {
     }
 
     function setContractController(address _controller) public onlyOwner {
-        require(_controller != address(0));
+        require(_controller != address(0), "Invalid address supplied");
         cryptoCardsController = _controller;
     }
 
     function setOracleAddress(address _oracle) public onlyOwner {
-        require(_oracle != address(0));
+        require(_oracle != address(0), "Invalid address supplied");
         cryptoCardsOracle = _oracle;
     }
 
     function setErc721Token(CryptoCardsERC721 _token) public onlyOwner {
-        require(_token != address(0));
+        require(_token != address(0), "Invalid address supplied");
         token = _token;
     }
 
     function setCardsAddress(CryptoCards _cards) public onlyOwner {
-        require(_cards != address(0));
+        require(_cards != address(0), "Invalid address supplied");
         cards = _cards;
     }
 
     function setGumAddress(CryptoCardsGum _gum) public onlyOwner {
-        require(_gum != address(0));
+        require(_gum != address(0), "Invalid address supplied");
         gum = _gum;
     }
 
     function setLibAddress(CryptoCardsLib _lib) public onlyOwner {
-        require(_lib != address(0));
+        require(_lib != address(0), "Invalid address supplied");
         lib = _lib;
     }
 
@@ -134,7 +134,7 @@ contract CryptoCardPacks is Initializable, Ownable {
     }
 
     function packDataById(uint256 _packId) public view returns (string) {
-        require(_packId >= 0 && _packId < token.totalSupply());
+        require(_packId >= 0 && _packId < token.totalSupply(), "Invalid packId supplied");
         return packsDataById[_packId];
     }
 
@@ -151,8 +151,8 @@ contract CryptoCardPacks is Initializable, Ownable {
     }
 
     function claimPackGum(address _to) public onlyController returns (uint256) {
-        require(_to != address(0));
-        require(packGumByOwner[_to] > 0, 'No GUM to Claim');
+        require(_to != address(0), "Invalid address supplied");
+        require(packGumByOwner[_to] > 0, "No GUM to Claim");
 
         uint256 quantity = packGumByOwner[_to];
         gum.claimPackGum(_to, quantity);
@@ -161,19 +161,21 @@ contract CryptoCardPacks is Initializable, Ownable {
     }
 
     function updatePackPrice(address _owner, uint256 _packId, uint256 _packPrice) public onlyController onlyUnopenedPacks(_packId) {
-        require(_packId >= 0 && _packId < token.totalSupply());
+        require(_packId >= 0 && _packId < token.totalSupply(), "Invalid packId supplied");
         address packOwner = token.ownerOf(_packId);
-        require(packOwner != address(0) && _owner == packOwner);
+        require(packOwner != address(0) && _owner == packOwner, "Invalid owner supplied or owner is not pack-owner");
         packSalePriceById[_packId] = _packPrice;
     }
 
     function transferPackForBuyer(address _receiver, address _owner, uint256 _packId, uint256 _pricePaid) public onlyController onlyUnopenedPacks(_packId) returns (uint256) {
-        require(_packId >= 0 && _packId < token.totalSupply());
+        require(_packId >= 0 && _packId < token.totalSupply(), "Invalid packId supplied");
         address packOwner = token.ownerOf(_packId);
-        require(packOwner != address(0) && _owner == packOwner && _receiver != packOwner);
+        require(packOwner != address(0) && _owner == packOwner, "Invalid owner supplied or owner is not pack-owner");
+        require(_receiver != packOwner, "Cannot transfer pack to self");
 
         uint256 packPrice = packSalePriceById[_packId];
-        require(packPrice > 0 && _pricePaid >= packPrice);
+        require(packPrice > 0, "Pack is not for sale");
+        require(_pricePaid >= packPrice, "Pack price is greater than the price paid");
 
         transferPack(packOwner, _receiver, _packId);
 
@@ -198,9 +200,9 @@ contract CryptoCardPacks is Initializable, Ownable {
      * @param _packId uint256 Pack ID of the pack to be minted
      */
     function tokenizePack(address _opener, uint256 _packId) public onlyController onlyUnopenedPacks(_packId) returns (uint256[8]) {
-        require(_packId >= 0 && _packId < token.totalSupply());
+        require(_packId >= 0 && _packId < token.totalSupply(), "Invalid packId supplied");
         address owner = token.ownerOf(_packId);
-        require(owner != address(0) && _opener == owner);
+        require(owner != address(0) && _opener == owner, "opener must be owner of pack");
 
         // Tokenize Pack
         uint256[8] memory mintedCards;
@@ -217,8 +219,8 @@ contract CryptoCardPacks is Initializable, Ownable {
     }
 
     function transferPack(address _from, address _to, uint256 _packId) internal {
-        require(_from != address(0));
-        require(_to != address(0));
+        require(_from != address(0), "Invalid from address supplied");
+        require(_to != address(0), "Invalid to address supplied");
 
         resetPackValue(_packId);
         token.tokenTransfer(_from, _to, _packId);

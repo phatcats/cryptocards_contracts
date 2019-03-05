@@ -91,7 +91,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     mapping(address => uint256) internal referrals_paid;
 
     modifier onlyController() {
-        require(msg.sender == contractController);
+        require(msg.sender == contractController, "Action only allowed by Controller contract");
         _;
     }
 
@@ -107,20 +107,20 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         address _controller,
         address _account
     ) public onlyOwner {
-        require(_controller != address(0));
-        require(_account != address(0));
+        require(_controller != address(0), "Invalid controller address supplied");
+        require(_account != address(0), "Invalid treasury address supplied");
 
         contractController = _controller;
         inHouseAccount = _account;
     }
 
     function setContractController(address _controller) public onlyOwner {
-        require(_controller != address(0));
+        require(_controller != address(0), "Invalid address supplied");
         contractController = _controller;
     }
 
     function setInHouseAccount(address _account) public onlyOwner {
-        require(_account != address(0));
+        require(_account != address(0), "Invalid address supplied");
         inHouseAccount = _account;
     }
 
@@ -129,7 +129,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function setOutSourcePoolPercentOnDeposit(uint256 _percent) public onlyOwner {
-        require(_percent >= 0 && _percent < 100);
+        require(_percent >= 0 && _percent < 100, "percent must be between 0 and 99");
         outSourcePool_percentOnDeposit = _percent;
     }
 
@@ -138,15 +138,16 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function addOutsourcedMember(address _account, uint256 _limit) public onlyOwner {
-        require(outsourcedMembers_limit[_account] == 0);
+        require(outsourcedMembers_limit[_account] == 0, "Outsourced-Member already exists");
 
         updateOutsourcedMemberLimit(_account, _limit);
         outsourcedMembers_payoutIndex[_account] = getCurrentPayoutIndex();
     }
 
     function updateOutsourcedMemberLimit(address _account, uint256 _limitToAdd) public onlyOwner {
-        require(_account != address(0) && _limitToAdd > 0);
-        require(outSourcePool_unpaid + outSourcePool_paid + _limitToAdd <= outSourcePool_limit);
+        require(_account != address(0), "Invalid address supplied");
+        require(_limitToAdd > 0, "limitToAdd must be greater than zero");
+        require(outSourcePool_unpaid + outSourcePool_paid + _limitToAdd <= outSourcePool_limit, "limitToAdd exceeds remaining pool limit");
 
         // New Member, or previously paid out and removed from memberCount
         if (outsourcedMembers_paid[_account] == outsourcedMembers_limit[_account]) {
@@ -170,7 +171,8 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function withdrawFromEscrow() public onlyOwner {
-        require(inHouseEscrow_unpaid > 0 && inHouseAccount != address(0));
+        require(inHouseAccount != address(0), "Invalid address supplied");
+        require(inHouseEscrow_unpaid > 0, "Unpaid balance must be greater than zero");
         uint256 amount = inHouseEscrow_unpaid;
         inHouseEscrow_paid = inHouseEscrow_paid + amount;
         inHouseEscrow_unpaid = 0;
@@ -214,7 +216,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function setOutsourcedPayoutLimit(uint256 _limit) public onlyOwner {
-        require(_limit > outSourcePool_unpaid && _limit > outSourcePool_total);
+        require(_limit > outSourcePool_unpaid && _limit > outSourcePool_total, "limit must be set higher");
         outSourcePool_limit = _limit;
     }
 
@@ -269,8 +271,8 @@ contract CryptoCardsTreasury is Initializable, Ownable {
 
     function transferUnusedFundsFromPool() public onlyOwner {
         uint256 unusedFunds = getUnusedFundsInPool();
-        require(unusedFunds > 0);
-        require(outSourcePool_total - unusedFunds >= 0);
+        require(unusedFunds > 0, "Unused funds must be greater than zero");
+        require(outSourcePool_total - unusedFunds >= 0, "Unused funds exceeds pool total");
 
         // Remove from Outsource Pool
         outSourcePool_total = outSourcePool_total - unusedFunds;
@@ -284,8 +286,8 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     //
 
     function deposit(uint256 _amountDeposited, uint256 _amountForReferrer, address _referrer) public onlyController payable {
-        require(_amountDeposited == msg.value);
-        require(_amountDeposited - _amountForReferrer >= 0);
+        require(_amountDeposited == msg.value, "amountDeposited does not match amount received");
+        require(_amountDeposited - _amountForReferrer >= 0, "Referral amount exceeds amountDeposited");
 
         // Referrals
         if (_referrer != address(0) && _amountForReferrer > 0) {
@@ -308,8 +310,8 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function _withdrawForReferrer(address _account) internal returns (uint256) {
-        require(_account != address(0));
-        require(referrals_unpaid[_account] > 0);
+        require(_account != address(0), "Invalid account address supplied");
+        require(referrals_unpaid[_account] > 0, "Unpaid balance must be greater than zero");
 
         uint256 amount = referrals_unpaid[_account];
         referrals_paid[_account] = referrals_paid[_account] + amount;
@@ -320,10 +322,10 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     }
 
     function _withdrawForMember(address _account) internal returns (uint256) {
-        require(_account != address(0));
+        require(_account != address(0), "Invalid account address supplied");
         uint256 amountToPay = getAvailableBalanceOfMember(_account);
-        require(amountToPay > 0);
-        require(outSourcePool_unpaid - amountToPay >= 0);
+        require(amountToPay > 0, "Amount to pay must be greater than zero");
+        require(outSourcePool_unpaid - amountToPay >= 0, "Amount to pay exceeds available funds in pool");
 
         outSourcePool_paid = outSourcePool_paid + amountToPay;
         outSourcePool_unpaid = outSourcePool_unpaid - amountToPay;
@@ -333,7 +335,7 @@ contract CryptoCardsTreasury is Initializable, Ownable {
 
         if (outsourcedMembers_paid[_account] == outsourcedMembers_limit[_account]) {
             // No more bounty to pay out, remove from memberCount
-            require(outSourcePool_memberCount - 1 >= 0);
+            require(outSourcePool_memberCount - 1 >= 0, "Invalid member count");
             outSourcePool_memberCount = outSourcePool_memberCount - 1;
         }
 

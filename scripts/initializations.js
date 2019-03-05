@@ -107,12 +107,10 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Oracle to Contracts...'});
         Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Treasury: ${ddCryptoCardsTreasury.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardPacks.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});
         receipt = await cryptoCardsOracle.setContractAddresses(
             ddCryptoCardsController.address,
-            ddCryptoCardsTreasury.address,
             ddCryptoCardPacks.address,
             ddCryptoCardsLib.address,
             _getTxOptions()
@@ -141,12 +139,10 @@ module.exports = async function() {
         //
         Lib.log({separator: true});
         Lib.log({spacer: true});
-        Lib.log({msg: 'Linking Gum to Contracts...'});
+        Lib.log({msg: 'Linking Gum to Packs...'});
         Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardPacks.address}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Treasury: ${ddCryptoCardsTreasury.address}`, indent: 1});
-        receipt = await cryptoCardsGum.setContractAddresses(
+        receipt = await cryptoCardsGum.setPacksAddress(
             ddCryptoCardPacks.address,
-            ddCryptoCardsTreasury.address,
             _getTxOptions()
         );
         Lib.logTxResult(receipt);

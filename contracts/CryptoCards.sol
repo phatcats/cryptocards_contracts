@@ -54,17 +54,17 @@ contract CryptoCards is Initializable, Ownable {
     mapping(uint256 => bool[4]) internal cardAllowedTradeGensByTokenId; // [0] = Any, [1, 2, 3] = Gen
 
     modifier onlyController() {
-        require(msg.sender == cryptoCardsController);
+        require(msg.sender == cryptoCardsController, "Action only allowed by Controller contract");
         _;
     }
 
     modifier onlyPacks() {
-        require(msg.sender == address(packs));
+        require(msg.sender == address(packs), "Action only allowed by Packs contract");
         _;
     }
 
     modifier onlyUnprintedCards(uint256 _cardId) {
-        require(token.isTokenFrozen(_cardId) != true);
+        require(token.isTokenFrozen(_cardId) != true, "Action only allowed on Unprinted Cards");
         _;
     }
 
@@ -78,9 +78,9 @@ contract CryptoCards is Initializable, Ownable {
         CryptoCardPacks _packs,
         CryptoCardsLib _lib
     ) public onlyOwner {
-        require(_controller != address(0));
-        require(_packs != address(0));
-        require(_lib != address(0));
+        require(_controller != address(0), "Invalid controller address supplied");
+        require(_packs != address(0), "Invalid packs address supplied");
+        require(_lib != address(0), "Invalid lib address supplied");
 
         cryptoCardsController = _controller;
         packs = _packs;
@@ -88,22 +88,22 @@ contract CryptoCards is Initializable, Ownable {
     }
 
     function setContractController(address _controller) public onlyOwner {
-        require(_controller != address(0));
+        require(_controller != address(0), "Invalid address supplied");
         cryptoCardsController = _controller;
     }
 
     function setPacksAddress(CryptoCardPacks _packs) public onlyOwner {
-        require(_packs != address(0));
+        require(_packs != address(0), "Invalid address supplied");
         packs = _packs;
     }
 
     function setErc721Token(CryptoCardsERC721 _token) public onlyOwner {
-        require(_token != address(0));
+        require(_token != address(0), "Invalid address supplied");
         token = _token;
     }
 
     function setLibAddress(CryptoCardsLib _lib) public onlyOwner {
-        require(_lib != address(0));
+        require(_lib != address(0), "Invalid address supplied");
         lib = _lib;
     }
 
@@ -120,22 +120,22 @@ contract CryptoCards is Initializable, Ownable {
     }
 
     function cardHashById(uint256 _cardId) public view returns (string) {
-        require(_cardId >= 0 && _cardId < token.totalSupply());
+        require(_cardId >= 0 && _cardId < token.totalSupply(), "Invalid cardId supplied");
         return cardHashByTokenId[_cardId];
     }
 
     function cardIssueById(uint256 _cardId) public view returns (uint16) {
-        require(_cardId >= 0 && _cardId < token.totalSupply());
+        require(_cardId >= 0 && _cardId < token.totalSupply(), "Invalid cardId supplied");
         return cardIssueByTokenId[_cardId];
     }
 
     function cardIndexById(uint256 _cardId) public view returns (uint8) {
-        require(_cardId >= 0 && _cardId < token.totalSupply());
+        require(_cardId >= 0 && _cardId < token.totalSupply(), "Invalid cardId supplied");
         return cardIndexByTokenId[_cardId];
     }
 
     function cardGenById(uint256 _cardId) public view returns (uint8) {
-        require(_cardId >= 0 && _cardId < token.totalSupply());
+        require(_cardId >= 0 && _cardId < token.totalSupply(), "Invalid cardId supplied");
         return cardGenByTokenId[_cardId];
     }
 
@@ -144,16 +144,16 @@ contract CryptoCards is Initializable, Ownable {
     }
 
     function updateCardPrice(address _owner, uint256 _cardId, uint256 _cardPrice) public onlyController onlyUnprintedCards(_cardId) {
-        require(_cardId >= 0 && _cardId < token.totalSupply());
+        require(_cardId >= 0 && _cardId < token.totalSupply(), "Invalid cardId supplied");
         address cardOwner = token.ownerOf(_cardId);
-        require(cardOwner != address(0) && _owner == cardOwner);
+        require(cardOwner != address(0) && _owner == cardOwner, "Invalid owner supplied or owner is not card-owner");
         cardSalePriceById[_cardId] = _cardPrice;
     }
 
     function updateCardTradeValue(address _owner, uint256 _cardId, uint8[] _cardValues, uint8[] _cardGens) public onlyController onlyUnprintedCards(_cardId) {
-        require(_cardId >= 0 && _cardId < token.totalSupply());
+        require(_cardId >= 0 && _cardId < token.totalSupply(), "Invalid cardId supplied");
         address cardOwner = token.ownerOf(_cardId);
-        require(cardOwner != address(0) && _owner == cardOwner);
+        require(cardOwner != address(0) && _owner == cardOwner, "Invalid owner supplied or owner is not card-owner");
 
         // Clear Previous Trade Values
         delete cardAllowedTradesByTokenId[_cardId];
@@ -179,12 +179,14 @@ contract CryptoCards is Initializable, Ownable {
     }
 
     function transferCardForBuyer(address _receiver, address _owner, uint256 _cardId, uint256 _pricePaid) public onlyController onlyUnprintedCards(_cardId) returns (uint256) {
-        require(_cardId >= 0 && _cardId < token.totalSupply());
+        require(_cardId >= 0 && _cardId < token.totalSupply(), "Invalid cardId supplied");
         address cardOwner = token.ownerOf(_cardId);
-        require(cardOwner != address(0) && _owner == cardOwner && _receiver != cardOwner);
+        require(cardOwner != address(0) && _owner == cardOwner , "Invalid owner supplied or owner is not card-owner");
+        require(_receiver != cardOwner, "Cannot transfer card to self");
 
         uint256 cardPrice = cardSalePriceById[_cardId];
-        require(cardPrice > 0 && _pricePaid >= cardPrice);
+        require(cardPrice > 0, "Card is not for sale");
+        require(_pricePaid >= cardPrice, "Card price is greater than the price paid");
 
         transferCard(cardOwner, _receiver, _cardId);
 
@@ -192,11 +194,12 @@ contract CryptoCards is Initializable, Ownable {
     }
 
     function tradeCardForCard(address _owner, uint256 _ownerCardId, uint256 _tradeCardId) public onlyController onlyUnprintedCards(_ownerCardId) returns (address) {
-        require(_tradeCardId >= 0 && _tradeCardId < token.totalSupply() && _ownerCardId >= 0 && _ownerCardId < token.totalSupply());
+        require(_tradeCardId >= 0 && _tradeCardId < token.totalSupply(), "Invalid tradeCardId supplied");
+        require(_ownerCardId >= 0 && _ownerCardId < token.totalSupply(), "Invalid ownerCardId supplied");
         address ownerCardRealOwner = token.ownerOf(_ownerCardId);
         address tradeCardRealOwner = token.ownerOf(_tradeCardId);
-        require(ownerCardRealOwner == _owner);
-        require(tradeCardRealOwner != address(0));
+        require(ownerCardRealOwner == _owner, "owner supplied is not real owner of card");
+        require(tradeCardRealOwner != address(0), "Invalid trade card owner");
 
         // Validate Trade
         validateTradeValue(_ownerCardId, _tradeCardId);
@@ -232,8 +235,8 @@ contract CryptoCards is Initializable, Ownable {
     }
 
     function transferCard(address _from, address _to, uint256 _cardId) internal {
-        require(_from != address(0));
-        require(_to != address(0));
+        require(_from != address(0), "Invalid from address supplied");
+        require(_to != address(0), "Invalid to address supplied");
 
         resetCardValue(_cardId);
         token.tokenTransfer(_from, _to, _cardId);
@@ -249,9 +252,9 @@ contract CryptoCards is Initializable, Ownable {
         uint8 ownerCardIndex = cardIndexByTokenId[_ownerCardId];
         uint8 ownerCardGen = (cardGenByTokenId[_ownerCardId] + 1);
 
-        require( cardAllowedTradesByTokenId[_tradeCardId][ownerCardIndex] == true );
+        require( cardAllowedTradesByTokenId[_tradeCardId][ownerCardIndex] == true, "Owner-card cannot be traded for trade-card" );
         if (cardAllowedTradeGensByTokenId[_tradeCardId][0] != true) { // If Not Any Gen
-            require( cardAllowedTradeGensByTokenId[_tradeCardId][ownerCardGen] == true );
+            require( cardAllowedTradeGensByTokenId[_tradeCardId][ownerCardGen] == true, "Owner-card does not match required generation for trade-card" );
         }
     }
 }
