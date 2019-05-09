@@ -189,8 +189,7 @@ contract CryptoCardPacks is Initializable, Ownable {
      */
     function mintPack(address _to, string _packData, uint256 _packGeneration) public onlyOracle {
         uint256 packId = token.totalSupply();
-        string memory packInfo = lib.uintToHexStr(packId);
-        token.mintWithTokenURI(_to, packId, endpoint.toSlice().concat(packInfo.toSlice()));
+        token.mintWithTokenURI(_to, packId, string(abi.encodePacked(endpoint, lib.uint2str(packId))));
         packsDataById[packId] = _packData;
         packGumByOwner[_to] = packGumByOwner[_to] + (packGumPerGeneration[_packGeneration-1] * (10**18));
     }

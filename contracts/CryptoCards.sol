@@ -45,9 +45,9 @@ contract CryptoCards is Initializable, Ownable {
 
     // Mapping from token ID to card-data
     mapping(uint256 => string) internal cardHashByTokenId;
-    mapping(uint256 => uint16) internal cardIssueByTokenId;
-    mapping(uint256 => uint8) internal cardIndexByTokenId;
-    mapping(uint256 => uint8) internal cardGenByTokenId;
+    mapping(uint256 => uint16) internal cardIssueByTokenId;  // no longer used
+    mapping(uint256 => uint8) internal cardIndexByTokenId;   // no longer used
+    mapping(uint256 => uint8) internal cardGenByTokenId;     // no longer used
 
     // Mapping from Token ID to Allowed Trade Values
     mapping(uint256 => bool[256]) internal cardAllowedTradesByTokenId;  // tokenId => bool[cardIndex]
@@ -126,17 +126,20 @@ contract CryptoCards is Initializable, Ownable {
 
     function cardIssueById(uint256 _cardId) public view returns (uint16) {
         require(_cardId >= 0 && _cardId < token.totalSupply(), "Invalid cardId supplied");
-        return cardIssueByTokenId[_cardId];
+        uint256 cardData = lib.bytesToUint(lib.fromHex(cardHashByTokenId[_cardId]));
+        return uint16(lib.readBits(cardData, 0, 22));
     }
 
     function cardIndexById(uint256 _cardId) public view returns (uint8) {
         require(_cardId >= 0 && _cardId < token.totalSupply(), "Invalid cardId supplied");
-        return cardIndexByTokenId[_cardId];
+        uint256 cardData = lib.bytesToUint(lib.fromHex(cardHashByTokenId[_cardId]));
+        return uint8(lib.readBits(cardData, 22, 8));
     }
 
     function cardGenById(uint256 _cardId) public view returns (uint8) {
         require(_cardId >= 0 && _cardId < token.totalSupply(), "Invalid cardId supplied");
-        return cardGenByTokenId[_cardId];
+        uint256 cardData = lib.bytesToUint(lib.fromHex(cardHashByTokenId[_cardId]));
+        return uint8(lib.readBits(cardData, 30, 2));
     }
 
     function isCardPrinted(uint256 _cardId) public view returns (bool) {
@@ -212,14 +215,8 @@ contract CryptoCards is Initializable, Ownable {
 
     function mintCard(address _to, string _cardData) public onlyPacks returns (uint256) {
         uint cardId = token.totalSupply();
-        strings.slice memory cardDataSlice = _cardData.toSlice();
-        token.mintWithTokenURI(_to, cardId, endpoint.toSlice().concat(cardDataSlice));
-
-        uint256 cardData = lib.bytesToUint(lib.fromHex(_cardData));
+        token.mintWithTokenURI(_to, cardId, string(abi.encodePacked(endpoint, lib.uint2str(cardId))));
         cardHashByTokenId[cardId] = _cardData;
-        cardIssueByTokenId[cardId] = uint16(lib.readBits(cardData, 0, 22));
-        cardIndexByTokenId[cardId] = uint8(lib.readBits(cardData, 22, 8));
-        cardGenByTokenId[cardId] = uint8(lib.readBits(cardData, 30, 2));
         return cardId;
     }
 
@@ -249,8 +246,9 @@ contract CryptoCards is Initializable, Ownable {
     }
 
     function validateTradeValue(uint256 _ownerCardId, uint256 _tradeCardId) internal view {
-        uint8 ownerCardIndex = cardIndexByTokenId[_ownerCardId];
-        uint8 ownerCardGen = (cardGenByTokenId[_ownerCardId] + 1);
+        uint256 cardData = lib.bytesToUint(lib.fromHex(cardHashByTokenId[_ownerCardId]));
+        uint8 ownerCardIndex = uint8(lib.readBits(cardData, 22, 8));
+        uint8 ownerCardGen = uint8(lib.readBits(cardData, 30, 2)) + 1;
 
         require( cardAllowedTradesByTokenId[_tradeCardId][ownerCardIndex] == true, "Owner-card cannot be traded for trade-card" );
         if (cardAllowedTradeGensByTokenId[_tradeCardId][0] != true) { // If Not Any Gen

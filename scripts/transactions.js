@@ -13,6 +13,7 @@ require('dotenv').config();
 global.artifacts = artifacts;
 global.web3 = web3;
 
+const Random = require('meteor-random');
 const { Contracts } = require('zos-lib');
 const { Lib } = require('./common');
 const { networkOptions } = require('../config');
@@ -83,6 +84,11 @@ module.exports = async function() {
         });
     }
 
+    const _getRandom = (max = 16) => {
+        // return web3.utils.randomHex(max);
+        return Random.id(max);
+    };
+
     const _getTxOptions = (txData) => {
         return _.assignIn({}, {
             nonce: currentAccountNonce++,
@@ -151,7 +157,7 @@ module.exports = async function() {
             }
 
             for (let j = 0; j < testTx.count; j++) {
-                testParams = _.map(testTx.params, p => (p === '__rnd__' ? web3.utils.randomHex(16) : p));
+                testParams = _.map(testTx.params, p => (p === '__rnd__' ? _getRandom() : p));
                 Lib.log({indent: 1, msg: `${(j+1)}/${testTx.count}: Running "${testTx.method}" with params: ${JSON.stringify(testParams)}`});
                 receipt = await cryptoCardsController[testTx.method](...testParams, _getTxOptions(testTx.tx));
                 Lib.logTxResult(receipt);

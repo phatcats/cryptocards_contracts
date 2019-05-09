@@ -30,7 +30,7 @@ contract CryptoCardsLib is Initializable, Ownable {
     function initialize(address _owner) public initializer {
         Ownable.initialize(_owner);
 
-        packPrices = [30 finney, 35 finney, 40 finney];
+        packPrices = [15 finney, 20 finney, 25 finney];
         referralLevels = [1, 10, 20];
         promoCodes = [5, 10, 15];
     }
@@ -137,6 +137,26 @@ contract CryptoCardsLib is Initializable, Ownable {
             uint curr = (i & mask);
             bstr[k--] = curr > 9 ? byte(87 + curr) : byte(48 + curr); // 87 = 97 - 10
             i = i >> 4;
+        }
+        return string(bstr);
+    }
+
+    // @dev from https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol
+    function uint2str(uint _i) public pure returns (string memory _uintAsString) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint j = _i;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+        while (_i != 0) {
+            bstr[k--] = byte(uint8(48 + _i % 10));
+            _i /= 10;
         }
         return string(bstr);
     }

@@ -154,7 +154,7 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
         uint256 responseCode = cryptoCardsLib.strToUint(s.split(".".toSlice()).toString());
 
         // Check for Error from API
-        if (responseCode == 0) {
+        if (responseCode < 1 || responseCode > 4) {
             cryptoCardsController.receivedPackError(receiver, oracleIdToUUID[_queryId], _result);  // API Error
         } else {
             // Get Pack Data
