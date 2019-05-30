@@ -6,7 +6,6 @@
  * Copyright 2019 (c) Phat Cats, Inc.
  *
  * Contract Audits:
- *   - SmartDEC International - https://smartcontracts.smartdec.net
  *   - Callisto Security Department - https://callisto.network/
  */
 /*
@@ -65,6 +64,9 @@ import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 //
 
 contract CryptoCardsTreasury is Initializable, Ownable {
+    //
+    // Storage
+    //
     // Contract Controller
     address internal contractController;  // Points to CryptoCardsController Contract
 
@@ -90,11 +92,17 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     mapping(address => uint256) internal referrals_unpaid;
     mapping(address => uint256) internal referrals_paid;
 
+    //
+    // Modifiers
+    //
     modifier onlyController() {
         require(msg.sender == contractController, "Action only allowed by Controller contract");
         _;
     }
 
+    //
+    // Initialize
+    //
     function initialize(address _owner) public initializer {
         Ownable.initialize(_owner);
 

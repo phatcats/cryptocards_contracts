@@ -179,8 +179,8 @@ deployUpdate() {
     echo "Updating Logic Contracts.."
     zos update CryptoCardsLib
     zos update CryptoCardsGum
-    zos update CryptoCards
-    zos update CryptoCardPacks
+    zos update CryptoCardsCards
+    zos update CryptoCardSPacks
     zos update CryptoCardsTreasury
     zos update CryptoCardsOracle
     zos update CryptoCardsController

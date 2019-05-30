@@ -6,7 +6,6 @@
  * Copyright 2019 (c) Phat Cats, Inc.
  *
  * Contract Audits:
- *   - SmartDEC International - https://smartcontracts.smartdec.net
  *   - Callisto Security Department - https://callisto.network/
  */
 
@@ -22,90 +21,88 @@ import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 //
 
 contract CryptoCardsLib is Initializable, Ownable {
-    uint256[3] internal packPrices;
-    uint256[3] internal referralLevels;
-    uint256[3] internal promoCodes;
+    uint256 private constant MAX_LEVELS = 3;
+    uint256 private constant MAX_CODES = 3;
 
+    uint256 internal _packPrice;
 
-    function initialize(address _owner) public initializer {
-        Ownable.initialize(_owner);
+    uint256[MAX_LEVELS] internal _referralLevels;
+    uint256[MAX_CODES] internal _promoCodes;
+    uint256[MAX_CODES] internal _promoDiscounts;
 
-        packPrices = [15 finney, 20 finney, 25 finney];
-        referralLevels = [1, 10, 20];
-        promoCodes = [5, 10, 15];
+    mapping(address => uint256) internal _purchasedPackCount;
+
+    // Contract Reference Addresses
+    address internal _controller;
+
+    //
+    // Modifiers
+    //
+    modifier onlyController() {
+        require(msg.sender == _controller, "Action only allowed by Controller contract");
+        _;
     }
 
-    function updatePricePerPack(uint8 _generation, uint256 _price) public onlyOwner {
-        require(_generation >= 0 && _generation < 3, "Invalid generation supplied");
-        require(_price > 1 finney, "price must be higher than 0.001 ETH");
-        packPrices[_generation] = _price;
+    function initialize(address owner) public initializer {
+        Ownable.initialize(owner);
+
+        _packPrice = 15 finney;
+        _referralLevels = [1, 10, 20];
+        _promoCodes = [123, 456, 789];
+        _promoDiscounts = [5, 10, 15];
     }
 
-    function updatePromoCode(uint8 _index, uint256 _code) public onlyOwner {
-        require(_index >= 0 && _index < 3, "Invalid index supplied");
-        promoCodes[_index] = _code;
+    function getPurchasedPackCount(address owner) public view returns (uint256) {
+        return _purchasedPackCount[owner];
     }
 
-    function updateReferralLevels(uint8 _level, uint256 _amount) public onlyOwner {
-        require(_level >= 0 && _level < 3, "Invalid level supplied");
-        require(_amount > 0, "amount must be greater than zero");
-        referralLevels[_level] = _amount;
+    function getPromoCode(uint8 index) public view returns (uint256) {
+        require(index >= 0 && index < MAX_CODES, "Invalid index supplied");
+        return _promoCodes[index];
     }
 
-    function getPromoCode(uint8 _index) public view returns (uint256) {
-        require(_index >= 0 && _index < 3, "Invalid index supplied");
-        return promoCodes[_index];
+    function getPromoDiscount(uint8 index) public view returns (uint256) {
+        require(index >= 0 && index < MAX_CODES, "Invalid index supplied");
+        return _promoDiscounts[index];
     }
 
-    function getReferralLevel(uint8 _index) public view returns (uint256) {
-        require(_index >= 0 && _index < 3, "Invalid index supplied");
-        return referralLevels[_index];
+    function getReferralLevel(uint8 index) public view returns (uint256) {
+        require(index >= 0 && index < MAX_LEVELS, "Invalid index supplied");
+        return _referralLevels[index];
     }
 
-    function getPriceAtGeneration(uint8 _generation) public view returns (uint256) {
-        require(_generation >= 0 && _generation < 3, "Invalid generation supplied");
-        return packPrices[_generation];
+    function getPrice() public view returns (uint256) {
+        return _packPrice;
     }
 
-    function getPricePerPack(uint256 _generation, uint256 _promoCode, bool _hasReferral) public view returns (uint256) {
-        uint256 packPrice = packPrices[_generation];
-
+    function getPricePerPack(uint256 promoCode, bool hasReferral) public view returns (uint256) {
         // Promo Codes
-        if (promoCodes[0] == _promoCode) {
-            return packPrice - (packPrice * 5 / 100);    // 5% off
-        }
-        if (promoCodes[1] == _promoCode) {
-            return packPrice - (packPrice / 10);         // 10% off
-        }
-        if (promoCodes[2] == _promoCode) {
-            return packPrice - (packPrice * 15 / 100);   // 15% off
+        for (uint256 i = 0; i < MAX_CODES; i++) {
+            if (_promoCodes[i] == promoCode) {
+                return _packPrice - (_packPrice * _promoDiscounts[i] / 100);
+            }
         }
 
         // Referrals
-        if (_hasReferral) {
-            return packPrice - (packPrice * 5 / 100);    // 5% off
+        if (hasReferral) {
+            return _packPrice - (_packPrice / 20);    // 5% off
         }
 
         // Default (Full) Price
-        return packPrice;
+        return _packPrice;
     }
 
-    function getAmountForReferrer(uint256 _packCount, uint256 _cost) public view returns (uint256) {
-        if (_packCount >= referralLevels[2]) {
-            return _cost * 15 / 100;     // 15%
+    function getAmountForReferrer(address referrer, uint256 cost) public view returns (uint256) {
+        if (_purchasedPackCount[referrer] >= _referralLevels[2]) {
+            return cost * 15 / 100;     // 15%
         }
-        if (_packCount >= referralLevels[1]) {
-            return _cost / 10;           // 10%
+        if (_purchasedPackCount[referrer] >= _referralLevels[1]) {
+            return cost / 10;           // 10%
         }
-        if (_packCount >= referralLevels[0]) {
-            return _cost / 20;           // 5%
+        if (_purchasedPackCount[referrer] >= _referralLevels[0]) {
+            return cost / 20;           // 5%
         }
         return 0;
-    }
-
-    function readBits(uint num, uint from, uint len) public pure returns (uint) {
-        uint mask = ((1 << len) - 1) << from;
-        return (num & mask) >> from;
     }
 
     // @dev from https://ethereum.stackexchange.com/questions/10932/how-to-convert-string-to-int
@@ -194,5 +191,61 @@ contract CryptoCardsLib is Initializable, Ownable {
             number = number + uint(b[i])*(2**(8*(len-(i+1))));
         }
         return number;
+    }
+
+//    function _getBitPosition(uint32 val) private pure returns (uint) {
+//        for (uint i = 0; i < 32; i++) {
+//            if ((val & 1) == 1) {
+//                return i;
+//            }
+//            val = val >>= 1;
+//        }
+//    }
+//
+//    function _traitByIndex(uint256 index) private pure returns (uint256) {
+//        return uint256(1 << index);
+//    }
+
+    function _readBits(uint num, uint from, uint len) private pure returns (uint) {
+        uint mask = ((1 << len) - 1) << from;
+        return (num & mask) >> from;
+    }
+
+    //
+    // Only Controller
+    //
+
+    function incrementPurchasedPackCount(address owner, uint256 amount) public onlyController returns (uint256) {
+        _purchasedPackCount[owner] = _purchasedPackCount[owner] + amount;
+    }
+
+    //
+    // Only Owner
+    //
+
+    function setContractController(address controller) public onlyOwner {
+        require(controller != address(0), "Invalid address supplied");
+        _controller = controller;
+    }
+
+    function updatePricePerPack(uint256 price) public onlyOwner {
+        require(price > 5 finney, "price must be higher than 0.005 ETH");
+        _packPrice = price;
+    }
+
+    function updatePromoCode(uint8 index, uint256 code) public onlyOwner {
+        require(index >= 0 && index < MAX_CODES, "Invalid index supplied");
+        _promoCodes[index] = code;
+    }
+
+    function updatePromoDiscount(uint8 index, uint256 discount) public onlyOwner {
+        require(index >= 0 && index < MAX_CODES, "Invalid index supplied");
+        _promoDiscounts[index] = discount;
+    }
+
+    function updateReferralLevels(uint8 level, uint256 amount) public onlyOwner {
+        require(level >= 0 && level < MAX_LEVELS, "Invalid level supplied");
+        require(amount > 0, "amount must be greater than zero");
+        _referralLevels[level] = amount;
     }
 }

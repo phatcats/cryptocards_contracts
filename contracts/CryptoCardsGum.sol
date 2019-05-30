@@ -6,7 +6,6 @@
  * Copyright 2019 (c) Phat Cats, Inc.
  *
  * Contract Audits:
- *   - SmartDEC International - https://smartcontracts.smartdec.net
  *   - Callisto Security Department - https://callisto.network/
  */
 
@@ -15,8 +14,8 @@ pragma solidity 0.4.24;
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
-import "./CryptoCardsERC20.sol";
-
+import "./CryptoCardsGumToken.sol";
+import "./CryptoCardsCardToken.sol";
 
 //
 // NOTE on Ownable:
@@ -24,165 +23,144 @@ import "./CryptoCardsERC20.sol";
 //
 
 contract CryptoCardsGum is Initializable, Ownable {
-    CryptoCardsERC20 internal gumToken;
-    address internal cryptoCardPacks;
+    uint256 private constant MAX_FLAVORS = 5;
 
-    // [0] = In-House               (Sent to In-House Account)
-    // [1] = Bounty Rewards         (Sent to Bounty-Rewards Account)
-    // [2] = Marketing Rewards      (Sent to Marketing Rewards Account)
-    // [3] = Exchanges              (Sent to Exchange-Handler Account)
-    // [4] = Sales from Contract    (Stays in Contract, distributed via buyGum or fallback function)
-    // [5] = Packs                  (Stays in Contract, distributed via giveGumWithPack function)
-    address[4] internal reserveAccounts;
-    uint256[6] internal reserveRatios;
+    //
+    // Storage
+    //
+    CryptoCardsCardToken internal _cardToken;
+    CryptoCardsGumToken[MAX_FLAVORS] internal _gumToken;
+    bytes32[MAX_FLAVORS] internal _flavorName;
+    uint256[MAX_FLAVORS] internal _gumPerPack;
+    uint internal _flavorsAvailable;
+    uint internal _earnedGumFlavor;
 
-    uint256 public baseSalePrice;
+    address internal _cryptoCardsController;
+    address internal _cryptoCardsOracle;
 
-    uint256 public saleGumAvailable;
-    uint256 public packGumAvailable;
-    uint256 public saleGumSold;
-
-    bool public purchasesEnabled;
-    bool internal tokensDistributed;
-    bool internal reserveAccountsSet;
-
-    modifier onlyPacks() {
-        require(msg.sender == cryptoCardPacks, "Action only allowed by Packs contract");
+    //
+    // Modifiers
+    //
+    modifier onlyController() {
+        require(msg.sender == _cryptoCardsController, "Action only allowed by Controller contract");
         _;
     }
 
-    function initialize(address _owner) public initializer {
-        Ownable.initialize(_owner);
-
-        baseSalePrice = 40000 * (10**18); // tokens per 1 ether
-
-        // dist = (total * ratio) / 100
-        reserveRatios = [
-            31,   // % of Total         930,000,000
-             5,   //                    150,000,000
-             5,   //                    150,000,000
-            20,   //                    600,000,000
-             5,   //                    150,000,000
-            34    //                  1,020,000,000
-        ];        //                -----------------
-                  // Total            3,000,000,000
+    modifier onlyOracle() {
+        require(msg.sender == _cryptoCardsOracle, "Action only allowed by Oracle contract");
+        _;
     }
 
-    function setPacksAddress(address _packs) public onlyOwner {
-        require(_packs != address(0), "Invalid address supplied");
-        cryptoCardPacks = _packs;
+    //
+    // Initialize
+    //
+    function initialize(address owner) public initializer {
+        Ownable.initialize(owner);
     }
 
-    function setGumToken(CryptoCardsERC20 _token) public onlyOwner {
-        require(_token != address(0), "Invalid address supplied");
-        gumToken = _token;
+    //
+    // Public
+    //
+
+    function gumFlavorAvailable(uint flavor) public view returns (bool) {
+        if (flavor < 0 || flavor > MAX_FLAVORS) { return false; }
+        return _gumToken[flavor] != address(0x0);
     }
 
-    function contractBalance() public view returns (uint256) {
-        return address(this).balance;
+    function gumFlavorName(uint flavor) public view returns (bytes32) {
+        if (!gumFlavorAvailable(flavor)) { return ""; }
+        return _flavorName[flavor];
     }
 
-    function enablePurchases() public onlyOwner {
-        purchasesEnabled = true;
+    function gumFlavorAddress(uint flavor) public view returns (address) {
+        if (!gumFlavorAvailable(flavor)) { return address(0x0); }
+        return _gumToken[flavor];
     }
 
-    function disablePurchases() public onlyOwner {
-        purchasesEnabled = false;
+    function gumPerPack(uint flavor) public view returns (uint256) {
+        if (!gumFlavorAvailable(flavor)) { return 0; }
+        return _gumPerPack[flavor];
     }
 
-    function transferGumRevenueToInHouse() public onlyOwner {
-        require(reserveAccounts[0] != address(0), "In-House Reserve Account is not set");
-        uint256 balance = address(this).balance;
-        require(balance > 0, "Contract balance is zero");
-        reserveAccounts[0].transfer(balance);
+    function balanceOf(address owner, uint flavor) public view returns (uint256) {
+        if (!gumFlavorAvailable(flavor)) { return 0; }
+        return _gumToken[flavor].balanceOf(owner);
     }
 
-    function setReserveAccounts(address[] _accounts) public onlyOwner {
-        require(!reserveAccountsSet, "Reserve Accounts already set");
-        require(_accounts.length == 4, "Invalid accounts supplied; must be an array of length 4");
+    function packGumAvailable(uint flavor) public view returns (uint256) {
+        return balanceOf(address(this), flavor);
+    }
 
-        for (uint256 i = 0; i < 4; ++i) {
-            require(_accounts[i] != address(0), "Invalid address supplied for reserve account");
-            reserveAccounts[i] = _accounts[i];
+    //
+    // Only Owner
+    //
+
+    function setContractController(address controller) public onlyOwner {
+        require(controller != address(0x0), "Invalid address supplied");
+        _cryptoCardsController = controller;
+    }
+
+    function setOracleAddress(address oracle) public onlyOwner {
+        require(oracle != address(0x0), "Invalid address supplied");
+        _cryptoCardsOracle = oracle;
+    }
+
+    function setCardToken(CryptoCardsCardToken token) public onlyOwner {
+        require(token != address(0x0), "Invalid address supplied");
+        _cardToken = token;
+    }
+
+    function setGumToken(CryptoCardsGumToken token, uint flavor, bytes32 flavorName) public onlyOwner {
+        require(token != address(0x0), "Invalid address supplied");
+        require(flavor == _flavorsAvailable, "Invalid flavor supplied");
+        require(flavorName.length > 0, "Invalid flavor name supplied");
+
+        _gumToken[flavor] = token;
+        _flavorName[flavor] = flavorName;
+        _flavorsAvailable = flavor + 1;
+    }
+
+    function setGumPerPack(uint flavor, uint256 amount) public onlyOwner {
+        require(gumFlavorAvailable(flavor), "Flavor not available");
+        _gumPerPack[flavor] = amount;
+    }
+
+    function setEarnedGumFlavor(uint flavor) public onlyOwner {
+        require(gumFlavorAvailable(flavor), "Flavor not available");
+        _earnedGumFlavor = flavor;
+    }
+
+    //
+    // Only Controller Contract
+    //
+
+    function claimEarnedGum(address to) public onlyController returns (uint256) {
+        require(to != address(0x0), "Invalid address supplied");
+
+        uint256 earnedGum = _cardToken.getEarnedGum(to);
+        uint256 available = packGumAvailable(_earnedGumFlavor);
+        if (earnedGum > available) {
+            earnedGum = available;
         }
-        reserveAccountsSet = true;
-    }
-
-    function distributeInitialGum() public onlyOwner {
-        require(reserveAccountsSet, "Reserve accounts are not set");
-        require(!tokensDistributed, "Tokens have already been distributed to reserve accounts");
-
-        uint256 totalSupply = gumToken.totalSupply();
-        uint256 amount;
-        uint len = reserveAccounts.length;
-        for (uint256 i = 0; i < len; ++i) {
-            amount = totalSupply * reserveRatios[i] / 100;
-            gumToken.transfer(reserveAccounts[i], amount);
-        }
-
-        saleGumAvailable = totalSupply * reserveRatios[4] / 100;
-        packGumAvailable = totalSupply * reserveRatios[5] / 100;
-
-        tokensDistributed = true;
-    }
-
-    function buyGum() public payable {
-        _buyGum(msg.sender, msg.value);
-    }
-
-    function balanceOf(address _owner) public view returns (uint256) {
-        return gumToken.balanceOf(_owner);
-    }
-
-    function claimPackGum(address _to, uint256 _amountOfGum) public onlyPacks returns (uint256) {
-        require(_to != address(0), "Invalid address supplied");
-        require(tokensDistributed, "Tokens have not yet been distributed");
-        require(_amountOfGum > 0, "amountOfGum must be greater than zero");
-
-        uint256 tokens = _amountOfGum;
-        if (tokens > packGumAvailable) {
-            tokens = packGumAvailable;
-        }
-
-        // Track Gum Supplies
-        packGumAvailable = packGumAvailable - tokens;
 
         // Transfer Gum Tokens
-        gumToken.transfer(_to, tokens);
-        return tokens;
+        _cardToken.claimEarnedGum(to, earnedGum);
+        _gumToken[_earnedGumFlavor].transfer(to, earnedGum);
+        return earnedGum;
     }
 
-    function _buyGum(address _to, uint256 _etherPaid) internal {
-        require(purchasesEnabled, "Purchases are not enabled");
-        require(tokensDistributed, "Tokens have not yet been distributed");
-        require(_to != address(0), "Invalid address supplied");
-        require(_etherPaid > 0, "etherPaid must be greater than zero");
-        require(saleGumAvailable > 0, "No Sale-Gum available");
+    //
+    // Only Oracle Contract
+    //
 
-        // Calculate tokens to sell
-        uint256 amountPaid = _etherPaid;
-        uint256 tokens = amountPaid * (baseSalePrice / (10**18));
-        uint256 refund = 0;
-
-        // Sell only tokens that are available
-        if (tokens > saleGumAvailable) {
-            uint256 newTokens = saleGumAvailable;
-            uint256 newAmount = newTokens / tokens * amountPaid;
-            refund = amountPaid - newAmount;
-            amountPaid = newAmount;
-            tokens = newTokens;
-        }
-
-        // Track Gum Sales
-        saleGumSold = saleGumSold + tokens;
-        saleGumAvailable = saleGumAvailable - tokens;
-
-        // Transfer Gum Tokens
-        gumToken.transfer(_to, tokens);
-
-        // Refund over-spend
-        if (refund > 0) {
-            _to.transfer(refund);
+    function transferPackGum(address to, uint packCount) public onlyOracle {
+        for (uint i = 0; i < _flavorsAvailable; i++) {
+            uint256 packGum = _gumPerPack[i] * packCount;
+            uint256 available = packGumAvailable(i);
+            if (packGum > available) {
+                packGum = available;
+            }
+            _gumToken[i].transfer(to, packGum);
         }
     }
 }
