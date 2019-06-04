@@ -44,7 +44,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     //
     // Events
     //
-    event BuyNewPack(address indexed _receiver, bytes16 _uuid, uint256 _pricePaid, address _referredBy, uint256 _promoCode);
+    event BuyNewPack(address indexed receiver, bytes16 uuid, uint256 pricePaid, address referredBy, uint256 promoCode);
 
     //
     // Modifiers
@@ -345,26 +345,26 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     //
 
     function setContractAddresses(
-        CryptoCardsOracle _oracle,
-        CryptoCardsCards _cards,
-        CryptoCardsPacks _packs,
-        CryptoCardsTreasury _treasury,
-        CryptoCardsGum _gum,
-        CryptoCardsLib _lib
+        CryptoCardsOracle oracle,
+        CryptoCardsCards cards,
+        CryptoCardsPacks packs,
+        CryptoCardsTreasury treasury,
+        CryptoCardsGum gum,
+        CryptoCardsLib lib
     ) public onlyOwner {
-        require(_oracle != address(0));
-        require(_cards != address(0));
-        require(_packs != address(0));
-        require(_treasury != address(0));
-        require(_gum != address(0));
-        require(_lib != address(0));
+        require(oracle != address(0));
+        require(cards != address(0));
+        require(packs != address(0));
+        require(treasury != address(0));
+        require(gum != address(0));
+        require(lib != address(0));
 
-        _cryptoCardsOracle = _oracle;
-        _cryptoCardsCards = _cards;
-        _cryptoCardsPacks = _packs;
-        _cryptoCardsTreasury = _treasury;
-        _cryptoCardsGum = _gum;
-        _cryptoCardsLib = _lib;
+        _cryptoCardsOracle = oracle;
+        _cryptoCardsCards = cards;
+        _cryptoCardsPacks = packs;
+        _cryptoCardsTreasury = treasury;
+        _cryptoCardsGum = gum;
+        _cryptoCardsLib = lib;
     }
 
     //    function contractBalance() public view returns (uint256) {

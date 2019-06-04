@@ -22,8 +22,9 @@ const CryptoCardsTreasury = Contracts.getFromLocal('CryptoCardsTreasury');
 const CryptoCardsOracle = Contracts.getFromLocal('CryptoCardsOracle');
 const CryptoCardsLib = Contracts.getFromLocal('CryptoCardsLib');
 const CryptoCardsGum = Contracts.getFromLocal('CryptoCardsGum');
-const CryptoCards = Contracts.getFromLocal('CryptoCards');
-const CryptoCardPacks = Contracts.getFromLocal('CryptoCardPacks');
+const CryptoCardsCards = Contracts.getFromLocal('CryptoCardsCards');
+const CryptoCardsPacks = Contracts.getFromLocal('CryptoCardsPacks');
+const CryptoCardsGumDistributor = Contracts.getFromLocal('CryptoCardsGumDistributor');
 const CryptoCardsController = Contracts.getFromLocal('CryptoCardsController');
 
 Lib.network = process.env.CCC_NETWORK_NAME;
@@ -45,9 +46,10 @@ module.exports = async function() {
     const proxyAdmin = process.env[`${_.toUpper(Lib.network)}_PROXY_ADMIN`];
     const owner = process.env[`${_.toUpper(Lib.network)}_OWNER_ACCOUNT`];
     const inHouseAccount = process.env[`${_.toUpper(Lib.network)}_IN_HOUSE_ACCOUNT`];
+    const reserveAccount = process.env[`${_.toUpper(Lib.network)}_RESERVE_ACCOUNT`];
     const bountyAccount = process.env[`${_.toUpper(Lib.network)}_BOUNTY_ACCOUNT`];
     const marketingAccount = process.env[`${_.toUpper(Lib.network)}_MARKETING_ACCOUNT`];
-    const exchangeAccount = process.env[`${_.toUpper(Lib.network)}_EXCHANGE_ACCOUNT`];
+    const airdropAccount = process.env[`${_.toUpper(Lib.network)}_AIRDROP_ACCOUNT`];
 
     Lib.deployData = require(`../zos.${Lib.networkProvider}.json`);
 
@@ -88,11 +90,14 @@ module.exports = async function() {
         const ddCryptoCardsGum = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsGum');
         const cryptoCardsGum = Lib.getContractInstance(CryptoCardsGum, ddCryptoCardsGum.address);
 
-        const ddCryptoCards = Lib.getDeployDataFor('cryptocardscontracts/CryptoCards');
-        const cryptoCards = Lib.getContractInstance(CryptoCards, ddCryptoCards.address);
+        const ddCryptoCardsCards = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsCards');
+        const cryptoCardsCards = Lib.getContractInstance(CryptoCardsCards, ddCryptoCardsCards.address);
 
-        const ddCryptoCardPacks = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardPacks');
-        const cryptoCardPacks = Lib.getContractInstance(CryptoCardPacks, ddCryptoCardPacks.address);
+        const ddCryptoCardsPacks = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsPacks');
+        const cryptoCardsPacks = Lib.getContractInstance(CryptoCardsPacks, ddCryptoCardsPacks.address);
+
+        const ddCryptoCardsGumDistributor = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsGumDistributor');
+        const cryptoCardsGumDistributor = Lib.getContractInstance(CryptoCardsGumDistributor, ddCryptoCardsGumDistributor.address);
 
         const ddCryptoCardsController = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsController');
         const cryptoCardsController = Lib.getContractInstance(CryptoCardsController, ddCryptoCardsController.address);
@@ -107,14 +112,19 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Oracle to Contracts...'});
         Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardPacks.address}`, indent: 1});
+        receipt = await cryptoCardsOracle.setContractController(ddCryptoCardsController.address, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+        Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardsPacks.address}`, indent: 1});
+        receipt = await cryptoCardsOracle.setPacksAddress(ddCryptoCardsPacks.address, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+        Lib.verbose && Lib.log({msg: `Gum: ${ddCryptoCardsGum.address}`, indent: 1});
+        receipt = await cryptoCardsOracle.setGumAddress(ddCryptoCardsGum.address, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
         Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});
-        receipt = await cryptoCardsOracle.setContractAddresses(
-            ddCryptoCardsController.address,
-            ddCryptoCardPacks.address,
-            ddCryptoCardsLib.address,
-            _getTxOptions()
-        );
+        receipt = await cryptoCardsOracle.setLibAddress(ddCryptoCardsLib.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
@@ -126,11 +136,18 @@ module.exports = async function() {
         Lib.log({msg: 'Linking Treasury to Contracts...'});
         Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `In-House Account: ${inHouseAccount}`, indent: 1});
-        receipt = await cryptoCardsTreasury.setContractAddresses(
-            ddCryptoCardsController.address,
-            inHouseAccount,
-            _getTxOptions()
-        );
+        receipt = await cryptoCardsTreasury.setContractAddresses(ddCryptoCardsController.address, inHouseAccount, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+
+        //
+        // CryptoCardsLib
+        //
+        Lib.log({separator: true});
+        Lib.log({spacer: true});
+        Lib.log({msg: 'Linking Lib to Contracts...'});
+        Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
+        receipt = await cryptoCardsLib.setContractController(ddCryptoCardsController.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
@@ -139,52 +156,47 @@ module.exports = async function() {
         //
         Lib.log({separator: true});
         Lib.log({spacer: true});
-        Lib.log({msg: 'Linking Gum to Packs...'});
-        Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardPacks.address}`, indent: 1});
-        receipt = await cryptoCardsGum.setPacksAddress(
-            ddCryptoCardPacks.address,
-            _getTxOptions()
-        );
+        Lib.log({msg: 'Linking Gum to Contracts...'});
+        Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
+        receipt = await cryptoCardsGum.setContractController(ddCryptoCardsController.address, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+        Lib.verbose && Lib.log({msg: `Oracle: ${ddCryptoCardsOracle.address}`, indent: 1});
+        receipt = await cryptoCardsGum.setOracleAddress(ddCryptoCardsOracle.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
         //
-        // CryptoCards
+        // CryptoCardsCards
         //
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Cards to Contracts...'});
         Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardPacks.address}`, indent: 1});
+        receipt = await cryptoCardsCards.setContractController(ddCryptoCardsController.address, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
         Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});
-        receipt = await cryptoCards.setContractAddresses(
-            ddCryptoCardsController.address,
-            ddCryptoCardPacks.address,
-            ddCryptoCardsLib.address,
-            _getTxOptions()
-        );
+        receipt = await cryptoCardsCards.setLibAddress(ddCryptoCardsLib.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
         //
-        // CryptoCardPacks
+        // CryptoCardsPacks
         //
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Packs to Contracts...'});
         Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
+        receipt = await cryptoCardsPacks.setContractController(ddCryptoCardsController.address, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
         Lib.verbose && Lib.log({msg: `Oracle: ${ddCryptoCardsOracle.address}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Cards: ${ddCryptoCards.address}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Gum: ${ddCryptoCardsGum.address}`, indent: 1});
+        receipt = await cryptoCardsPacks.setOracleAddress(ddCryptoCardsOracle.address, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
         Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});
-        receipt = await cryptoCardPacks.setContractAddresses(
-            ddCryptoCardsController.address,
-            ddCryptoCardsOracle.address,
-            ddCryptoCards.address,
-            ddCryptoCardsGum.address,
-            ddCryptoCardsLib.address,
-            _getTxOptions()
-        );
+        receipt = await cryptoCardsPacks.setLibAddress(ddCryptoCardsLib.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
@@ -195,15 +207,15 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Controller to Contracts...'});
         Lib.verbose && Lib.log({msg: `Oracle: ${ddCryptoCardsOracle.address}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Cards: ${ddCryptoCards.address}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardPacks.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Treasury: ${ddCryptoCardsTreasury.address}`, indent: 1});
+        Lib.verbose && Lib.log({msg: `Cards: ${ddCryptoCardsCards.address}`, indent: 1});
+        Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardsPacks.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Gum: ${ddCryptoCardsGum.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});
         receipt = await cryptoCardsController.setContractAddresses(
             ddCryptoCardsOracle.address,
-            ddCryptoCards.address,
-            ddCryptoCardPacks.address,
+            ddCryptoCardsCards.address,
+            ddCryptoCardsPacks.address,
             ddCryptoCardsTreasury.address,
             ddCryptoCardsGum.address,
             ddCryptoCardsLib.address,
@@ -222,22 +234,6 @@ module.exports = async function() {
         receipt = await cryptoCardsOracle.updateApiEndpoint(options.oracleApiEndpoint, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
-
-        //
-        // GUM Reserve Accounts
-        //
-        Lib.log({separator: true});
-        Lib.log({spacer: true});
-        Lib.log({msg: 'Updating GUM Reserve Accounts...'});
-        Lib.verbose && Lib.log({msg: `In-House Account:  ${inHouseAccount}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Bounty Account:    ${bountyAccount}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Marketing Account: ${marketingAccount}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Exchange Account:  ${exchangeAccount}`, indent: 1});
-        const accounts = [inHouseAccount, bountyAccount, marketingAccount, exchangeAccount];
-        receipt = await cryptoCardsGum.setReserveAccounts(accounts, _getTxOptions());
-        Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
-        Lib.log({spacer: true});
 
         //
         // Pause the Controller
@@ -260,25 +256,27 @@ module.exports = async function() {
         Lib.log({spacer: true});
 
         Lib.log({msg: 'Contract Addresses:'});
-        Lib.log({msg: `Controller:  ${ddCryptoCardsController.address}`, indent: 1});
-        Lib.log({msg: `Treasury:    ${ddCryptoCardsTreasury.address}`, indent: 1});
-        Lib.log({msg: `Oracle:      ${ddCryptoCardsOracle.address}`, indent: 1});
-        Lib.log({msg: `Packs:       ${ddCryptoCardPacks.address}`, indent: 1});
-        Lib.log({msg: `Cards:       ${ddCryptoCards.address}`, indent: 1});
-        Lib.log({msg: `Gum:         ${ddCryptoCardsGum.address}`, indent: 1});
-        Lib.log({msg: `Lib:         ${ddCryptoCardsLib.address}`, indent: 1});
+        Lib.log({msg: `Controller:      ${ddCryptoCardsController.address}`, indent: 1});
+        Lib.log({msg: `Treasury:        ${ddCryptoCardsTreasury.address}`, indent: 1});
+        Lib.log({msg: `Oracle:          ${ddCryptoCardsOracle.address}`, indent: 1});
+        Lib.log({msg: `Packs:           ${ddCryptoCardsPacks.address}`, indent: 1});
+        Lib.log({msg: `Cards:           ${ddCryptoCardsCards.address}`, indent: 1});
+        Lib.log({msg: `Gum:             ${ddCryptoCardsGum.address}`, indent: 1});
+        Lib.log({msg: `Gum Distributor: ${ddCryptoCardsGumDistributor.address}`, indent: 1});
+        Lib.log({msg: `Lib:             ${ddCryptoCardsLib.address}`, indent: 1});
         Lib.log({spacer: true});
         Lib.log({msg: 'Accounts:'});
-        Lib.log({msg: `Proxy Admin: ${proxyAdmin}`, indent: 1});
-        Lib.log({msg: `Owner:       ${owner}`, indent: 1});
-        Lib.log({msg: `In-House:    ${inHouseAccount}`, indent: 1});
-        Lib.log({msg: `Bounty:      ${bountyAccount}`, indent: 1});
-        Lib.log({msg: `Marketing:   ${marketingAccount}`, indent: 1});
-        Lib.log({msg: `Exchange:    ${exchangeAccount}`, indent: 1});
+        Lib.log({msg: `Proxy Admin:     ${proxyAdmin}`, indent: 1});
+        Lib.log({msg: `Owner:           ${owner}`, indent: 1});
+        Lib.log({msg: `In-House:        ${inHouseAccount}`, indent: 1});
+        Lib.log({msg: `Reserve:         ${reserveAccount}`, indent: 1});
+        Lib.log({msg: `Bounty:          ${bountyAccount}`, indent: 1});
+        Lib.log({msg: `Marketing:       ${marketingAccount}`, indent: 1});
+        Lib.log({msg: `Airdrop:         ${airdropAccount}`, indent: 1});
         Lib.log({spacer: true});
-        Lib.log({msg: `Total Gas Used: ${totalGas} WEI`});
-        Lib.log({msg: `Gas Price:      ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
-        Lib.log({msg: `Actual Cost:    ${Lib.fromWeiToEther(totalGas * options.gasPrice)} ETH`});
+        Lib.log({msg: `Total Gas Used:  ${totalGas} WEI`});
+        Lib.log({msg: `Gas Price:       ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
+        Lib.log({msg: `Actual Cost:     ${Lib.fromWeiToEther(totalGas * options.gasPrice)} ETH`});
 
         Lib.log({spacer: true});
         Lib.log({msg: 'Initializations Complete!'});

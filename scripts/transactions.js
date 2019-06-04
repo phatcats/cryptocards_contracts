@@ -19,21 +19,15 @@ const { Lib } = require('./common');
 const { networkOptions } = require('../config');
 const _ = require('lodash');
 
-const CryptoCardsERC20 = Contracts.getFromLocal('CryptoCardsERC20');
-const CryptoCardsERC721 = Contracts.getFromLocal('CryptoCardsERC721');
 const CryptoCardsTreasury = Contracts.getFromLocal('CryptoCardsTreasury');
 const CryptoCardsOracle = Contracts.getFromLocal('CryptoCardsOracle');
-const CryptoCardsLib = Contracts.getFromLocal('CryptoCardsLib');
-const CryptoCardsGum = Contracts.getFromLocal('CryptoCardsGum');
-const CryptoCards = Contracts.getFromLocal('CryptoCards');
-const CryptoCardPacks = Contracts.getFromLocal('CryptoCardPacks');
 const CryptoCardsController = Contracts.getFromLocal('CryptoCardsController');
 
 const _zeroAddress = '0x0000000000000000000000000000000000000000';
 const _testAccounts = [
-    {address: '0x7002FF8d83625DC59A2C23bCAb9e8939A201B0d6', packs: 3, bounty: 2}, // Ganache Account 6
-    {address: '0x4DE7C0BEEdD7286074fE2b9CeA08774ba55C991b', packs: 3, bounty: 3}, // Ganache Account 7
-    {address: '0x2C46170cE4436Ca1e19550228777F283c0923AdB', packs: 3, bounty: 5}, // Ganache Account 8
+    {address: '0x7002FF8d83625DC59A2C23bCAb9e8939A201B0d6', packs: 1, bounty: 2}, // Ganache Account 6
+    {address: '0x4DE7C0BEEdD7286074fE2b9CeA08774ba55C991b', packs: 0, bounty: 3}, // Ganache Account 7
+    {address: '0x2C46170cE4436Ca1e19550228777F283c0923AdB', packs: 0, bounty: 5}, // Ganache Account 8
 ];
 const _txDelay = 1000;
 

@@ -138,12 +138,16 @@ deployFresh() {
     gumAddress=$(zos create CryptoCardsGum --init initialize --args "$ownerAccount")
 
     echoHeader
-    echo "Creating Contract: CryptoCards"
-    cardsAddress=$(zos create CryptoCards --init initialize --args "$ownerAccount")
+    echo "Creating Contract: CryptoCardsCards"
+    cardsAddress=$(zos create CryptoCardsCards --init initialize --args "$ownerAccount")
 
     echoHeader
-    echo "Creating Contract: CryptoCardPacks"
-    packsAddress=$(zos create CryptoCardPacks --init initialize --args "$ownerAccount")
+    echo "Creating Contract: CryptoCardsPacks"
+    packsAddress=$(zos create CryptoCardsPacks --init initialize --args "$ownerAccount")
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsGumDistributor"
+    gumDistributor=$(zos create CryptoCardsGumDistributor --init initialize --args "$ownerAccount")
 
     echoHeader
     echo "Creating Contract: CryptoCardsController"
@@ -157,6 +161,7 @@ deployFresh() {
     echo " - packsAddress:      $packsAddress"
     echo " - cardsAddress:      $cardsAddress"
     echo " - gumAddress:        $gumAddress"
+    echo " - gumDistributor:    $gumDistributor"
     echo " - libAddress:        $libAddress"
 
     echoHeader
@@ -183,6 +188,7 @@ deployUpdate() {
     zos update CryptoCardSPacks
     zos update CryptoCardsTreasury
     zos update CryptoCardsOracle
+    zos update CryptoCardsGumDistributor
     zos update CryptoCardsController
 
     echo " "

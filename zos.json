@@ -3,13 +3,14 @@
   "name": "cryptocardscontracts",
   "version": "1.1.0",
   "contracts": {
-    "CryptoCards": "CryptoCards",
-    "CryptoCardPacks": "CryptoCardPacks",
-    "CryptoCardsTreasury": "CryptoCardsTreasury",
-    "CryptoCardsController": "CryptoCardsController",
-    "CryptoCardsOracle": "CryptoCardsOracle",
+    "CryptoCardsCards": "CryptoCardsCards",
+    "CryptoCardsPacks": "CryptoCardsPacks",
     "CryptoCardsGum": "CryptoCardsGum",
-    "CryptoCardsLib": "CryptoCardsLib"
+    "CryptoCardsGumDistributor": "CryptoCardsGumDistributor",
+    "CryptoCardsLib": "CryptoCardsLib",
+    "CryptoCardsTreasury": "CryptoCardsTreasury",
+    "CryptoCardsOracle": "CryptoCardsOracle",
+    "CryptoCardsController": "CryptoCardsController"
   },
   "dependencies": {
     "openzeppelin-eth": "^2.0.2"
