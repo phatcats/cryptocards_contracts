@@ -19,11 +19,11 @@
     "openzeppelin-eth": "^2.0.2",
     "openzeppelin-solidity": "^2.1.1",
     "web3": "^1.0.0-beta.37",
-    "zos-lib": "^2.1.0"
+    "zos-lib": "^2.3.0"
   },
   "devDependencies": {
     "dotenv": "^6.2.0",
-    "eth-gas-reporter": "^0.1.12",
+    "eth-gas-reporter": "^0.2.0",
     "ethereumjs-wallet": "^0.6.2",
     "lodash": "^4.17.11",
     "meteor-random": "0.0.3",
