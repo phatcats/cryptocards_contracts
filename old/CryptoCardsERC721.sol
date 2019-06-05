@@ -9,7 +9,7 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.4.24;
+pragma solidity 0.5.0;
 
 
 contract CryptoCardsERC721 {

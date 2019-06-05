@@ -9,7 +9,7 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.4.24;
+pragma solidity 0.5.0;
 
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
@@ -66,8 +66,8 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     // Public
     //
 
-    function getVersion() public pure returns (string) {
-        return "v1.1.0";
+    function getVersion() public pure returns (string memory) {
+        return "v2.0.0";
     }
 
     //
@@ -77,7 +77,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         return _cryptoCardsPacks.balanceOf(owner);
     }
 
-    function packDataById(uint256 packId) public view returns (string) {
+    function packDataById(uint256 packId) public view returns (string memory) {
         return _cryptoCardsPacks.packDataById(packId);
     }
 
@@ -238,7 +238,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         _setCardTradeValue(msg.sender, cardId, 0, new uint8[](0), new uint8[](0), uuid);
     }
 
-    function updateCardTradeValue(uint256 cardId, uint16 cardRank, uint8[] cardGens, uint8[] cardYears, bytes16 uuid) public whenNotPaused {
+    function updateCardTradeValue(uint256 cardId, uint16 cardRank, uint8[] memory cardGens, uint8[] memory cardYears, bytes16 uuid) public whenNotPaused {
         _setCardTradeValue(msg.sender, cardId, cardRank, cardGens, cardYears, uuid);
     }
 
@@ -246,7 +246,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     // Buy/Sell/Trade/Open
     //
 
-    function buyPackFromOwner(address owner, uint256 packId, bytes16 uuid) public nonReentrant whenNotPaused payable {
+    function buyPackFromOwner(address payable owner, uint256 packId, bytes16 uuid) public nonReentrant whenNotPaused payable {
         require(owner != address(0) && msg.sender != owner);
 
         // Transfer Pack
@@ -262,7 +262,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         }
     }
 
-    function buyCardFromOwner(address owner, uint256 cardId, bytes16 uuid) public nonReentrant whenNotPaused payable {
+    function buyCardFromOwner(address payable owner, uint256 cardId, bytes16 uuid) public nonReentrant whenNotPaused payable {
         require(owner != address(0) && msg.sender != owner);
 
         // Transfer Card
@@ -332,11 +332,11 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         return _cryptoCardsCards.combineCards(msg.sender, cardA, cardB);
     }
 
-    function printCards(uint256[] cardIds) public whenNotPaused {
+    function printCards(uint256[] memory cardIds) public whenNotPaused {
         _cryptoCardsCards.printCards(msg.sender, cardIds);
     }
 
-    function meltCards(uint256[] cardIds) public whenNotPaused {
+    function meltCards(uint256[] memory cardIds) public whenNotPaused {
         _cryptoCardsCards.meltCards(msg.sender, cardIds);
     }
 
@@ -352,12 +352,12 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         CryptoCardsGum gum,
         CryptoCardsLib lib
     ) public onlyOwner {
-        require(oracle != address(0));
-        require(cards != address(0));
-        require(packs != address(0));
-        require(treasury != address(0));
-        require(gum != address(0));
-        require(lib != address(0));
+        require(address(oracle) != address(0));
+        require(address(cards) != address(0));
+        require(address(packs) != address(0));
+        require(address(treasury) != address(0));
+        require(address(gum) != address(0));
+        require(address(lib) != address(0));
 
         _cryptoCardsOracle = oracle;
         _cryptoCardsCards = cards;
@@ -389,7 +389,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         _cryptoCardsCards.updateCardPrice(owner, cardId, cardPrice, uuid);
     }
 
-    function _setCardTradeValue(address owner, uint256 cardId, uint16 cardRank, uint8[] cardGens, uint8[] cardYears, bytes16 uuid) internal {
+    function _setCardTradeValue(address owner, uint256 cardId, uint16 cardRank, uint8[] memory cardGens, uint8[] memory cardYears, bytes16 uuid) internal {
         _cryptoCardsCards.updateCardTradeValue(owner, cardId, cardRank, cardGens, cardYears, uuid);
     }
 }

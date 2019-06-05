@@ -34,7 +34,7 @@ library HitchensUnorderedKeySetLib {
 
     struct Set {
         mapping(bytes32 => uint) keyPointers;
-        bytes32[] keyList;
+        bytes32[] memory keyList;
     }
 
     function insert(Set storage self, bytes32 key) internal {

@@ -14,20 +14,19 @@ global.artifacts = artifacts;
 global.web3 = web3;
 
 const Random = require('meteor-random');
-const { Contracts } = require('zos-lib');
 const { Lib } = require('./common');
-const { networkOptions } = require('../config');
+const { networkOptions, contracts } = require('../config');
 const _ = require('lodash');
 
-const CryptoCardsTreasury = Contracts.getFromLocal('CryptoCardsTreasury');
-const CryptoCardsOracle = Contracts.getFromLocal('CryptoCardsOracle');
-const CryptoCardsController = Contracts.getFromLocal('CryptoCardsController');
+const CryptoCardsTreasury = contracts.getFromLocal('CryptoCardsTreasury');
+const CryptoCardsOracle = contracts.getFromLocal('CryptoCardsOracle');
+const CryptoCardsController = contracts.getFromLocal('CryptoCardsController');
 
 const _zeroAddress = '0x0000000000000000000000000000000000000000';
 const _testAccounts = [
-    {address: '0x7002FF8d83625DC59A2C23bCAb9e8939A201B0d6', packs: 1, bounty: 2}, // Ganache Account 6
-    {address: '0x4DE7C0BEEdD7286074fE2b9CeA08774ba55C991b', packs: 0, bounty: 3}, // Ganache Account 7
-    {address: '0x2C46170cE4436Ca1e19550228777F283c0923AdB', packs: 0, bounty: 5}, // Ganache Account 8
+    {address: '0x7002FF8d83625DC59A2C23bCAb9e8939A201B0d6', packs: 1, bounty: '2'}, // Ganache Account 6
+    {address: '0x4DE7C0BEEdD7286074fE2b9CeA08774ba55C991b', packs: 0, bounty: '3'}, // Ganache Account 7
+    {address: '0x2C46170cE4436Ca1e19550228777F283c0923AdB', packs: 0, bounty: '5'}, // Ganache Account 8
 ];
 const _txDelay = 1000;
 
@@ -79,8 +78,7 @@ module.exports = async function() {
     }
 
     const _getRandom = (max = 16) => {
-        // return web3.utils.randomHex(max);
-        return Random.id(max);
+        return web3.utils.asciiToHex(Random.id(max));
     };
 
     const _getTxOptions = (txData) => {
@@ -101,13 +99,13 @@ module.exports = async function() {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Contract Deployments
         const ddCryptoCardsController = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsController');
-        const cryptoCardsController = Lib.getContractInstance(CryptoCardsController, ddCryptoCardsController.address);
+        const cryptoCardsController = await Lib.getContractInstance(CryptoCardsController, ddCryptoCardsController.address);
 
         const ddCryptoCardsOracle = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsOracle');
-        const cryptoCardsOracle = Lib.getContractInstance(CryptoCardsOracle, ddCryptoCardsOracle.address);
+        const cryptoCardsOracle = await Lib.getContractInstance(CryptoCardsOracle, ddCryptoCardsOracle.address);
 
         const ddCryptoCardsTreasury = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsTreasury');
-        const cryptoCardsTreasury = Lib.getContractInstance(CryptoCardsTreasury, ddCryptoCardsTreasury.address);
+        const cryptoCardsTreasury = await Lib.getContractInstance(CryptoCardsTreasury, ddCryptoCardsTreasury.address);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Update Oracle Gas Limit for Testing
@@ -127,7 +125,8 @@ module.exports = async function() {
         let bounty;
         for (let i = 0; i < _testAccounts.length; i++) {
             currentAccount = _testAccounts[i].address;
-            bounty = _testAccounts[i].bounty * 1e18;
+            bounty = web3.utils.toWei(_testAccounts[i].bounty);
+            // bounty = _testAccounts[i].bounty * 1e18;
 
             Lib.log({spacer: true});
             Lib.log({msg: `Adding Bounty Reward of ${bounty} ETH..`});

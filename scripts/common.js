@@ -85,15 +85,15 @@ Lib.getDeployDataFor = (contractNamespace, index = 0) => {
     return dd;
 };
 
-Lib.getContractInstance = (contract, contractAddress) => {
+Lib.getContractInstance = async (contract, contractAddress) => {
     // Dirty hack for web3@1.0.0 support for localhost testrpc,
     // see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
-    if (typeof contract.currentProvider.sendAsync !== "function") {
-        contract.currentProvider.sendAsync = function () {
-            return contract.currentProvider.send.apply(contract.currentProvider, arguments);
-        };
-    }
-    return contract.at(contractAddress);
+    // if (typeof contract.currentProvider.sendAsync !== "function") {
+    //     contract.currentProvider.sendAsync = function () {
+    //         return contract.currentProvider.send.apply(contract.currentProvider, arguments);
+    //     };
+    // }
+    return await contract.deployed(); // .at(contractAddress);
 };
 
 module.exports = { Lib };

@@ -52,7 +52,7 @@
         recoverableFunds = outSourcePool.total - (outSourcePool.paid + outSourcePool.unpaid)
 
 */
-pragma solidity 0.4.24;
+pragma solidity 0.5.0;
 
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
@@ -68,102 +68,102 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     // Storage
     //
     // Contract Controller
-    address internal contractController;  // Points to CryptoCardsController Contract
+    address internal _contractController;  // Points to CryptoCardsController Contract
 
     // In-house Escrow - 70%
-    address internal inHouseAccount;
-    uint256 internal inHouseEscrow_paid;
-    uint256 internal inHouseEscrow_unpaid;
+    address payable internal _inHouseAccount;
+    uint256 internal _inHouseEscrow_paid;
+    uint256 internal _inHouseEscrow_unpaid;
 
     // Out-sourcing - 30% up to Pool Limit
-    uint256 internal outSourcePool_total;        // Payout Total Accumulated
-    uint256 internal outSourcePool_limit;        // Payout Maximum
-    uint256 internal outSourcePool_interval;     // Payout Interval
-    uint256 internal outSourcePool_unpaid;       // Amount left Unpaid
-    uint256 internal outSourcePool_paid;         // Amount Paid Out
-    uint256 internal outSourcePool_memberCount;
-    uint256 internal outSourcePool_percentOnDeposit;
+    uint256 internal _outSourcePool_total;        // Payout Total Accumulated
+    uint256 internal _outSourcePool_limit;        // Payout Maximum
+    uint256 internal _outSourcePool_interval;     // Payout Interval
+    uint256 internal _outSourcePool_unpaid;       // Amount left Unpaid
+    uint256 internal _outSourcePool_paid;         // Amount Paid Out
+    uint256 internal _outSourcePool_memberCount;
+    uint256 internal _outSourcePool_percentOnDeposit;
 
-    mapping(address => uint256) internal outsourcedMembers_payoutIndex;
-    mapping(address => uint256) internal outsourcedMembers_limit;
-    mapping(address => uint256) internal outsourcedMembers_paid;
+    mapping(address => uint256) internal _outsourcedMembers_payoutIndex;
+    mapping(address => uint256) internal _outsourcedMembers_limit;
+    mapping(address => uint256) internal _outsourcedMembers_paid;
 
     // Referral Account Escrows
-    mapping(address => uint256) internal referrals_unpaid;
-    mapping(address => uint256) internal referrals_paid;
+    mapping(address => uint256) internal _referrals_unpaid;
+    mapping(address => uint256) internal _referrals_paid;
 
     //
     // Modifiers
     //
     modifier onlyController() {
-        require(msg.sender == contractController, "Action only allowed by Controller contract");
+        require(msg.sender == _contractController, "Action only allowed by Controller contract");
         _;
     }
 
     //
     // Initialize
     //
-    function initialize(address _owner) public initializer {
-        Ownable.initialize(_owner);
+    function initialize(address owner) public initializer {
+        Ownable.initialize(owner);
 
-        outSourcePool_limit = 500 ether;
-        outSourcePool_interval = 250 finney; // cannot change once live
-        outSourcePool_percentOnDeposit = 30; // As percentage of deposit
+        _outSourcePool_limit = 500 ether;
+        _outSourcePool_interval = 250 finney; // cannot change once live
+        _outSourcePool_percentOnDeposit = 30; // As percentage of deposit
     }
 
     function setContractAddresses(
-        address _controller,
-        address _account
+        address controller,
+        address payable account
     ) public onlyOwner {
-        require(_controller != address(0), "Invalid controller address supplied");
-        require(_account != address(0), "Invalid treasury address supplied");
+        require(controller != address(0), "Invalid controller address supplied");
+        require(account != address(0), "Invalid treasury address supplied");
 
-        contractController = _controller;
-        inHouseAccount = _account;
+        _contractController = controller;
+        _inHouseAccount = account;
     }
 
-    function setContractController(address _controller) public onlyOwner {
-        require(_controller != address(0), "Invalid address supplied");
-        contractController = _controller;
+    function setContractController(address controller) public onlyOwner {
+        require(controller != address(0), "Invalid address supplied");
+        _contractController = controller;
     }
 
-    function setInHouseAccount(address _account) public onlyOwner {
-        require(_account != address(0), "Invalid address supplied");
-        inHouseAccount = _account;
+    function setInHouseAccount(address payable account) public onlyOwner {
+        require(account != address(0), "Invalid address supplied");
+        _inHouseAccount = account;
     }
 
     function getOutSourcePoolPercentOnDeposit() public view returns (uint256) {
-        return outSourcePool_percentOnDeposit;
+        return _outSourcePool_percentOnDeposit;
     }
 
-    function setOutSourcePoolPercentOnDeposit(uint256 _percent) public onlyOwner {
-        require(_percent >= 0 && _percent < 100, "percent must be between 0 and 99");
-        outSourcePool_percentOnDeposit = _percent;
+    function setOutSourcePoolPercentOnDeposit(uint256 percent) public onlyOwner {
+        require(percent >= 0 && percent < 100, "percent must be between 0 and 99");
+        _outSourcePool_percentOnDeposit = percent;
     }
 
     function contractBalance() public view returns (uint256) {
         return address(this).balance;
     }
 
-    function addOutsourcedMember(address _account, uint256 _limit) public onlyOwner {
-        require(outsourcedMembers_limit[_account] == 0, "Outsourced-Member already exists");
+    function addOutsourcedMember(address account, uint256 limit) public onlyOwner {
+        require(_outsourcedMembers_limit[account] == 0, "Outsourced-Member already exists");
 
-        updateOutsourcedMemberLimit(_account, _limit);
-        outsourcedMembers_payoutIndex[_account] = getCurrentPayoutIndex();
+        updateOutsourcedMemberLimit(account, limit);
+        _outsourcedMembers_payoutIndex[account] = getCurrentPayoutIndex();
     }
 
-    function updateOutsourcedMemberLimit(address _account, uint256 _limitToAdd) public onlyOwner {
-        require(_account != address(0), "Invalid address supplied");
-        require(_limitToAdd > 0, "limitToAdd must be greater than zero");
-        require(outSourcePool_unpaid + outSourcePool_paid + _limitToAdd <= outSourcePool_limit, "limitToAdd exceeds remaining pool limit");
+    function updateOutsourcedMemberLimit(address account, uint256 limitToAdd) public onlyOwner {
+        require(account != address(0), "Invalid address supplied");
+        require(limitToAdd > 0, "limitToAdd must be greater than zero");
+        require(_outSourcePool_unpaid + _outSourcePool_paid + limitToAdd <= _outSourcePool_limit, "limitToAdd exceeds remaining pool limit");
 
         // New Member, or previously paid out and removed from memberCount
-        if (outsourcedMembers_paid[_account] == outsourcedMembers_limit[_account]) {
-            outSourcePool_memberCount = outSourcePool_memberCount + 1;
+        if (_outsourcedMembers_paid[account] == _outsourcedMembers_limit[account]) {
+            _outSourcePool_memberCount = _outSourcePool_memberCount + 1;
         }
 
-        outsourcedMembers_limit[_account] = outsourcedMembers_limit[_account] + _limitToAdd;
-        outSourcePool_unpaid = outSourcePool_unpaid + _limitToAdd;
+        _outsourcedMembers_limit[account] = _outsourcedMembers_limit[account] + limitToAdd;
+        _outSourcePool_unpaid = _outSourcePool_unpaid + limitToAdd;
     }
 
     //
@@ -171,40 +171,40 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     //
 
     function getPaidBalanceOfEscrow() public view returns (uint256) {
-        return inHouseEscrow_paid;
+        return _inHouseEscrow_paid;
     }
 
     function getUnpaidBalanceOfEscrow() public view returns (uint256) {
-        return inHouseEscrow_unpaid;
+        return _inHouseEscrow_unpaid;
     }
 
     function withdrawFromEscrow() public onlyOwner {
-        require(inHouseAccount != address(0), "Invalid address supplied");
-        require(inHouseEscrow_unpaid > 0, "Unpaid balance must be greater than zero");
-        uint256 amount = inHouseEscrow_unpaid;
-        inHouseEscrow_paid = inHouseEscrow_paid + amount;
-        inHouseEscrow_unpaid = 0;
-        inHouseAccount.transfer(amount);
+        require(_inHouseAccount != address(0), "Invalid address supplied");
+        require(_inHouseEscrow_unpaid > 0, "Unpaid balance must be greater than zero");
+        uint256 amount = _inHouseEscrow_unpaid;
+        _inHouseEscrow_paid = _inHouseEscrow_paid + amount;
+        _inHouseEscrow_unpaid = 0;
+        _inHouseAccount.transfer(amount);
     }
 
     //
     // Referrals
     //
 
-    function getPaidBalanceOfReferrer(address _account) public view returns (uint256) {
-        return referrals_paid[_account];
+    function getPaidBalanceOfReferrer(address account) public view returns (uint256) {
+        return _referrals_paid[account];
     }
 
-    function getUnpaidBalanceOfReferrer(address _account) public view returns (uint256) {
-        return referrals_unpaid[_account];
+    function getUnpaidBalanceOfReferrer(address account) public view returns (uint256) {
+        return _referrals_unpaid[account];
     }
 
     function withdrawMyReferralBalance() public {
         _withdrawForReferrer(address(msg.sender));
     }
 
-    function withdrawForReferrer(address _account) public onlyController returns (uint256) {
-        return _withdrawForReferrer(_account);
+    function withdrawForReferrer(address payable account) public onlyController returns (uint256) {
+        return _withdrawForReferrer(account);
     }
 
     //
@@ -212,54 +212,54 @@ contract CryptoCardsTreasury is Initializable, Ownable {
     //
 
     function getCurrentPayoutIndex() public view returns (uint256) {
-        return ((outSourcePool_total - (outSourcePool_total % outSourcePool_interval)) / outSourcePool_interval);
+        return ((_outSourcePool_total - (_outSourcePool_total % _outSourcePool_interval)) / _outSourcePool_interval);
     }
 
     function getOutsourcedMemberCount() public view returns (uint256) {
-        return outSourcePool_memberCount;
+        return _outSourcePool_memberCount;
     }
 
     function getOutsourcedPayoutLimit() public view returns (uint256) {
-        return outSourcePool_limit;
+        return _outSourcePool_limit;
     }
 
-    function setOutsourcedPayoutLimit(uint256 _limit) public onlyOwner {
-        require(_limit > outSourcePool_unpaid && _limit > outSourcePool_total, "limit must be set higher");
-        outSourcePool_limit = _limit;
+    function setOutsourcedPayoutLimit(uint256 limit) public onlyOwner {
+        require(limit > _outSourcePool_unpaid && limit > _outSourcePool_total, "limit must be set higher");
+        _outSourcePool_limit = limit;
     }
 
     function getOutsourcedPayoutInterval() public view returns (uint256) {
-        return outSourcePool_interval;
+        return _outSourcePool_interval;
     }
 
     function getTotalBalanceOfPool() public view returns (uint256) {
-        return outSourcePool_total;
+        return _outSourcePool_total;
     }
 
     function getPaidBalanceOfPool() public view returns (uint256) {
-        return outSourcePool_paid;
+        return _outSourcePool_paid;
     }
 
     function getUnpaidBalanceOfPool() public view returns (uint256) {
-        return outSourcePool_unpaid;
+        return _outSourcePool_unpaid;
     }
 
-    function getPaidBalanceOfMember(address _account) public view returns (uint256) {
-        return outsourcedMembers_paid[_account];
+    function getPaidBalanceOfMember(address account) public view returns (uint256) {
+        return _outsourcedMembers_paid[account];
     }
 
-    function getUnpaidBalanceOfMember(address _account) public view returns (uint256) {
-        return outsourcedMembers_limit[_account] - outsourcedMembers_paid[_account];
+    function getUnpaidBalanceOfMember(address account) public view returns (uint256) {
+        return _outsourcedMembers_limit[account] - _outsourcedMembers_paid[account];
     }
 
-    function getAvailableBalanceOfMember(address _account) public view returns (uint256) {
+    function getAvailableBalanceOfMember(address account) public view returns (uint256) {
         uint256 currentPayoutIndex = getCurrentPayoutIndex();
-        if (outsourcedMembers_payoutIndex[_account] == currentPayoutIndex) { return 0; }
-        if (outsourcedMembers_limit[_account] == 0 || outsourcedMembers_paid[_account] == outsourcedMembers_limit[_account]) { return 0; }
+        if (_outsourcedMembers_payoutIndex[account] == currentPayoutIndex) { return 0; }
+        if (_outsourcedMembers_limit[account] == 0 || _outsourcedMembers_paid[account] == _outsourcedMembers_limit[account]) { return 0; }
 
-        uint256 payoutMultiplier = currentPayoutIndex - outsourcedMembers_payoutIndex[_account];
-        uint256 maxPayable = (outSourcePool_interval * payoutMultiplier) / outSourcePool_memberCount;
-        uint256 remainingToBePaid = outsourcedMembers_limit[_account] - outsourcedMembers_paid[_account];
+        uint256 payoutMultiplier = currentPayoutIndex - _outsourcedMembers_payoutIndex[account];
+        uint256 maxPayable = (_outSourcePool_interval * payoutMultiplier) / _outSourcePool_memberCount;
+        uint256 remainingToBePaid = _outsourcedMembers_limit[account] - _outsourcedMembers_paid[account];
         return remainingToBePaid > maxPayable ? maxPayable : remainingToBePaid;
     }
 
@@ -267,26 +267,26 @@ contract CryptoCardsTreasury is Initializable, Ownable {
         _withdrawForMember(address(msg.sender));
     }
 
-    function withdrawForMember(address _account) public onlyController returns (uint256) {
-        return _withdrawForMember(_account);
+    function withdrawForMember(address payable account) public onlyController returns (uint256) {
+        return _withdrawForMember(account);
     }
 
     function getUnusedFundsInPool() public view returns (uint256) {
-        uint256 payouts = (outSourcePool_paid + outSourcePool_unpaid);
-        if (payouts > outSourcePool_total) { return 0; }
-        return outSourcePool_total - payouts;
+        uint256 payouts = (_outSourcePool_paid + _outSourcePool_unpaid);
+        if (payouts > _outSourcePool_total) { return 0; }
+        return _outSourcePool_total - payouts;
     }
 
     function transferUnusedFundsFromPool() public onlyOwner {
         uint256 unusedFunds = getUnusedFundsInPool();
         require(unusedFunds > 0, "Unused funds must be greater than zero");
-        require(outSourcePool_total - unusedFunds >= 0, "Unused funds exceeds pool total");
+        require(_outSourcePool_total - unusedFunds >= 0, "Unused funds exceeds pool total");
 
         // Remove from Outsource Pool
-        outSourcePool_total = outSourcePool_total - unusedFunds;
+        _outSourcePool_total = _outSourcePool_total - unusedFunds;
 
         // Transfer to In-house Escrow
-        inHouseEscrow_unpaid = inHouseEscrow_unpaid + unusedFunds;
+        _inHouseEscrow_unpaid = _inHouseEscrow_unpaid + unusedFunds;
     }
 
     //
@@ -299,55 +299,55 @@ contract CryptoCardsTreasury is Initializable, Ownable {
 
         // Referrals
         if (_referrer != address(0) && _amountForReferrer > 0) {
-            referrals_unpaid[_referrer] = referrals_unpaid[_referrer] + _amountForReferrer;
+            _referrals_unpaid[_referrer] = _referrals_unpaid[_referrer] + _amountForReferrer;
             _amountDeposited = _amountDeposited - _amountForReferrer;
         }
 
         // Out-sourcing
-        uint256 outsourcePortion = _amountDeposited * outSourcePool_percentOnDeposit / 100;
-        if (outSourcePool_total < outSourcePool_limit) {
-            if (outSourcePool_total + outsourcePortion > outSourcePool_limit) {
-                outsourcePortion = outSourcePool_limit - outSourcePool_total;
+        uint256 outsourcePortion = _amountDeposited * _outSourcePool_percentOnDeposit / 100;
+        if (_outSourcePool_total < _outSourcePool_limit) {
+            if (_outSourcePool_total + outsourcePortion > _outSourcePool_limit) {
+                outsourcePortion = _outSourcePool_limit - _outSourcePool_total;
             }
-            outSourcePool_total = outSourcePool_total + outsourcePortion;
+            _outSourcePool_total = _outSourcePool_total + outsourcePortion;
             _amountDeposited = _amountDeposited - outsourcePortion;
         }
 
         // In-house
-        inHouseEscrow_unpaid = inHouseEscrow_unpaid + _amountDeposited;
+        _inHouseEscrow_unpaid = _inHouseEscrow_unpaid + _amountDeposited;
     }
 
-    function _withdrawForReferrer(address _account) internal returns (uint256) {
-        require(_account != address(0), "Invalid account address supplied");
-        require(referrals_unpaid[_account] > 0, "Unpaid balance must be greater than zero");
+    function _withdrawForReferrer(address payable account) internal returns (uint256) {
+        require(account != address(0), "Invalid account address supplied");
+        require(_referrals_unpaid[account] > 0, "Unpaid balance must be greater than zero");
 
-        uint256 amount = referrals_unpaid[_account];
-        referrals_paid[_account] = referrals_paid[_account] + amount;
-        referrals_unpaid[_account] = 0;
+        uint256 amount = _referrals_unpaid[account];
+        _referrals_paid[account] = _referrals_paid[account] + amount;
+        _referrals_unpaid[account] = 0;
 
-        _account.transfer(amount);
+        account.transfer(amount);
         return amount;
     }
 
-    function _withdrawForMember(address _account) internal returns (uint256) {
-        require(_account != address(0), "Invalid account address supplied");
-        uint256 amountToPay = getAvailableBalanceOfMember(_account);
+    function _withdrawForMember(address payable account) internal returns (uint256) {
+        require(account != address(0), "Invalid account address supplied");
+        uint256 amountToPay = getAvailableBalanceOfMember(account);
         require(amountToPay > 0, "Amount to pay must be greater than zero");
-        require(outSourcePool_unpaid - amountToPay >= 0, "Amount to pay exceeds available funds in pool");
+        require(_outSourcePool_unpaid - amountToPay >= 0, "Amount to pay exceeds available funds in pool");
 
-        outSourcePool_paid = outSourcePool_paid + amountToPay;
-        outSourcePool_unpaid = outSourcePool_unpaid - amountToPay;
+        _outSourcePool_paid = _outSourcePool_paid + amountToPay;
+        _outSourcePool_unpaid = _outSourcePool_unpaid - amountToPay;
 
-        outsourcedMembers_paid[_account] = outsourcedMembers_paid[_account] + amountToPay;
-        outsourcedMembers_payoutIndex[_account] = getCurrentPayoutIndex();
+        _outsourcedMembers_paid[account] = _outsourcedMembers_paid[account] + amountToPay;
+        _outsourcedMembers_payoutIndex[account] = getCurrentPayoutIndex();
 
-        if (outsourcedMembers_paid[_account] == outsourcedMembers_limit[_account]) {
+        if (_outsourcedMembers_paid[account] == _outsourcedMembers_limit[account]) {
             // No more bounty to pay out, remove from memberCount
-            require(outSourcePool_memberCount - 1 >= 0, "Invalid member count");
-            outSourcePool_memberCount = outSourcePool_memberCount - 1;
+            require(_outSourcePool_memberCount - 1 >= 0, "Invalid member count");
+            _outSourcePool_memberCount = _outSourcePool_memberCount - 1;
         }
 
-        _account.transfer(amountToPay);
+        account.transfer(amountToPay);
         return amountToPay;
     }
 }

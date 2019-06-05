@@ -34,7 +34,7 @@ library HitchensUnorderedAddressSetLib {
 
     struct Set {
         mapping(address => uint) keyPointers;
-        address[] keyList;
+        address[] memory keyList;
     }
 
     function insert(Set storage self, address key) internal {

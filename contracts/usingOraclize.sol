@@ -30,14 +30,14 @@ THE SOFTWARE.
 
 // This api is currently targeted at 0.4.18, please import oraclizeAPI_pre0.4.sol or oraclizeAPI_0.4 where necessary
 
-pragma solidity 0.4.24;
+pragma solidity 0.5.0;
 
 contract OraclizeI {
     address public cbAddress;
-    function query(uint _timestamp, string _datasource, string _arg) external payable returns (bytes32 _id);
-    function query_withGasLimit(uint _timestamp, string _datasource, string _arg, uint _gaslimit) external payable returns (bytes32 _id);
-    function getPrice(string _datasource) public returns (uint _dsprice);
-    function getPrice(string _datasource, uint gaslimit) public returns (uint _dsprice);
+    function query(uint _timestamp, string calldata _datasource, string calldata _arg) external payable returns (bytes32 _id);
+    function query_withGasLimit(uint _timestamp, string calldata _datasource, string calldata _arg, uint _gaslimit) external payable returns (bytes32 _id);
+    function getPrice(string memory _datasource) public returns (uint _dsprice);
+    function getPrice(string memory _datasource, uint gaslimit) public returns (uint _dsprice);
     function setCustomGasPrice(uint _gasPrice) external;
 }
 
@@ -56,7 +56,7 @@ contract usingOraclize {
 
     OraclizeI oraclize;
     modifier oraclizeAPI {
-        if((address(OAR)==0)||(getCodeSize(address(OAR))==0))
+        if((address(OAR)==address(0)) || (getCodeSize(address(OAR))==0))
             oraclize_setNetwork(networkID_auto);
 
         if(address(oraclize) != OAR.getAddress())
@@ -64,7 +64,7 @@ contract usingOraclize {
 
         _;
     }
-    modifier coupon(string code){
+    modifier coupon(string memory code){
         oraclize = OraclizeI(OAR.getAddress());
         _;
     }
@@ -109,24 +109,24 @@ contract usingOraclize {
         return false;
     }
 
-    function __callback(bytes32 myid, string result) public {
+    function __callback(bytes32 myid, string memory result) public {
         __callback(myid, result, new bytes(0));
     }
-    function __callback(bytes32 myid, string result, bytes proof) public {
+    function __callback(bytes32 myid, string memory result, bytes memory proof) public {
         return;
         myid; result; proof; // Silence compiler warnings
     }
 
-    function oraclize_getPrice(string datasource) oraclizeAPI internal returns (uint){
+    function oraclize_getPrice(string memory datasource) oraclizeAPI internal returns (uint){
         return oraclize.getPrice(datasource);
     }
 
-    function oraclize_getPrice(string datasource, uint gaslimit) oraclizeAPI internal returns (uint){
+    function oraclize_getPrice(string memory datasource, uint gaslimit) oraclizeAPI internal returns (uint){
         return oraclize.getPrice(datasource, gaslimit);
     }
 
 
-    function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
+    function oraclize_query(string memory datasource, string memory arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){
         uint price = oraclize.getPrice(datasource, gaslimit);
         if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
@@ -147,11 +147,11 @@ contract usingOraclize {
     }
 
     string oraclize_network_name;
-    function oraclize_setNetworkName(string _network_name) internal {
+    function oraclize_setNetworkName(string memory _network_name) internal {
         oraclize_network_name = _network_name;
     }
 
-    function oraclize_getNetworkName() internal view returns (string) {
+    function oraclize_getNetworkName() internal view returns (string memory) {
         return oraclize_network_name;
     }
 

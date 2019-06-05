@@ -6,6 +6,8 @@
  * Copyright 2019 (c) Phat Cats, Inc.
  */
 
+// const { Contracts } = require('zos-lib');
+
 module.exports = {
     wallets: {
         ropsten: {
@@ -46,5 +48,13 @@ module.exports = {
             gas      : 1000000,             // https://etherscan.io/blocks
             gasPrice : 2000000000           // https://etherscan.io/gastracker  (1 Gwei)
         }
+    },
+
+    contracts: {
+        getFromLocal: function(contractName) {
+            // return Contracts.getFromLocal(contractName);
+            return artifacts.require(`${contractName}.sol`);
+        }
     }
+
 };

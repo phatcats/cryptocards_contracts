@@ -9,7 +9,7 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.4.24;
+pragma solidity 0.5.0;
 
 import "./strings.sol";
 import "./usingOraclize.sol";
@@ -102,7 +102,7 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
         }
     }
 
-    function __callback(bytes32 _queryId, string _result) public {
+    function __callback(bytes32 _queryId, string memory _result) public {
         require(oracleIds[_queryId], "Invalid oracle id");
         require(msg.sender == oraclize_cbAddress(), "Invalid oracle origin");
         require(bytes(_result).length > 0, "Invalid oracle response");
@@ -135,26 +135,26 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
     //
 
     function setContractController(CryptoCardsController _controller) public onlyOwner {
-        require(_controller != address(0), "Invalid address supplied");
+        require(address(_controller) != address(0), "Invalid address supplied");
         cryptoCardsController = _controller;
     }
 
     function setPacksAddress(CryptoCardsPacks _packs) public onlyOwner {
-        require(_packs != address(0), "Invalid address supplied");
+        require(address(_packs) != address(0), "Invalid address supplied");
         cryptoCardsPacks = _packs;
     }
 
     function setGumAddress(CryptoCardsGum _gum) public onlyOwner {
-        require(_gum != address(0), "Invalid address supplied");
+        require(address(_gum) != address(0), "Invalid address supplied");
         cryptoCardsGum = _gum;
     }
 
     function setLibAddress(CryptoCardsLib _lib) public onlyOwner {
-        require(_lib != address(0), "Invalid address supplied");
+        require(address(_lib) != address(0), "Invalid address supplied");
         cryptoCardsLib = _lib;
     }
 
-    function updateApiEndpoint(string _endpoint) public onlyOwner {
+    function updateApiEndpoint(string memory _endpoint) public onlyOwner {
         apiEndpoint = _endpoint;
     }
 

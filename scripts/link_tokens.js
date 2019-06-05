@@ -13,16 +13,15 @@ require('dotenv').config();
 global.artifacts = artifacts;
 global.web3 = web3;
 
-const { Contracts } = require('zos-lib');
 const { Lib } = require('./common');
-const { networkOptions } = require('../config');
+const { networkOptions, contracts } = require('../config');
 const _ = require('lodash');
 
-const CryptoCardsPacks = Contracts.getFromLocal('CryptoCardsPacks');
-const CryptoCardsCards = Contracts.getFromLocal('CryptoCardsCards');
-const CryptoCardsGum = Contracts.getFromLocal('CryptoCardsGum');
-const CryptoCardsGumDistributor = Contracts.getFromLocal('CryptoCardsGumDistributor');
-const CryptoCardsController = Contracts.getFromLocal('CryptoCardsController');
+const CryptoCardsPacks = contracts.getFromLocal('CryptoCardsPacks');
+const CryptoCardsCards = contracts.getFromLocal('CryptoCardsCards');
+const CryptoCardsGum = contracts.getFromLocal('CryptoCardsGum');
+const CryptoCardsGumDistributor = contracts.getFromLocal('CryptoCardsGumDistributor');
+const CryptoCardsController = contracts.getFromLocal('CryptoCardsController');
 
 Lib.network = process.env.CCC_NETWORK_NAME;
 Lib.networkProvider = process.env.CCC_NETWORK_PROVIDER;
@@ -94,19 +93,19 @@ module.exports = async function() {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Get Deployed Contracts
         const ddCryptoCardsGum = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsGum');
-        const cryptoCardsGum = Lib.getContractInstance(CryptoCardsGum, ddCryptoCardsGum.address);
+        const cryptoCardsGum = await Lib.getContractInstance(CryptoCardsGum, ddCryptoCardsGum.address);
 
         const ddCryptoCardsGumDistributor = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsGumDistributor');
-        const cryptoCardsGumDistributor = Lib.getContractInstance(CryptoCardsGumDistributor, ddCryptoCardsGumDistributor.address);
+        const cryptoCardsGumDistributor = await Lib.getContractInstance(CryptoCardsGumDistributor, ddCryptoCardsGumDistributor.address);
 
         const ddCryptoCardsCards = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsCards');
-        const cryptoCardsCards = Lib.getContractInstance(CryptoCardsCards, ddCryptoCardsCards.address);
+        const cryptoCardsCards = await Lib.getContractInstance(CryptoCardsCards, ddCryptoCardsCards.address);
 
         const ddCryptoCardsPacks = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsPacks');
-        const cryptoCardsPacks = Lib.getContractInstance(CryptoCardsPacks, ddCryptoCardsPacks.address);
+        const cryptoCardsPacks = await Lib.getContractInstance(CryptoCardsPacks, ddCryptoCardsPacks.address);
 
         const ddCryptoCardsController = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsController');
-        const cryptoCardsController = Lib.getContractInstance(CryptoCardsController, ddCryptoCardsController.address);
+        const cryptoCardsController = await Lib.getContractInstance(CryptoCardsController, ddCryptoCardsController.address);
 
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

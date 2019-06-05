@@ -9,7 +9,7 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.4.24;
+pragma solidity 0.5.0;
 
 
 contract CryptoCardsCardToken {
@@ -20,9 +20,9 @@ contract CryptoCardsCardToken {
 //    function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256);
 
     // ERC721-Batched
-//    function safeBatchTransferFrom(address from, address to, uint256[] tokenIds) public;
-//    function safeBatchTransferFrom(address from, address to, uint256[] tokenIds, bytes memory _data) public;
-//    function batchTransferFrom(address from, address to, uint256[] tokenIds) public;
+//    function safeBatchTransferFrom(address from, address to, uint256[] memory tokenIds) public;
+//    function safeBatchTransferFrom(address from, address to, uint256[] memory tokenIds, bytes memory _data) public;
+//    function batchTransferFrom(address from, address to, uint256[] memory tokenIds) public;
 
     // CryptoCardsCardToken
 //    function getYear(uint256 tokenId) public pure returns (uint);

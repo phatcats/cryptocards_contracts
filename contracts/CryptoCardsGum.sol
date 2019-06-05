@@ -9,7 +9,7 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.4.24;
+pragma solidity 0.5.0;
 
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
@@ -64,7 +64,7 @@ contract CryptoCardsGum is Initializable, Ownable {
 
     function gumFlavorAvailable(uint flavor) public view returns (bool) {
         if (flavor < 0 || flavor > MAX_FLAVORS) { return false; }
-        return _gumToken[flavor] != address(0x0);
+        return address(_gumToken[flavor]) != address(0x0);
     }
 
     function gumFlavorName(uint flavor) public view returns (bytes32) {
@@ -74,7 +74,7 @@ contract CryptoCardsGum is Initializable, Ownable {
 
     function gumFlavorAddress(uint flavor) public view returns (address) {
         if (!gumFlavorAvailable(flavor)) { return address(0x0); }
-        return _gumToken[flavor];
+        return address(_gumToken[flavor]);
     }
 
     function gumPerPack(uint flavor) public view returns (uint256) {
@@ -106,14 +106,13 @@ contract CryptoCardsGum is Initializable, Ownable {
     }
 
     function setCardToken(CryptoCardsCardToken token) public onlyOwner {
-        require(token != address(0x0), "Invalid address supplied");
+        require(address(token) != address(0x0), "Invalid address supplied");
         _cardToken = token;
     }
 
     function setGumToken(CryptoCardsGumToken token, uint flavor, bytes32 flavorName) public onlyOwner {
-        require(token != address(0x0), "Invalid address supplied");
+        require(address(token) != address(0x0), "Invalid address supplied");
         require(flavor == _flavorsAvailable, "Invalid flavor supplied");
-        require(flavorName.length > 0, "Invalid flavor name supplied");
 
         _gumToken[flavor] = token;
         _flavorName[flavor] = flavorName;

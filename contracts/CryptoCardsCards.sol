@@ -9,7 +9,7 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.4.24;
+pragma solidity 0.5.0;
 
 import "./strings.sol";
 
@@ -51,7 +51,7 @@ contract CryptoCardsCards is Initializable, Ownable {
     //
     event CardPriceSet      (address indexed owner, bytes16 uuid, uint256 cardId, uint256 price);
     event CardTradeValueSet (address indexed owner, bytes16 uuid, uint256 cardId, uint16 cardRank, uint8[] cardGens, uint8[] cardYears);
-//    event CardTradeValueSet (address indexed owner, bytes16 uuid, uint256 cardId, uint16[] cardRanks, uint8[] cardGens, uint8[] cardYears);
+//    event CardTradeValueSet (address indexed owner, bytes16 uuid, uint256 cardId, uint16[] memory cardRanks, uint8[] memory cardGens, uint8[] memory cardYears);
     event CardSale          (address indexed owner, address indexed receiver, bytes16 uuid, uint256 cardId, uint256 price);
     event CardTrade         (address indexed owner, address indexed receiver, bytes16 uuid, uint256 ownerCardId, uint256 tradeCardId);
 
@@ -157,12 +157,12 @@ contract CryptoCardsCards is Initializable, Ownable {
     }
 
     function setCryptoCardsCardToken(CryptoCardsCardToken token) public onlyOwner {
-        require(token != address(0), "Invalid address supplied");
+        require(address(token) != address(0), "Invalid address supplied");
         _cardToken = token;
     }
 
     function setLibAddress(CryptoCardsLib lib) public onlyOwner {
-        require(lib != address(0), "Invalid address supplied");
+        require(address(lib) != address(0), "Invalid address supplied");
         _lib = lib;
     }
 
@@ -181,7 +181,7 @@ contract CryptoCardsCards is Initializable, Ownable {
         emit CardPriceSet(owner, uuid, cardId, cardPrice);
     }
 
-    function updateCardTradeValue(address owner, uint256 cardId, uint16 cardRank, uint8[] cardGens, uint8[] cardYears, bytes16 uuid)
+    function updateCardTradeValue(address owner, uint256 cardId, uint16 cardRank, uint8[] memory cardGens, uint8[] memory cardYears, bytes16 uuid)
         public
         onlyController
         onlyUnprintedCards(cardId)
@@ -241,7 +241,7 @@ contract CryptoCardsCards is Initializable, Ownable {
         emit CardTrade(owner, desiredCardRealOwner, uuid, ownerCardId, desiredCardId);
     }
 
-    function printCards(address owner, uint256[] cardIds)
+    function printCards(address owner, uint256[] memory cardIds)
         public
         onlyController
     {
@@ -262,7 +262,7 @@ contract CryptoCardsCards is Initializable, Ownable {
         return _cardToken.combineFor(owner, tokenA, tokenB);
     }
 
-    function meltCards(address owner, uint256[] cardIds)
+    function meltCards(address owner, uint256[] memory cardIds)
         public
         onlyController
     {

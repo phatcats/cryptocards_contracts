@@ -9,7 +9,7 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.4.24;
+pragma solidity 0.5.0;
 
 import "./strings.sol";
 
@@ -86,7 +86,7 @@ contract CryptoCardsPacks is Initializable, Ownable {
         return _packToken.ownerOf(tokenId);
     }
 
-    function packDataById(uint256 tokenId) public view returns (string) {
+    function packDataById(uint256 tokenId) public view returns (string memory) {
         return _packToken.packDataById(tokenId);
     }
 
@@ -109,17 +109,17 @@ contract CryptoCardsPacks is Initializable, Ownable {
     }
 
     function setCryptoCardsPackToken(CryptoCardsPackToken token) public onlyOwner {
-        require(token != address(0), "Invalid address supplied");
+        require(address(token) != address(0), "Invalid address supplied");
         _packToken = token;
     }
 
     function setCryptoCardsCardToken(CryptoCardsCardToken token) public onlyOwner {
-        require(token != address(0), "Invalid address supplied");
+        require(address(token) != address(0), "Invalid address supplied");
         _cardToken = token;
     }
 
     function setLibAddress(CryptoCardsLib lib) public onlyOwner {
-        require(lib != address(0), "Invalid address supplied");
+        require(address(lib) != address(0), "Invalid address supplied");
         _lib = lib;
     }
 
@@ -158,8 +158,8 @@ contract CryptoCardsPacks is Initializable, Ownable {
         strings.slice memory s = _packToken.packDataById(packId).toSlice();
         strings.slice memory d = ".".toSlice();
         for (uint i = 0; i < 8; i++) {
-            mintedCards[i] = _lib.bytesToUint(_lib.fromHex(s.split(d).toString()));
-//            mintedCards[i] = _lib.strToUint(s.split(d).toString());
+//            mintedCards[i] = _lib.bytesToUint(_lib.fromHex(s.split(d).toString()));
+            mintedCards[i] = _lib.strToUint(s.split(d).toString());
         }
         _cardToken.mintCardsFromPack(owner, mintedCards);
 
@@ -173,7 +173,7 @@ contract CryptoCardsPacks is Initializable, Ownable {
     // Only Oracle Contract
     //
 
-    function mintPack(address to, string packData) public onlyOracle returns (uint256) {
+    function mintPack(address to, string memory packData) public onlyOracle returns (uint256) {
         return _packToken.mintPack(to, packData);
     }
 
