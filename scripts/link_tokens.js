@@ -23,6 +23,8 @@ const CryptoCardsGum = contracts.getFromLocal('CryptoCardsGum');
 const CryptoCardsGumDistributor = contracts.getFromLocal('CryptoCardsGumDistributor');
 const CryptoCardsController = contracts.getFromLocal('CryptoCardsController');
 
+const GUM_REGULAR_FLAVOR = 0;
+
 Lib.network = process.env.CCC_NETWORK_NAME;
 Lib.networkProvider = process.env.CCC_NETWORK_PROVIDER;
 Lib.networkId = process.env.CCC_NETWORK_ID;
@@ -35,9 +37,9 @@ const _tokenAddress = {
         gum   : '0xF70B61E3800dFFDA57cf167051CAa0Fb6bA1B0B3'
     },
     ropsten: {
-        packs : '',
-        cards : '',
-        gum   : ''
+        packs : '0x8a43C333eC0A26e84C4CF5b6338Bf6983eFEBd8D',
+        cards : '0xE2E450b20B25311bb135eE7A3d546EEb526ca349',
+        gum   : '0xC042CAF4E8d49E8e06Cc61D3B8448b4424Cc6A50'
     },
     mainnet: {
         packs : '',
@@ -125,11 +127,17 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Gum to Tokens...'});
         Lib.verbose && Lib.log({msg: `CryptoCardsGumToken: ${tokenAddress.gum}`, indent: 1});
-        receipt = await cryptoCardsGum.setGumToken(tokenAddress.gum, 0, "Regular", _getTxOptions());
+        receipt = await cryptoCardsGum.setGumToken(tokenAddress.gum, GUM_REGULAR_FLAVOR, web3.utils.asciiToHex('Regular'), _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
         Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cards}`, indent: 1});
         receipt = await cryptoCardsGum.setCardToken(tokenAddress.cards, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+
+        Lib.log({msg: 'Setting Gum per Pack...'});
+        Lib.verbose && Lib.log({msg: `setGumPerPack: ${options.gumPerPack}`, indent: 1});
+        receipt = await cryptoCardsGum.setGumPerPack(GUM_REGULAR_FLAVOR, options.gumPerPack, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
@@ -166,11 +174,11 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({msg: 'Updating GUM Initial Accounts...'});
         Lib.verbose && Lib.log({msg: `In-House Account:  ${inHouseAccount}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Reserve Account:  ${reserveAccount}`, indent: 1});
+        Lib.verbose && Lib.log({msg: `Reserve Account:   ${reserveAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Bounty Account:    ${bountyAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Marketing Account: ${marketingAccount}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Airdrop Account:  ${airdropAccount}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Gum Contract:  ${cryptoCardsGum.address}`, indent: 1});
+        Lib.verbose && Lib.log({msg: `Airdrop Account:   ${airdropAccount}`, indent: 1});
+        Lib.verbose && Lib.log({msg: `Gum Contract:      ${cryptoCardsGum.address}`, indent: 1});
         const accounts = [inHouseAccount, reserveAccount, bountyAccount, marketingAccount, airdropAccount, cryptoCardsGum.address];
         receipt = await cryptoCardsGumDistributor.setInitialAccounts(accounts, _getTxOptions());
         Lib.logTxResult(receipt);

@@ -57,18 +57,18 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
         Ownable.initialize(owner);
 
         _migrationGum = [
-            123456,
+            123456, // TODO
             123456
         ];
         _initialAmounts = [
-            1000000000,
-            1500000000,
-             150000000  - _migrationGum[0],
-             150000000,
-             150000000,
-            1050000000 - _migrationGum[1]
+             700000,
+             700000  - _migrationGum[1],
+             200000  - _migrationGum[0],
+             200000,
+             200000,
+            1000000
         ];
-        //  4000000000
+        //  3000000  Total Supply
     }
 
     function setGumToken(CryptoCardsGumToken gum) public onlyOwner {
@@ -126,7 +126,12 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
 
     function _migrate(address owner) internal {
         require(!_isMigrated[owner], "Owner has already been migrated");
-        uint256 amount = _gumTokenOld.balanceOf(owner) + _packsOld.unclaimedGumOf(owner);
+
+        // 10 Old GUM exchanged for 1 New GUM   (10x reduction)
+        //   Old GUM Supply: 3,000,000,000
+        //   New GUM Supply:     3,000,000      (1000x reduction)
+        //     Value of New Tokens increases by 100x
+        uint256 amount = (_gumTokenOld.balanceOf(owner) + _packsOld.unclaimedGumOf(owner)) / 10;
         _transferGum(owner, amount);
         _isMigrated[owner] = true;
         emit OwnerGumMigrated(owner, amount);

@@ -75,7 +75,7 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         oraclize_setCustomGasPrice(10000000000); // 10 gwei
-        oracleGasLimit = 400000;                 // wei
+        oracleGasLimit = 500000;                 // wei
     }
 
     //
@@ -94,7 +94,11 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
         if (gasReserve > address(this).balance) {
             emit PackError(receiver, uuid, uint256(100));  // Insufficient Funds for Oracle Error
         } else {
-            bytes32 queryId = oraclize_query("URL", apiEndpoint, oracleGasLimit);
+            string[] memory apiArgs = new string[](2);
+            apiArgs[0] = string(abi.encodePacked('{"owner":"', receiver, '","uuid":"', uuid, '"}'));
+            apiArgs[1] = apiEndpoint;
+
+            bytes32 queryId = oraclize_query("URL", apiArgs, oracleGasLimit);
             uuids[uuid] = true;
             oracleIdToOwner[queryId] = receiver;
             oracleIdToUUID[queryId] = uuid;
