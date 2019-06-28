@@ -14,7 +14,7 @@ global.artifacts = artifacts;
 global.web3 = web3;
 
 const { Lib } = require('./common');
-const { networkOptions, contracts } = require('../config');
+const { networkOptions, tokenAddresses, contracts } = require('../config');
 const _ = require('lodash');
 
 const CryptoCardsPacks = contracts.getFromLocal('CryptoCardsPacks');
@@ -30,30 +30,6 @@ Lib.networkProvider = process.env.CCC_NETWORK_PROVIDER;
 Lib.networkId = process.env.CCC_NETWORK_ID;
 Lib.verbose = (process.env.CCC_VERBOSE_LOGS === 'yes');
 
-const _tokenAddress = {
-    local: {
-        packs    : '0x01b9707dD7782bB441ec57C1B62D669896859096',
-        cards    : '0x89eC3f11E1600BEd981DD2d12404bAAF21c7699c',
-        gum      : '0xF70B61E3800dFFDA57cf167051CAa0Fb6bA1B0B3',
-        oldPacks : '',
-        oldGum   : ''
-    },
-    ropsten: {
-        packs    : '',
-        cards    : '',
-        gum      : '',
-        oldPacks : '0xd650003aa4A1DAa3ec8d34524abE79b886e0EBBC',
-        oldGum   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
-    },
-    mainnet: {
-        packs    : '',
-        cards    : '',
-        gum      : '',
-        oldPacks : '0x0683e840ea22b089dafa0bf8c59f1a9690de7c12',
-        oldGum   : '0xaafa4bf1696732752a4ad4d27dd1ea6793f24fc0'
-    }
-};
-
 module.exports = async function() {
     Lib.log({separator: true});
     let nonce = 0;
@@ -65,7 +41,7 @@ module.exports = async function() {
 
     const options = networkOptions[Lib.network];
     const owner = process.env[`${_.toUpper(Lib.network)}_OWNER_ACCOUNT`];
-    const tokenAddress = _tokenAddress[Lib.network];
+    const tokenAddress = tokenAddresses[Lib.network];
 
     const inHouseAccount = process.env[`${_.toUpper(Lib.network)}_IN_HOUSE_ACCOUNT`];
     const reserveAccount = process.env[`${_.toUpper(Lib.network)}_RESERVE_ACCOUNT`];

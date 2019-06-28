@@ -46,7 +46,7 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
 
     mapping (address => bool) internal _isMigrated;
 
-    event OwnerGumMigrated(address indexed owner, uint256 amount);
+    event OwnerGumMigrated(address indexed owner, uint256 oldAmount, uint256 newAmount);
 
     //
     // Initialize
@@ -80,7 +80,7 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
         _packsOld = packs;
     }
 
-    function migrateTokenHolder(address tokenHolder) public onlyOwner returns (uint256) {
+    function migrateTokenHolder(address tokenHolder) public onlyOwner returns (uint256, uint256) {
         return _migrate(tokenHolder);
     }
 
@@ -114,18 +114,19 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
         _gumToken.transfer(to, amount);
     }
 
-    function _migrate(address tokenHolder) internal returns (uint256) {
+    function _migrate(address tokenHolder) internal returns (uint256, uint256) {
         require(!_isMigrated[tokenHolder], "Token Holder has already been migrated");
 
         // 10 Old GUM exchanged for 1 New GUM   (10x reduction)
         //   Old GUM Supply: 3,000,000,000
         //   New GUM Supply:     3,000,000      (1000x reduction)
         //     Value of New Tokens increases by 100x
-        uint256 amount = (_gumTokenOld.balanceOf(tokenHolder) + _packsOld.unclaimedGumOf(tokenHolder)) / 10;
-        _migratedGum = _migratedGum + amount;
-        _transferGum(tokenHolder, amount);
+        uint256 oldAmount = (_gumTokenOld.balanceOf(tokenHolder) + _packsOld.unclaimedGumOf(tokenHolder));
+        uint256 newAmount = oldAmount / 10 + (oldAmount % 10 > 0 ? 1 : 0);
+        _migratedGum = _migratedGum + newAmount;
+        _transferGum(tokenHolder, newAmount);
         _isMigrated[tokenHolder] = true;
-        emit OwnerGumMigrated(tokenHolder, amount);
-        return amount;
+        emit OwnerGumMigrated(tokenHolder, oldAmount, newAmount);
+        return (oldAmount, newAmount);
     }
 }
