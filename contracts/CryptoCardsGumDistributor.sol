@@ -31,10 +31,10 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
 
     // THIS CONTRACT IS INITIAL GUM HOLDER
 
-    // [0] = In-House               (Sent to In-House Account)
-    // [3] = Reserve                (Sent to Reserve-Escrow Account)
-    // [1] = Bounty Rewards         (Sent to Bounty-Rewards Account)
-    // [2] = Marketing Rewards      (Sent to Marketing Rewards Account)
+    // [0] = Reserve                (Sent to Reserve-Escrow Account)
+    // [1] = In-House               (Sent to In-House Account)
+    // [2] = Bounty Rewards         (Sent to Bounty-Rewards Account)
+    // [3] = Marketing Rewards      (Sent to Marketing Rewards Account)
     // [4] = Airdrop                (Sent to Airdrop-Escrow Account)
     // [5] = For Packs              (Sent to CryptoCardsGum Contract for distribution)
     address[6] internal _initialAccounts;
@@ -42,9 +42,7 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
 
     bool internal _initialTokensDistributed;
 
-    // [0] = existing tokens distributed from Bounty Rewards
-    // [1] = existing tokens distributed from Pack Gum
-    uint256[2] internal _migrationGum;
+    uint256 internal _migratedGum;
 
     mapping (address => bool) internal _isMigrated;
 
@@ -56,14 +54,10 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
     function initialize(address owner) public initializer {
         Ownable.initialize(owner);
 
-        _migrationGum = [
-            123456, // TODO
-            123456
-        ];
         _initialAmounts = [
+             700000,  // minus _migratedGum
              700000,
-             700000  - _migrationGum[1],
-             200000  - _migrationGum[0],
+             200000,
              200000,
              200000,
             1000000
@@ -86,14 +80,8 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
         _packsOld = packs;
     }
 
-    function migrateForOwner(address owner) public onlyOwner {
-        _migrate(owner);
-    }
-
-    function migrateForOwners(address[] memory owners) public onlyOwner {
-        for (uint256 i = 0; i < owners.length; i++) {
-            _migrate(owners[i]);
-        }
+    function migrateTokenHolder(address tokenHolder) public onlyOwner returns (uint256) {
+        return _migrate(tokenHolder);
     }
 
     function setInitialAccounts(address[] memory accounts) public onlyOwner {
@@ -108,8 +96,10 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
 
     function distributeInitialGum() public onlyOwner {
         require(!_initialTokensDistributed, "Tokens have already been distributed to initial accounts");
+        require(_initialAmounts[0] - _migratedGum > 0, "Migrated GUM is more than Reserve GUM");
 
-        for (uint i = 0; i < _initialAccounts.length; i++) {
+        _transferGum(_initialAccounts[0], _initialAmounts[0] - _migratedGum);
+        for (uint i = 1; i < _initialAccounts.length; i++) {
             _transferGum(_initialAccounts[i], _initialAmounts[i]);
         }
 
@@ -124,16 +114,18 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
         _gumToken.transfer(to, amount);
     }
 
-    function _migrate(address owner) internal {
-        require(!_isMigrated[owner], "Owner has already been migrated");
+    function _migrate(address tokenHolder) internal returns (uint256) {
+        require(!_isMigrated[tokenHolder], "Token Holder has already been migrated");
 
         // 10 Old GUM exchanged for 1 New GUM   (10x reduction)
         //   Old GUM Supply: 3,000,000,000
         //   New GUM Supply:     3,000,000      (1000x reduction)
         //     Value of New Tokens increases by 100x
-        uint256 amount = (_gumTokenOld.balanceOf(owner) + _packsOld.unclaimedGumOf(owner)) / 10;
-        _transferGum(owner, amount);
-        _isMigrated[owner] = true;
-        emit OwnerGumMigrated(owner, amount);
+        uint256 amount = (_gumTokenOld.balanceOf(tokenHolder) + _packsOld.unclaimedGumOf(tokenHolder)) / 10;
+        _migratedGum = _migratedGum + amount;
+        _transferGum(tokenHolder, amount);
+        _isMigrated[tokenHolder] = true;
+        emit OwnerGumMigrated(tokenHolder, amount);
+        return amount;
     }
 }

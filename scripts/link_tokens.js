@@ -32,19 +32,25 @@ Lib.verbose = (process.env.CCC_VERBOSE_LOGS === 'yes');
 
 const _tokenAddress = {
     local: {
-        packs : '0x01b9707dD7782bB441ec57C1B62D669896859096',
-        cards : '0x89eC3f11E1600BEd981DD2d12404bAAF21c7699c',
-        gum   : '0xF70B61E3800dFFDA57cf167051CAa0Fb6bA1B0B3'
+        packs    : '0x01b9707dD7782bB441ec57C1B62D669896859096',
+        cards    : '0x89eC3f11E1600BEd981DD2d12404bAAF21c7699c',
+        gum      : '0xF70B61E3800dFFDA57cf167051CAa0Fb6bA1B0B3',
+        oldPacks : '',
+        oldGum   : ''
     },
     ropsten: {
-        packs : '0x8a43C333eC0A26e84C4CF5b6338Bf6983eFEBd8D',
-        cards : '0xE2E450b20B25311bb135eE7A3d546EEb526ca349',
-        gum   : '0xC042CAF4E8d49E8e06Cc61D3B8448b4424Cc6A50'
+        packs    : '',
+        cards    : '',
+        gum      : '',
+        oldPacks : '0xd650003aa4A1DAa3ec8d34524abE79b886e0EBBC',
+        oldGum   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
     },
     mainnet: {
-        packs : '',
-        cards : '',
-        gum   : ''
+        packs    : '',
+        cards    : '',
+        gum      : '',
+        oldPacks : '0x0683e840ea22b089dafa0bf8c59f1a9690de7c12',
+        oldGum   : '0xaafa4bf1696732752a4ad4d27dd1ea6793f24fc0'
     }
 };
 
@@ -116,9 +122,19 @@ module.exports = async function() {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Assign Distributor of Initial GUM
         Lib.log({spacer: true});
-        Lib.log({msg: '-- Assign Distributor of Initial GUM Tokens (ERC20) --'});
+        Lib.log({msg: 'Linking Distributor to Tokens...'});
+        Lib.verbose && Lib.log({msg: `CryptoCardsGumToken: ${tokenAddress.gum}`, indent: 1});
         receipt = await cryptoCardsGumDistributor.setGumToken(tokenAddress.gum, _getTxOptions());
         Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+        Lib.verbose && Lib.log({msg: `OLD CryptoCardsGumToken: ${tokenAddress.oldGum}`, indent: 1});
+        receipt = await cryptoCardsGumDistributor.setOldGumToken(tokenAddress.oldGum, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+        Lib.verbose && Lib.log({msg: `OLD CryptoCardsPackToken: ${tokenAddress.oldPacks}`, indent: 1});
+        receipt = await cryptoCardsGumDistributor.setOldPacks(tokenAddress.oldPacks, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
 
         //
         // CryptoCardsGum
@@ -173,13 +189,13 @@ module.exports = async function() {
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Updating GUM Initial Accounts...'});
-        Lib.verbose && Lib.log({msg: `In-House Account:  ${inHouseAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Reserve Account:   ${reserveAccount}`, indent: 1});
+        Lib.verbose && Lib.log({msg: `In-House Account:  ${inHouseAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Bounty Account:    ${bountyAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Marketing Account: ${marketingAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Airdrop Account:   ${airdropAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Gum Contract:      ${cryptoCardsGum.address}`, indent: 1});
-        const accounts = [inHouseAccount, reserveAccount, bountyAccount, marketingAccount, airdropAccount, cryptoCardsGum.address];
+        const accounts = [reserveAccount, inHouseAccount, bountyAccount, marketingAccount, airdropAccount, cryptoCardsGum.address];
         receipt = await cryptoCardsGumDistributor.setInitialAccounts(accounts, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;

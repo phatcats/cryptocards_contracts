@@ -20,6 +20,7 @@ freshLoad=
 initialize=
 linkContracts=
 runTransactions=
+runMigration=
 proxyAdmin=
 ownerAccount=
 inHouseAccount=
@@ -34,6 +35,7 @@ usage() {
     echo "  -i | --initialize                         Run Contract Initializations"
     echo "  -l | --link                               Run Contract Linking"
     echo "  -t | --transactions                       Run Test Transactions (Local Only)"
+    echo "  -m | --migrate                            Run ERC20 Token Migration"
     echo "  -v | --verbose                            Outputs verbose logging"
     echo "  -h | --help                               Displays this help screen"
 }
@@ -89,8 +91,8 @@ startSession() {
     }
     echo "Starting ZOS Session from $fromAccount"
     echo " - using proxyAdmin: $proxyAdmin"
-    echo " - using owner: $ownerAccount"
-    echo " - using network: $networkName"
+    echo " - using owner:      $ownerAccount"
+    echo " - using network:    $networkName"
     zos session --network "$networkName" --from "$1" --expires 3600
 }
 
@@ -220,6 +222,14 @@ runTransactions() {
     truffle exec ./scripts/transactions.js --network "$networkName"
 }
 
+runTokenMigration() {
+    startSession "$ownerAccount"
+
+    echoHeader
+    echo "Running ERC20 Token (GUM) Migration..."
+    truffle exec ./scripts/migrate-gum.js --network "$networkName"
+}
+
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -233,6 +243,8 @@ while [ "$1" != "" ]; do
         -l | --link )           linkContracts="yes"
                                 ;;
         -t | --transactions )   runTransactions="yes"
+                                ;;
+        -m | --migrate )        runMigration="yes"
                                 ;;
         -v | --verbose )        verbose="yes"
                                 ;;
@@ -253,6 +265,8 @@ elif [ -n "$linkContracts" ]; then
     runContractLinking
 elif [ -n "$runTransactions" ]; then
     runTransactions
+elif [ -n "$runMigration" ]; then
+    runTokenMigration
 elif [ -n "$initialize" ]; then
     runInitializations
 else
