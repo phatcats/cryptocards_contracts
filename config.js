@@ -64,9 +64,9 @@ module.exports = {
             oldGum   : ''
         },
         ropsten: {
-            packs    : '',
-            cards    : '',
-            gum      : '',
+            packs    : '0x34E827Bb5AD52A15451341e39dEDf3FCcc8549F9',
+            cards    : '0x5Aa605EB9E2490874F917f271171139444077D03',
+            gum      : '0xa6a5a5330Dd71284082Ad726965062fA6Aa1b3Df',
             oldPacks : '0xd650003aa4A1DAa3ec8d34524abE79b886e0EBBC',
             oldGum   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
         },
