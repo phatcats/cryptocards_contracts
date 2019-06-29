@@ -121,8 +121,9 @@ contract CryptoCardsGumDistributor is Initializable, Ownable {
         //   Old GUM Supply: 3,000,000,000
         //   New GUM Supply:     3,000,000      (1000x reduction)
         //     Value of New Tokens increases by 100x
-        uint256 oldAmount = (_gumTokenOld.balanceOf(tokenHolder) + _packsOld.unclaimedGumOf(tokenHolder));
-        uint256 newAmount = oldAmount / 10 + (oldAmount % 10 > 0 ? 1 : 0);
+        uint256 oldAmount = (_gumTokenOld.balanceOf(tokenHolder) + _packsOld.unclaimedGumOf(tokenHolder)) / (1 ether);
+        uint256 remainder = (oldAmount % 10);
+        uint256 newAmount = (((oldAmount - remainder) / 10) + (remainder > 0 ? 1 : 0)) * (1 ether);
         _migratedGum = _migratedGum + newAmount;
         _transferGum(tokenHolder, newAmount);
         _isMigrated[tokenHolder] = true;

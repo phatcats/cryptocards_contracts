@@ -17,6 +17,8 @@ const { Lib } = require('./common');
 const { networkOptions, migrationAccounts, contracts } = require('../config');
 const _ = require('lodash');
 
+const ETH_UNIT = web3.utils.toBN(1e18);
+
 const CryptoCardsGumDistributor = contracts.getFromLocal('CryptoCardsGumDistributor');
 
 Lib.network = process.env.CCC_NETWORK_NAME;
@@ -75,14 +77,18 @@ module.exports = async function() {
         // Migrate GUM (ERC20) Tokens
         //
         let account;
+        let oldAmount;
+        let newAmount;
         for (let i = 0; i < accountsToMigrate.erc20.length; i++) {
             account = accountsToMigrate.erc20[i];
 
             Lib.log({separator: true});
             Lib.log({spacer: true});
-            Lib.log({msg: `Migrating GUM Token Holder ${account}...`});
+            Lib.log({msg: `Migrating GUM for Token Holder "${account}"...`});
             receipt = await cryptoCardsGumDistributor.migrateTokenHolder(account, _getTxOptions());
-            console.log('receipt', JSON.stringify(receipt));
+            oldAmount = web3.utils.toBN(receipt.logs[0].args.oldAmount).div(ETH_UNIT).toString();
+            newAmount = web3.utils.toBN(receipt.logs[0].args.newAmount).div(ETH_UNIT).toString();
+            Lib.verbose && Lib.log({msg: ` - Migrated ${oldAmount} Old Tokens for ${newAmount} New Tokens`, indent: 1});
             Lib.logTxResult(receipt);
             totalGas += receipt.receipt.gasUsed;
         }

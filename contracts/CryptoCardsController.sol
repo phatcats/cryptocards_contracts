@@ -17,7 +17,7 @@ import "openzeppelin-eth/contracts/lifecycle/Pausable.sol";
 import "openzeppelin-eth/contracts/utils/ReentrancyGuard.sol";
 
 import "./CryptoCardsLib.sol";
-import "./CryptoCardsGum.sol";
+//import "./CryptoCardsGum.sol";
 import "./CryptoCardsTreasury.sol";
 import "./CryptoCardsOracle.sol";
 import "./CryptoCardsPacks.sol";
@@ -38,7 +38,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     CryptoCardsOracle internal _cryptoCardsOracle;
     CryptoCardsPacks internal _cryptoCardsPacks;
     CryptoCardsCards internal _cryptoCardsCards;
-    CryptoCardsGum internal _cryptoCardsGum;
+//    CryptoCardsGum internal _cryptoCardsGum;
     CryptoCardsLib internal _cryptoCardsLib;
 
     //
@@ -69,150 +69,6 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     function getVersion() public pure returns (string memory) {
         return "v2.0.0";
     }
-
-    //
-    // Public; Packs
-    //
-//    function packsOf(address owner) public view returns (uint256) {
-//        return _cryptoCardsPacks.balanceOf(owner);
-//    }
-//
-//    function packDataById(uint256 packId) public view returns (string memory) {
-//        return _cryptoCardsPacks.packDataById(packId);
-//    }
-
-    //
-    // Public; Cards
-    //
-//    function cardsOf(address owner) public view returns (uint256) {
-//        return _cryptoCardsCards.balanceOf(owner);
-//    }
-
-//    function cardYear(uint256 tokenId) public pure returns (uint) {
-//        return _cryptoCardsCards.getYear(tokenId);
-//    }
-//
-//    function cardGeneration(uint256 tokenId) public pure returns (uint) {
-//        return _cryptoCardsCards.getGeneration(tokenId);
-//    }
-//
-//    function cardRank(uint256 tokenId) public pure returns (uint) {
-//        return _cryptoCardsCards.getRank(tokenId);
-//    }
-//
-//    function cardTypeIndicators(uint256 tokenId) public pure returns (uint, uint, uint) {
-//        return _cryptoCardsCards.getTypeIndicators(tokenId);
-//    }
-//
-//    function cardCombinedCount(uint256 tokenId) public pure returns (uint) {
-//        return _cryptoCardsCards.getCombinedCount(tokenId);
-//    }
-//
-//    function cardSpecialty(uint256 tokenId) public pure returns (uint) {
-//        return _cryptoCardsCards.getSpecialty(tokenId);
-//    }
-//
-//    function cardIssue(uint256 tokenId) public pure returns (uint) {
-//        return _cryptoCardsCards.getIssue(tokenId);
-//    }
-//
-//    function cardWrappedGum(uint256 tokenId) public pure returns (uint) {
-//        return _cryptoCardsCards.getWrappedGum(tokenId);
-//    }
-//
-//    function cardTraits(uint256 tokenId) public pure returns (uint) {
-//        return _cryptoCardsCards.getTraits(tokenId);
-//    }
-//
-//    function cardHasTrait(uint256 tokenId, uint256 trait) public pure returns (bool) {
-//        return _cryptoCardsCards.hasTrait(tokenId, trait);
-//    }
-
-//    function cardTotalIssued(uint256 tokenId) public view returns (uint) {
-//        return _cryptoCardsCards.getTotalIssued(tokenId);
-//    }
-//
-//    function isCardPrinted(uint256 tokenId) public view returns (bool) {
-//        return _cryptoCardsCards.isTokenPrinted(tokenId);
-//    }
-//
-//    function canCombineCards(uint256 tokenA, uint256 tokenB) public view returns (bool) {
-//        return _cryptoCardsCards.canCombine(tokenA, tokenB);
-//    }
-//
-//    function getEarnedGum(address owner) public view returns (uint256) {
-//        return _cryptoCardsCards.getEarnedGum(owner);
-//    }
-
-    //
-    // Public; Gum
-    //
-//    function gumOf(address owner, uint flavor) public view returns (uint256) {
-//        return _cryptoCardsGum.balanceOf(owner, flavor);
-//    }
-
-    //
-    // Public; Lib
-    //
-//    function getPromoCode(uint8 index) public view returns (uint256) {
-//        return _cryptoCardsLib.getPromoCode(index);
-//    }
-//
-//    function getReferralLevel(uint8 index) public view returns (uint256) {
-//        return _cryptoCardsLib.getReferralLevel(index);
-//    }
-//
-//    function getPurchasedPackCount(address owner) public view returns (uint256) {
-//        return _cryptoCardsLib.getPurchasedPackCount(owner);
-//    }
-//
-//    function getPackPrice() public view returns (uint256) {
-//        return _cryptoCardsLib.getPrice();
-//    }
-
-    //
-    // Public; Treasury; Rewards
-    //
-
-//    function paidReferralBalanceOf(address account) public view returns (uint256) {
-//        return _cryptoCardsTreasury.getPaidBalanceOfReferrer(account);
-//    }
-//
-//    function unpaidReferralBalanceOf(address account) public view returns (uint256) {
-//        return _cryptoCardsTreasury.getUnpaidBalanceOfReferrer(account);
-//    }
-//
-//    function paidBountyBalanceOf(address account) public view returns (uint256) {
-//        return _cryptoCardsTreasury.getPaidBalanceOfMember(account);
-//    }
-//
-//    function unpaidBountyBalanceOf(address account) public view returns (uint256) {
-//        return _cryptoCardsTreasury.getUnpaidBalanceOfMember(account);
-//    }
-//
-//    function availableBountyBalanceOf(address account) public view returns (uint256) {
-//        return _cryptoCardsTreasury.getAvailableBalanceOfMember(account);
-//    }
-//
-//    function bountyPayoutInterval() public view returns (uint256) {
-//        return _cryptoCardsTreasury.getOutsourcedPayoutInterval();
-//    }
-//
-//    function totalBalanceOfBountyPool() public view returns (uint256) {
-//        return _cryptoCardsTreasury.getTotalBalanceOfPool();
-//    }
-//
-//    function claimEarnedGum() public returns (uint256) {
-//        return _cryptoCardsGum.claimEarnedGum(msg.sender);
-//    }
-//
-//    function claimReferralRewards() public returns (uint256) {
-//        return _cryptoCardsTreasury.withdrawForReferrer(msg.sender);
-//    }
-//
-//    function claimBountyRewards() public returns (uint256) {
-//        return _cryptoCardsTreasury.withdrawForMember(msg.sender);
-//    }
 
     //
     // Set Prices/Trades
@@ -278,11 +134,11 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         }
     }
 
-//    function tradeCardForCard(address owner, uint256 ownerCardId, uint256 tradeCardId, bytes16 uuid) public nonReentrant whenNotPaused {
-//        require(owner != address(0) && msg.sender == owner);
-//
-//        _cryptoCardsCards.tradeCardForCard(owner, ownerCardId, tradeCardId, uuid);
-//    }
+    function tradeCardForCard(address owner, uint256 ownerCardId, uint256 tradeCardId, bytes16 uuid) public nonReentrant whenNotPaused {
+        require(owner != address(0) && msg.sender == owner);
+
+        _cryptoCardsCards.tradeCardForCard(owner, ownerCardId, tradeCardId, uuid);
+    }
 
     function buyPackOfCards(address referredBy, uint256 promoCode, bytes16 uuid) public nonReentrant whenNotPaused payable {
         require(msg.sender != address(0) && _cryptoCardsOracle.isValidUuid(uuid));
@@ -324,21 +180,21 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     // Advanced Functions
     //
 
-//    function openPack(uint256 packId, bytes16 uuid) public whenNotPaused {
-//        _cryptoCardsPacks.openPack(msg.sender, packId, uuid);
-//    }
-//
-//    function combineCards(uint256 cardA, uint256 cardB) public whenNotPaused returns (uint256) {
-//        return _cryptoCardsCards.combineCards(msg.sender, cardA, cardB);
-//    }
-//
-//    function printCards(uint256[] memory cardIds) public whenNotPaused {
-//        _cryptoCardsCards.printCards(msg.sender, cardIds);
-//    }
-//
-//    function meltCards(uint256[] memory cardIds) public whenNotPaused {
-//        _cryptoCardsCards.meltCards(msg.sender, cardIds);
-//    }
+    function openPack(uint256 packId, bytes16 uuid) public whenNotPaused {
+        _cryptoCardsPacks.openPack(msg.sender, packId, uuid);
+    }
+
+    function combineCards(uint256 cardA, uint256 cardB) public whenNotPaused returns (uint256) {
+        return _cryptoCardsCards.combineCards(msg.sender, cardA, cardB);
+    }
+
+    function printCards(uint256[] memory cardIds) public whenNotPaused {
+        _cryptoCardsCards.printCards(msg.sender, cardIds);
+    }
+
+    function meltCards(uint256[] memory cardIds) public whenNotPaused {
+        _cryptoCardsCards.meltCards(msg.sender, cardIds);
+    }
 
     //
     // Only Owner
@@ -349,33 +205,23 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         CryptoCardsCards cards,
         CryptoCardsPacks packs,
         CryptoCardsTreasury treasury,
-        CryptoCardsGum gum,
+//        CryptoCardsGum gum,
         CryptoCardsLib lib
     ) public onlyOwner {
         require(address(oracle) != address(0));
         require(address(cards) != address(0));
         require(address(packs) != address(0));
         require(address(treasury) != address(0));
-        require(address(gum) != address(0));
+//        require(address(gum) != address(0));
         require(address(lib) != address(0));
 
         _cryptoCardsOracle = oracle;
         _cryptoCardsCards = cards;
         _cryptoCardsPacks = packs;
         _cryptoCardsTreasury = treasury;
-        _cryptoCardsGum = gum;
+//        _cryptoCardsGum = gum;
         _cryptoCardsLib = lib;
     }
-
-    //    function contractBalance() public view returns (uint256) {
-    //        return address(this).balance;
-    //    }
-    //
-    //    function transferToTreasury() public onlyOwner {
-    //        uint256 balance = address(this).balance;
-    //        require(balance > 0);
-    //        _cryptoCardsTreasury.deposit.value(balance)(balance, 0, address(0));
-    //    }
 
     //
     // Private

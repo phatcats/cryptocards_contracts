@@ -28,7 +28,7 @@ module.exports = {
         },
         ropsten: {
             // Return instance rather than a function, as per: https://github.com/trufflesuite/truffle-hdwallet-provider/issues/65#issuecomment-417417192
-            provider      : new HDWalletProvider(wallets.ropsten.mnemonic[walletMnemonicType], wallets.ropsten.apiEndpoint, wallets.ropsten.accountIndex),
+            provider      : new HDWalletProvider(wallets.ropsten.mnemonic[walletMnemonicType], wallets.ropsten.apiEndpoint, wallets.ropsten.accountIndex), //, 1, true, "m/44'/1'/0'/0/"),
             network_id    : 3,                                  // Ropsten
             gas           : networkOptions.ropsten.gas,         // https://ropsten.etherscan.io/blocks
             gasPrice      : networkOptions.ropsten.gasPrice,    // https://ropsten.etherscan.io/gastracker

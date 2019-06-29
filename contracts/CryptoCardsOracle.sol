@@ -70,8 +70,8 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Local Only
-        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
-        oraclize_setNetwork(networkID_testnet);
+//        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
+//        oraclize_setNetwork(networkID_testnet);
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         oraclize_setCustomGasPrice(10000000000); // 10 gwei
@@ -169,15 +169,4 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
     function updateOracleGasLimit(uint _wei) public onlyOwner {
         oracleGasLimit = _wei;
     }
-
-    //    function contractBalance() public view returns (uint256) {
-    //        return address(this).balance;
-    //    }
-    //
-    //    function sweepUnusedOracleGas() public onlyOwner {
-    //        address owner = msg.sender;
-    //        uint256 balance = address(this).balance;
-    //        require(balance > 0, "Contract balance must be greater than zero");
-    //        owner.transfer(balance);
-    //    }
 }

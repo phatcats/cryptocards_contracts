@@ -71,7 +71,7 @@ setEnvVars() {
     fi
 
     walletMnemonicType="proxy"
-    [ -n "$initialize" -o -n "$runTransactions" -o -n "$linkContracts" ] && {
+    [ -n "$initialize" -o -n "$runTransactions" -o -n "$linkContracts" -o -n "$runMigration" ] && {
         walletMnemonicType="owner"
     }
 
@@ -227,7 +227,7 @@ runTokenMigration() {
 
     echoHeader
     echo "Running ERC20 Token (GUM) Migration..."
-    truffle exec ./scripts/migrate-gum.js --network "$networkName"
+    truffle exec ./scripts/migrate_gum.js --network "$networkName"
 }
 
 

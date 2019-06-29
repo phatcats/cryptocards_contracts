@@ -13,6 +13,7 @@ pragma solidity 0.5.0;
 
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
+import "openzeppelin-eth/contracts/access/roles/SignerRole.sol";
 
 
 //
@@ -20,7 +21,7 @@ import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 //   Owner Account is attached to a Multi-Sig wallet controlled by a minimum of 3 C-Level Executives.
 //
 
-contract CryptoCardsLib is Initializable, Ownable {
+contract CryptoCardsLib is Initializable, Ownable, SignerRole {
     uint256 private constant MAX_LEVELS = 3;
     uint256 private constant MAX_CODES = 3;
 
@@ -45,8 +46,9 @@ contract CryptoCardsLib is Initializable, Ownable {
 
     function initialize(address owner) public initializer {
         Ownable.initialize(owner);
+        SignerRole.initialize(owner);
 
-        _packPrice = 15 finney;
+        _packPrice = 10 finney;
         _referralLevels = [1, 10, 20];
         _promoCodes = [123, 456, 789];
         _promoDiscounts = [5, 10, 15];
@@ -119,91 +121,6 @@ contract CryptoCardsLib is Initializable, Ownable {
     }
 
     // @dev from https://ethereum.stackexchange.com/questions/64998/converting-from-bytes-in-0-5-x
-//    function bytesToUInt(string memory _b) public returns (uint256){
-//        bytes memory b = bytes(_b);
-//        uint256 number;
-//        for(uint i=0;i<b.length;i++){
-//            number = number + uint256(uint8(b[i]))*(2**(8*(b.length-(i+1))));
-//        }
-//        return number;
-//    }
-
-    // @dev from https://ethereum.stackexchange.com/questions/6591/conversion-of-uint-to-string
-//    function uintToHexStr(uint i) public pure returns (string memory) {
-//        if (i == 0) return "0";
-//        uint j = i;
-//        uint length;
-//        while (j != 0) {
-//            length++;
-//            j = j >> 4;
-//        }
-//        uint mask = 15;
-//        bytes memory bstr = new bytes(length);
-//        uint k = length - 1;
-//        while (i != 0){
-//            uint curr = (i & mask);
-//            bstr[k--] = curr > 9 ? byte(87 + curr) : byte(48 + curr); // 87 = 97 - 10
-//            i = i >> 4;
-//        }
-//        return string(bstr);
-//    }
-
-    // @dev from https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol
-//    function uint2str(uint _i) public pure returns (string memory _uintAsString) {
-//        if (_i == 0) {
-//            return "0";
-//        }
-//        uint j = _i;
-//        uint len;
-//        while (j != 0) {
-//            len++;
-//            j /= 10;
-//        }
-//        bytes memory bstr = new bytes(len);
-//        uint k = len - 1;
-//        while (_i != 0) {
-//            bstr[k--] = byte(uint8(48 + _i % 10));
-//            _i /= 10;
-//        }
-//        return string(bstr);
-//    }
-
-    // @dev from https://ethereum.stackexchange.com/questions/39989/solidity-convert-hex-string-to-bytes
-//    function fromHexChar(uint c) public pure returns (uint) {
-//        if (byte(c) >= byte('0') && byte(c) <= byte('9')) {
-//            return c - uint(byte('0'));
-//        }
-//        if (byte(c) >= byte('a') && byte(c) <= byte('f')) {
-//            return 10 + c - uint(byte('a'));
-//        }
-//        if (byte(c) >= byte('A') && byte(c) <= byte('F')) {
-//            return 10 + c - uint(byte('A'));
-//        }
-//    }
-
-    // @dev from https://ethereum.stackexchange.com/questions/39989/solidity-convert-hex-string-to-bytes
-//    function fromHex(string memory s) public pure returns (bytes memory) {
-//        bytes memory ss = bytes(s);
-//        uint len = ss.length;
-//        require(len%2 == 0, 'fromHex: length must be even');
-//        bytes memory r = new bytes(len/2);
-//        for (uint i=0; i<len/2; ++i) {
-//            r[i] = byte(fromHexChar(uint(ss[2*i])) * 16 + fromHexChar(uint(ss[2*i+1])));
-//        }
-//        return r;
-//    }
-
-    // @dev from https://ethereum.stackexchange.com/questions/51229/how-to-convert-bytes-to-uint-in-solidity
-//    function bytesToUint(bytes memory b) public pure returns (uint256) {
-//        uint256 number;
-//        uint256 len = b.length;
-//        for(uint i=0;i<len;i++){
-//            number = number + uint256(b[i])*(2**(8*(len-(i+1))));
-//        }
-//        return number;
-//    }
-
-    // @dev from https://ethereum.stackexchange.com/questions/64998/converting-from-bytes-in-0-5-x
     function bytesToUint(string memory _b) public pure returns (uint256){
         bytes memory b = bytes(_b);
         uint256 number;
@@ -212,20 +129,6 @@ contract CryptoCardsLib is Initializable, Ownable {
         }
         return number;
     }
-
-
-//    function _getBitPosition(uint32 val) private pure returns (uint) {
-//        for (uint i = 0; i < 32; i++) {
-//            if ((val & 1) == 1) {
-//                return i;
-//            }
-//            val = val >>= 1;
-//        }
-//    }
-//
-//    function _traitByIndex(uint256 index) private pure returns (uint256) {
-//        return uint256(1 << index);
-//    }
 
     function _readBits(uint num, uint from, uint len) private pure returns (uint) {
         uint mask = ((1 << len) - 1) << from;
@@ -241,22 +144,26 @@ contract CryptoCardsLib is Initializable, Ownable {
     }
 
     //
+    // Only Signer
+    //
+
+    function updatePricePerPack(uint256 price) public onlySigner {
+        require(price > 5 finney, "price must be higher than 0.005 ETH");
+        _packPrice = price;
+    }
+
+    function updatePromoCode(uint8 index, uint256 code) public onlySigner {
+        require(index >= 0 && index < MAX_CODES, "Invalid index supplied");
+        _promoCodes[index] = code;
+    }
+
+    //
     // Only Owner
     //
 
     function setContractController(address controller) public onlyOwner {
         require(controller != address(0), "Invalid address supplied");
         _controller = controller;
-    }
-
-    function updatePricePerPack(uint256 price) public onlyOwner {
-        require(price > 5 finney, "price must be higher than 0.005 ETH");
-        _packPrice = price;
-    }
-
-    function updatePromoCode(uint8 index, uint256 code) public onlyOwner {
-        require(index >= 0 && index < MAX_CODES, "Invalid index supplied");
-        _promoCodes[index] = code;
     }
 
     function updatePromoDiscount(uint8 index, uint256 discount) public onlyOwner {

@@ -99,16 +99,16 @@ module.exports = async function() {
         // Assign Distributor of Initial GUM
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Distributor to Tokens...'});
-        Lib.verbose && Lib.log({msg: `CryptoCardsGumToken: ${tokenAddress.gum}`, indent: 1});
-        receipt = await cryptoCardsGumDistributor.setGumToken(tokenAddress.gum, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `CryptoCardsGumToken: ${tokenAddress.gumToken}`, indent: 1});
+        receipt = await cryptoCardsGumDistributor.setGumToken(tokenAddress.gumToken, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `OLD CryptoCardsGumToken: ${tokenAddress.oldGum}`, indent: 1});
-        receipt = await cryptoCardsGumDistributor.setOldGumToken(tokenAddress.oldGum, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `OLD CryptoCardsGumToken: ${tokenAddress.oldGumToken}`, indent: 1});
+        receipt = await cryptoCardsGumDistributor.setOldGumToken(tokenAddress.oldGumToken, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `OLD CryptoCardsPackToken: ${tokenAddress.oldPacks}`, indent: 1});
-        receipt = await cryptoCardsGumDistributor.setOldPacks(tokenAddress.oldPacks, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `OLD CryptoCardPacks (Packs-Controller): ${tokenAddress.oldPacksCtrl}`, indent: 1});
+        receipt = await cryptoCardsGumDistributor.setOldPacks(tokenAddress.oldPacksCtrl, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
@@ -118,12 +118,12 @@ module.exports = async function() {
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Gum to Tokens...'});
-        Lib.verbose && Lib.log({msg: `CryptoCardsGumToken: ${tokenAddress.gum}`, indent: 1});
-        receipt = await cryptoCardsGum.setGumToken(tokenAddress.gum, GUM_REGULAR_FLAVOR, web3.utils.asciiToHex('Regular'), _getTxOptions());
+        Lib.verbose && Lib.log({msg: `CryptoCardsGumToken: ${tokenAddress.gumToken}`, indent: 1});
+        receipt = await cryptoCardsGum.setGumToken(tokenAddress.gumToken, GUM_REGULAR_FLAVOR, web3.utils.asciiToHex('Regular'), _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cards}`, indent: 1});
-        receipt = await cryptoCardsGum.setCardToken(tokenAddress.cards, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cardsToken}`, indent: 1});
+        receipt = await cryptoCardsGum.setCardToken(tokenAddress.cardsToken, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
@@ -139,8 +139,8 @@ module.exports = async function() {
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Cards to Tokens...'});
-        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cards}`, indent: 1});
-        receipt = await cryptoCardsCards.setCryptoCardsCardToken(tokenAddress.cards, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cardsToken}`, indent: 1});
+        receipt = await cryptoCardsCards.setCryptoCardsCardToken(tokenAddress.cardsToken, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
@@ -150,12 +150,12 @@ module.exports = async function() {
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Packs to Tokens...'});
-        Lib.verbose && Lib.log({msg: `CryptoCardsPackToken: ${tokenAddress.packs}`, indent: 1});
-        receipt = await cryptoCardsPacks.setCryptoCardsPackToken(tokenAddress.packs, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `CryptoCardsPackToken: ${tokenAddress.packsToken}`, indent: 1});
+        receipt = await cryptoCardsPacks.setCryptoCardsPackToken(tokenAddress.packsToken, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cards}`, indent: 1});
-        receipt = await cryptoCardsPacks.setCryptoCardsCardToken(tokenAddress.cards, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cardsToken}`, indent: 1});
+        receipt = await cryptoCardsPacks.setCryptoCardsCardToken(tokenAddress.cardsToken, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 

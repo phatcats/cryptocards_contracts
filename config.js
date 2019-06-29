@@ -57,25 +57,25 @@ module.exports = {
 
     tokenAddresses: {
         local: {
-            packs    : '0x01b9707dD7782bB441ec57C1B62D669896859096',
-            cards    : '0x89eC3f11E1600BEd981DD2d12404bAAF21c7699c',
-            gum      : '0xF70B61E3800dFFDA57cf167051CAa0Fb6bA1B0B3',
-            oldPacks : '',
-            oldGum   : ''
+            packsToken   : '0x01b9707dD7782bB441ec57C1B62D669896859096',
+            cardsToken   : '0x89eC3f11E1600BEd981DD2d12404bAAF21c7699c',
+            gumToken     : '0xF70B61E3800dFFDA57cf167051CAa0Fb6bA1B0B3',
+            oldPacksCtrl : '',
+            oldGumToken  : ''
         },
         ropsten: {
-            packs    : '0x34E827Bb5AD52A15451341e39dEDf3FCcc8549F9',
-            cards    : '0x5Aa605EB9E2490874F917f271171139444077D03',
-            gum      : '0xa6a5a5330Dd71284082Ad726965062fA6Aa1b3Df',
-            oldPacks : '0xd650003aa4A1DAa3ec8d34524abE79b886e0EBBC',
-            oldGum   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
+            packsToken   : '0xbf0274C4984Fd799ABe1EE22C1DE2D93BDEB9dF1',
+            cardsToken   : '0xD006465Eb42aCd17bc35C31C732054221eB1Df69',
+            gumToken     : '0x10FF1fDACc490aE12B05E4Daf5D1BfD3136e556a',
+            oldPacksCtrl : '0x856ee8736b204f926c33db5929328ba950768b6a',
+            oldGumToken  : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
         },
         mainnet: {
-            packs    : '',
-            cards    : '',
-            gum      : '',
-            oldPacks : '0x0683e840ea22b089dafa0bf8c59f1a9690de7c12',
-            oldGum   : '0xaafa4bf1696732752a4ad4d27dd1ea6793f24fc0'
+            packsToken   : '',
+            cardsToken   : '',
+            gumToken     : '',
+            oldPacksCtrl : '0x0683e840ea22b089dafa0bf8c59f1a9690de7c12',
+            oldGumToken  : '0xaafa4bf1696732752a4ad4d27dd1ea6793f24fc0'
         }
     },
 
@@ -85,7 +85,8 @@ module.exports = {
         ],
         ropsten: {
             erc20: [
-                '0x8b7ab7c6bb27c7ae707f751e444eed4998aaea7b'
+                '0x107EB6166d59350C634B1DcFDffBaD4846CCCD84', // Account 9
+                '0x8b7ab7c6bb27c7ae707f751e444eed4998aaea7b', // Account 10 - migrated
             ]
         },
         mainnet: {

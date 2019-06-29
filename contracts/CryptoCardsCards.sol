@@ -91,46 +91,6 @@ contract CryptoCardsCards is Initializable, Ownable {
         return _cardToken.ownerOf(tokenId);
     }
 
-//    function getYear(uint256 tokenId) public pure returns (uint) {
-//        return _cardToken.getYear(tokenId);
-//    }
-//
-//    function getGeneration(uint256 tokenId) public pure returns (uint) {
-//        return _cardToken.getGeneration(tokenId);
-//    }
-//
-//    function getRank(uint256 tokenId) public pure returns (uint) {
-//        return _cardToken.getRank(tokenId);
-//    }
-//
-//    function getTypeIndicators(uint256 tokenId) public pure returns (uint, uint, uint) {
-//        return _cardToken.getTypeIndicators(tokenId);
-//    }
-//
-//    function getCombinedCount(uint256 tokenId) public pure returns (uint) {
-//        return _cardToken.getCombinedCount(tokenId);
-//    }
-//
-//    function getSpecialty(uint256 tokenId) public pure returns (uint) {
-//        return _cardToken.getSpecialty(tokenId);
-//    }
-//
-//    function getIssue(uint256 tokenId) public pure returns (uint) {
-//        return _cardToken.getIssue(tokenId);
-//    }
-//
-//    function getWrappedGum(uint256 tokenId) public pure returns (uint) {
-//        return _cardToken.getWrappedGum(tokenId);
-//    }
-//
-//    function getTraits(uint256 tokenId) public pure returns (uint) {
-//        return _cardToken.getTraits(tokenId);
-//    }
-//
-//    function hasTrait(uint256 tokenId, uint256 trait) public pure returns (bool) {
-//        return _cardToken.hasTrait(tokenId, trait);
-//    }
-
     function getTotalIssued(uint256 tokenId) public view returns (uint) {
         return _cardToken.getTotalIssued(tokenId);
     }

@@ -209,14 +209,14 @@ module.exports = async function() {
         Lib.verbose && Lib.log({msg: `Treasury: ${ddCryptoCardsTreasury.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Cards: ${ddCryptoCardsCards.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardsPacks.address}`, indent: 1});
-        Lib.verbose && Lib.log({msg: `Gum: ${ddCryptoCardsGum.address}`, indent: 1});
+        // Lib.verbose && Lib.log({msg: `Gum: ${ddCryptoCardsGum.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});
         receipt = await cryptoCardsController.setContractAddresses(
             ddCryptoCardsOracle.address,
             ddCryptoCardsCards.address,
             ddCryptoCardsPacks.address,
             ddCryptoCardsTreasury.address,
-            ddCryptoCardsGum.address,
+            // ddCryptoCardsGum.address,
             ddCryptoCardsLib.address,
             _getTxOptions()
         );
