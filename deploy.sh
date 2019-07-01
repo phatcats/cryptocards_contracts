@@ -20,7 +20,8 @@ freshLoad=
 initialize=
 linkContracts=
 runTransactions=
-runMigration=
+runErc20Migration=
+runErc721Migration=
 proxyAdmin=
 ownerAccount=
 inHouseAccount=
@@ -35,7 +36,8 @@ usage() {
     echo "  -i | --initialize                         Run Contract Initializations"
     echo "  -l | --link                               Run Contract Linking"
     echo "  -t | --transactions                       Run Test Transactions (Local Only)"
-    echo "  -m | --migrate                            Run ERC20 Token Migration"
+    echo "  -m | --migrate20                          Run ERC20 Token Migration"
+    echo "  -m | --migrate721                         Run ERC721 Token Migration"
     echo "  -v | --verbose                            Outputs verbose logging"
     echo "  -h | --help                               Displays this help screen"
 }
@@ -71,7 +73,7 @@ setEnvVars() {
     fi
 
     walletMnemonicType="proxy"
-    [ -n "$initialize" -o -n "$runTransactions" -o -n "$linkContracts" -o -n "$runMigration" ] && {
+    [ -n "$initialize" -o -n "$runTransactions" -o -n "$linkContracts" -o -n "$runErc20Migration" -o -n "$runErc721Migration" ] && {
         walletMnemonicType="owner"
     }
 
@@ -222,12 +224,20 @@ runTransactions() {
     truffle exec ./scripts/transactions.js --network "$networkName"
 }
 
-runTokenMigration() {
+runErc20Migration() {
     startSession "$ownerAccount"
 
     echoHeader
-    echo "Running ERC20 Token (GUM) Migration..."
-    truffle exec ./scripts/migrate_gum.js --network "$networkName"
+    echo "Running ERC20 Token Migration..."
+    truffle exec ./scripts/migrate_erc20.js --network "$networkName"
+}
+
+runErc721Migration() {
+    startSession "$ownerAccount"
+
+    echoHeader
+    echo "Running ERC721 Token Migration..."
+    truffle exec ./scripts/migrate_erc721.js --network "$networkName"
 }
 
 
@@ -244,7 +254,9 @@ while [ "$1" != "" ]; do
                                 ;;
         -t | --transactions )   runTransactions="yes"
                                 ;;
-        -m | --migrate )        runMigration="yes"
+        -m | --migrate20 )      runErc20Migration="yes"
+                                ;;
+        -m | --migrate721 )     runErc721Migration="yes"
                                 ;;
         -v | --verbose )        verbose="yes"
                                 ;;
@@ -265,8 +277,10 @@ elif [ -n "$linkContracts" ]; then
     runContractLinking
 elif [ -n "$runTransactions" ]; then
     runTransactions
-elif [ -n "$runMigration" ]; then
-    runTokenMigration
+elif [ -n "$runErc20Migration" ]; then
+    runErc20Migration
+elif [ -n "$runErc721Migration" ]; then
+    runErc721Migration
 elif [ -n "$initialize" ]; then
     runInitializations
 else
