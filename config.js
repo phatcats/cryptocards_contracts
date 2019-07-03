@@ -57,25 +57,31 @@ module.exports = {
 
     tokenAddresses: {
         local: {
-            packsToken   : '0x01b9707dD7782bB441ec57C1B62D669896859096',
-            cardsToken   : '0x89eC3f11E1600BEd981DD2d12404bAAF21c7699c',
-            gumToken     : '0xF70B61E3800dFFDA57cf167051CAa0Fb6bA1B0B3',
-            oldPacksCtrl : '',
-            oldGumToken  : ''
+            packsToken    : '0x01b9707dD7782bB441ec57C1B62D669896859096',
+            cardsToken    : '0x89eC3f11E1600BEd981DD2d12404bAAF21c7699c',
+            gumToken      : '0xF70B61E3800dFFDA57cf167051CAa0Fb6bA1B0B3',
+            oldPacksCtrl  : '',
+            oldCardsCtrl  : '',
+            oldCardsToken : '',
+            oldGumToken   : ''
         },
         ropsten: {
-            packsToken   : '0xbf0274C4984Fd799ABe1EE22C1DE2D93BDEB9dF1',
-            cardsToken   : '0xD006465Eb42aCd17bc35C31C732054221eB1Df69',
-            gumToken     : '0x10FF1fDACc490aE12B05E4Daf5D1BfD3136e556a',
-            oldPacksCtrl : '0x856ee8736b204f926c33db5929328ba950768b6a',
-            oldGumToken  : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
+            packsToken    : '0xc0e043EB91aea2e4543b3a019bd5C8aa494813D6',
+            cardsToken    : '0x1f5B351E9E383d133bea2CD2F5506Db5e3f71e2B',
+            gumToken      : '0x1181C791a125c8Dd7DDF55Ee3c5471f5Da71F845',
+            oldPacksCtrl  : '0x856ee8736b204f926c33db5929328ba950768b6a',
+            oldCardsCtrl  : '0xaad8b7860cf6bb209f9e60f68aae438b2d076ca6',
+            oldCardsToken : '0x81D7E3648579E27679bFc3010e673532BF77c379',
+            oldGumToken   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
         },
         mainnet: {
-            packsToken   : '',
-            cardsToken   : '',
-            gumToken     : '',
-            oldPacksCtrl : '0x0683e840ea22b089dafa0bf8c59f1a9690de7c12',
-            oldGumToken  : '0xaafa4bf1696732752a4ad4d27dd1ea6793f24fc0'
+            packsToken    : '',
+            cardsToken    : '',
+            gumToken      : '',
+            oldPacksCtrl  : '0x0683e840ea22b089dafa0bf8c59f1a9690de7c12',
+            oldCardsCtrl  : '',
+            oldCardsToken : '',
+            oldGumToken   : '0xaafa4bf1696732752a4ad4d27dd1ea6793f24fc0'
         }
     },
 
@@ -87,6 +93,10 @@ module.exports = {
             erc20: [
                 '0x107EB6166d59350C634B1DcFDffBaD4846CCCD84', // Account 9
                 '0x8b7ab7c6bb27c7ae707f751e444eed4998aaea7b', // Account 10 - migrated
+            ],
+            erc721: [
+                '0x107EB6166d59350C634B1DcFDffBaD4846CCCD84',
+                '0xcd3a3d04560b54f9af22a87005aec435d42ddb92'
             ]
         },
         mainnet: {

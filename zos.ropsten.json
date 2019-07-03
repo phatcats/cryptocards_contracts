@@ -1,182 +1,7 @@
 {
   "contracts": {
-    "CryptoCardsLib": {
-      "address": "0x67d708e1d0dd94e96decf23a55d2aefefbf91475",
-      "constructorCode": "608060405234801561001057600080fd5b50612189806100206000396000f3fe",
-      "bodyBytecodeHash": "5d7e11cba4b2b302ddd002c2fc9d7e942e4c4a4649b8696923c6e5b7200ee141",
-      "localBytecodeHash": "da7414719eb223bbcd6042988e502f9c39d9979936d73bb98b00055fe80ba723",
-      "deployedBytecodeHash": "da7414719eb223bbcd6042988e502f9c39d9979936d73bb98b00055fe80ba723",
-      "types": {
-        "t_bool": {
-          "id": "t_bool",
-          "kind": "elementary",
-          "label": "bool"
-        },
-        "t_uint256": {
-          "id": "t_uint256",
-          "kind": "elementary",
-          "label": "uint256"
-        },
-        "t_array:50<t_uint256>": {
-          "id": "t_array:50<t_uint256>",
-          "valueType": "t_uint256",
-          "length": "50",
-          "kind": "array",
-          "label": "uint256[50]"
-        },
-        "t_address": {
-          "id": "t_address",
-          "kind": "elementary",
-          "label": "address"
-        },
-        "t_struct<Roles.Role>": {
-          "id": "t_struct<Roles.Role>",
-          "kind": "struct",
-          "label": "Roles.Role",
-          "members": [
-            {
-              "label": "bearer",
-              "astId": 13201,
-              "type": "t_mapping<t_bool>",
-              "src": "150:32:13"
-            }
-          ]
-        },
-        "t_mapping<t_bool>": {
-          "id": "t_mapping<t_bool>",
-          "valueType": "t_bool",
-          "label": "mapping(key => bool)",
-          "kind": "mapping"
-        },
-        "t_array:undefined<t_uint256>": {
-          "id": "t_array:undefined<t_uint256>",
-          "valueType": "t_uint256",
-          "kind": "array",
-          "label": "uint256[undefined]"
-        },
-        "t_mapping<t_uint256>": {
-          "id": "t_mapping<t_uint256>",
-          "valueType": "t_uint256",
-          "label": "mapping(key => uint256)",
-          "kind": "mapping"
-        }
-      },
-      "storage": [
-        {
-          "contract": "Initializable",
-          "path": "zos-lib/contracts/Initializable.sol",
-          "label": "initialized",
-          "astId": 13790,
-          "type": "t_bool",
-          "src": "757:24:19"
-        },
-        {
-          "contract": "Initializable",
-          "path": "zos-lib/contracts/Initializable.sol",
-          "label": "initializing",
-          "astId": 13792,
-          "type": "t_bool",
-          "src": "876:25:19"
-        },
-        {
-          "contract": "Initializable",
-          "path": "zos-lib/contracts/Initializable.sol",
-          "label": "______gap",
-          "astId": 13848,
-          "type": "t_array:50<t_uint256>",
-          "src": "1951:29:19"
-        },
-        {
-          "contract": "Ownable",
-          "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
-          "label": "_owner",
-          "astId": 13634,
-          "type": "t_address",
-          "src": "302:22:17"
-        },
-        {
-          "contract": "Ownable",
-          "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
-          "label": "______gap",
-          "astId": 13745,
-          "type": "t_array:50<t_uint256>",
-          "src": "2186:29:17"
-        },
-        {
-          "contract": "SignerRole",
-          "path": "openzeppelin-eth/contracts/access/roles/SignerRole.sol",
-          "label": "_signers",
-          "astId": 13427,
-          "type": "t_struct<Roles.Role>",
-          "src": "271:27:15"
-        },
-        {
-          "contract": "SignerRole",
-          "path": "openzeppelin-eth/contracts/access/roles/SignerRole.sol",
-          "label": "______gap",
-          "astId": 13526,
-          "type": "t_array:50<t_uint256>",
-          "src": "1081:29:15"
-        },
-        {
-          "contract": "CryptoCardsLib",
-          "path": "contracts/CryptoCardsLib.sol",
-          "label": "_packPrice",
-          "astId": 2587,
-          "type": "t_uint256",
-          "src": "704:27:6"
-        },
-        {
-          "contract": "CryptoCardsLib",
-          "path": "contracts/CryptoCardsLib.sol",
-          "label": "_referralLevels",
-          "astId": 2591,
-          "type": "t_array:undefined<t_uint256>",
-          "src": "738:44:6"
-        },
-        {
-          "contract": "CryptoCardsLib",
-          "path": "contracts/CryptoCardsLib.sol",
-          "label": "_promoCodes",
-          "astId": 2595,
-          "type": "t_array:undefined<t_uint256>",
-          "src": "788:39:6"
-        },
-        {
-          "contract": "CryptoCardsLib",
-          "path": "contracts/CryptoCardsLib.sol",
-          "label": "_promoDiscounts",
-          "astId": 2599,
-          "type": "t_array:undefined<t_uint256>",
-          "src": "833:43:6"
-        },
-        {
-          "contract": "CryptoCardsLib",
-          "path": "contracts/CryptoCardsLib.sol",
-          "label": "_purchasedPackCount",
-          "astId": 2603,
-          "type": "t_mapping<t_uint256>",
-          "src": "883:56:6"
-        },
-        {
-          "contract": "CryptoCardsLib",
-          "path": "contracts/CryptoCardsLib.sol",
-          "label": "_controller",
-          "astId": 2605,
-          "type": "t_address",
-          "src": "982:28:6"
-        }
-      ],
-      "warnings": {
-        "hasConstructor": false,
-        "hasSelfDestruct": false,
-        "hasDelegateCall": false,
-        "hasInitialValuesInDeclarations": false,
-        "uninitializedBaseContracts": []
-      }
-    },
     "CryptoCardsController": {
-      "address": "0x039bcb1e4672b0f41eea83e31e8ba62d4a5901cc",
+      "address": "0x4ade27d54e19cb44cc2da9c2addba4429113b7c3",
       "constructorCode": "608060405234801561001057600080fd5b5061385e806100206000396000f3fe",
       "bodyBytecodeHash": "8243373679006862cd6a4ee8660daa293a688fb8c6560988a040e2791f757202",
       "localBytecodeHash": "6e0bd889e244747e292002f5e5598e1a44ecf46de6652a1a63c491d49b22ebca",
@@ -211,7 +36,7 @@
           "members": [
             {
               "label": "bearer",
-              "astId": 13201,
+              "astId": 13560,
               "type": "t_mapping<t_bool>",
               "src": "150:32:13"
             }
@@ -229,7 +54,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 13790,
+          "astId": 14149,
           "type": "t_bool",
           "src": "757:24:19"
         },
@@ -237,7 +62,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 13792,
+          "astId": 14151,
           "type": "t_bool",
           "src": "876:25:19"
         },
@@ -245,7 +70,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 13848,
+          "astId": 14207,
           "type": "t_array:50<t_uint256>",
           "src": "1951:29:19"
         },
@@ -253,7 +78,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "_owner",
-          "astId": 13634,
+          "astId": 13993,
           "type": "t_address",
           "src": "302:22:17"
         },
@@ -261,7 +86,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "______gap",
-          "astId": 13745,
+          "astId": 14104,
           "type": "t_array:50<t_uint256>",
           "src": "2186:29:17"
         },
@@ -269,7 +94,7 @@
           "contract": "PauserRole",
           "path": "openzeppelin-eth/contracts/access/roles/PauserRole.sol",
           "label": "_pausers",
-          "astId": 13308,
+          "astId": 13667,
           "type": "t_struct<Roles.Role>",
           "src": "271:27:14"
         },
@@ -277,7 +102,7 @@
           "contract": "PauserRole",
           "path": "openzeppelin-eth/contracts/access/roles/PauserRole.sol",
           "label": "______gap",
-          "astId": 13407,
+          "astId": 13766,
           "type": "t_array:50<t_uint256>",
           "src": "1081:29:14"
         },
@@ -285,7 +110,7 @@
           "contract": "Pausable",
           "path": "openzeppelin-eth/contracts/lifecycle/Pausable.sol",
           "label": "_paused",
-          "astId": 13545,
+          "astId": 13904,
           "type": "t_bool",
           "src": "352:20:16"
         },
@@ -293,7 +118,7 @@
           "contract": "Pausable",
           "path": "openzeppelin-eth/contracts/lifecycle/Pausable.sol",
           "label": "______gap",
-          "astId": 13626,
+          "astId": 13985,
           "type": "t_array:50<t_uint256>",
           "src": "1429:29:16"
         },
@@ -301,7 +126,7 @@
           "contract": "ReentrancyGuard",
           "path": "openzeppelin-eth/contracts/utils/ReentrancyGuard.sol",
           "label": "_guardCounter",
-          "astId": 13753,
+          "astId": 14112,
           "type": "t_uint256",
           "src": "415:29:18"
         },
@@ -309,7 +134,7 @@
           "contract": "ReentrancyGuard",
           "path": "openzeppelin-eth/contracts/utils/ReentrancyGuard.sol",
           "label": "______gap",
-          "astId": 13785,
+          "astId": 14144,
           "type": "t_array:50<t_uint256>",
           "src": "1210:29:18"
         },
@@ -317,7 +142,7 @@
           "contract": "CryptoCardsController",
           "path": "contracts/CryptoCardsController.sol",
           "label": "_cryptoCardsTreasury",
-          "astId": 943,
+          "astId": 950,
           "type": "t_address",
           "src": "925:49:2"
         },
@@ -325,7 +150,7 @@
           "contract": "CryptoCardsController",
           "path": "contracts/CryptoCardsController.sol",
           "label": "_cryptoCardsOracle",
-          "astId": 945,
+          "astId": 952,
           "type": "t_address",
           "src": "980:45:2"
         },
@@ -333,7 +158,7 @@
           "contract": "CryptoCardsController",
           "path": "contracts/CryptoCardsController.sol",
           "label": "_cryptoCardsPacks",
-          "astId": 947,
+          "astId": 954,
           "type": "t_address",
           "src": "1031:43:2"
         },
@@ -341,7 +166,7 @@
           "contract": "CryptoCardsController",
           "path": "contracts/CryptoCardsController.sol",
           "label": "_cryptoCardsCards",
-          "astId": 949,
+          "astId": 956,
           "type": "t_address",
           "src": "1080:43:2"
         },
@@ -349,7 +174,7 @@
           "contract": "CryptoCardsController",
           "path": "contracts/CryptoCardsController.sol",
           "label": "_cryptoCardsLib",
-          "astId": 951,
+          "astId": 958,
           "type": "t_address",
           "src": "1176:39:2"
         }
@@ -363,7 +188,7 @@
       }
     },
     "CryptoCardsPacks": {
-      "address": "0x980cde5332f8d9a41f836ae68fdb871f93c4a3e6",
+      "address": "0x2fd0ac16b00f9a2b3f247488c4e6a4c79a45ad87",
       "constructorCode": "608060405234801561001057600080fd5b50612ee2806100206000396000f3fe",
       "bodyBytecodeHash": "e79f79107a7b85994c475a65a2ea9238f2629959460da00694fb847163fb6dcb",
       "localBytecodeHash": "820d3559b07073c0cbdc8d04c0ad531846064e6e021e0122df534fdbe1ff553b",
@@ -403,7 +228,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 13790,
+          "astId": 14149,
           "type": "t_bool",
           "src": "757:24:19"
         },
@@ -411,7 +236,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 13792,
+          "astId": 14151,
           "type": "t_bool",
           "src": "876:25:19"
         },
@@ -419,7 +244,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 13848,
+          "astId": 14207,
           "type": "t_array:50<t_uint256>",
           "src": "1951:29:19"
         },
@@ -427,7 +252,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "_owner",
-          "astId": 13634,
+          "astId": 13993,
           "type": "t_address",
           "src": "302:22:17"
         },
@@ -435,7 +260,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "______gap",
-          "astId": 13745,
+          "astId": 14104,
           "type": "t_array:50<t_uint256>",
           "src": "2186:29:17"
         },
@@ -443,49 +268,245 @@
           "contract": "CryptoCardsPacks",
           "path": "contracts/CryptoCardsPacks.sol",
           "label": "_packToken",
-          "astId": 3708,
+          "astId": 3331,
           "type": "t_address",
-          "src": "725:40:9"
+          "src": "725:40:8"
         },
         {
           "contract": "CryptoCardsPacks",
           "path": "contracts/CryptoCardsPacks.sol",
           "label": "_cardToken",
-          "astId": 3710,
+          "astId": 3333,
           "type": "t_address",
-          "src": "771:40:9"
+          "src": "771:40:8"
         },
         {
           "contract": "CryptoCardsPacks",
           "path": "contracts/CryptoCardsPacks.sol",
           "label": "_lib",
-          "astId": 3712,
+          "astId": 3335,
           "type": "t_address",
-          "src": "817:28:9"
+          "src": "817:28:8"
         },
         {
           "contract": "CryptoCardsPacks",
           "path": "contracts/CryptoCardsPacks.sol",
           "label": "_controller",
-          "astId": 3714,
+          "astId": 3337,
           "type": "t_address",
-          "src": "888:28:9"
+          "src": "888:28:8"
         },
         {
           "contract": "CryptoCardsPacks",
           "path": "contracts/CryptoCardsPacks.sol",
           "label": "_oracle",
-          "astId": 3716,
+          "astId": 3339,
           "type": "t_address",
-          "src": "922:24:9"
+          "src": "922:24:8"
         },
         {
           "contract": "CryptoCardsPacks",
           "path": "contracts/CryptoCardsPacks.sol",
           "label": "_packSalePriceById",
-          "astId": 3720,
+          "astId": 3343,
           "type": "t_mapping<t_uint256>",
-          "src": "995:55:9"
+          "src": "995:55:8"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "CryptoCardsTokenMigrator": {
+      "address": "0x160a1421ada6a96c05294ed4928de126d75e55c1",
+      "constructorCode": "608060405234801561001057600080fd5b50612cc5806100206000396000f3fe",
+      "bodyBytecodeHash": "00036e20fd1660be1c6e5b38142572ba9f7605dcbfe3f8fd5ac7965f8b679460",
+      "localBytecodeHash": "401a9d2f2ea7a2bce68f0d2b446440fb3cf040df0a0c27831015ace439d8ec4a",
+      "deployedBytecodeHash": "401a9d2f2ea7a2bce68f0d2b446440fb3cf040df0a0c27831015ace439d8ec4a",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:6<t_address>": {
+          "id": "t_array:6<t_address>",
+          "valueType": "t_address",
+          "length": "6",
+          "kind": "array",
+          "label": "address[6]"
+        },
+        "t_array:6<t_uint256>": {
+          "id": "t_array:6<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "6",
+          "kind": "array",
+          "label": "uint256[6]"
+        },
+        "t_mapping<t_bool>": {
+          "id": "t_mapping<t_bool>",
+          "valueType": "t_bool",
+          "label": "mapping(key => bool)",
+          "kind": "mapping"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initialized",
+          "astId": 14149,
+          "type": "t_bool",
+          "src": "757:24:19"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initializing",
+          "astId": 14151,
+          "type": "t_bool",
+          "src": "876:25:19"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "______gap",
+          "astId": 14207,
+          "type": "t_array:50<t_uint256>",
+          "src": "1951:29:19"
+        },
+        {
+          "contract": "Ownable",
+          "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
+          "label": "_owner",
+          "astId": 13993,
+          "type": "t_address",
+          "src": "302:22:17"
+        },
+        {
+          "contract": "Ownable",
+          "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
+          "label": "______gap",
+          "astId": 14104,
+          "type": "t_array:50<t_uint256>",
+          "src": "2186:29:17"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_gumToken",
+          "astId": 3953,
+          "type": "t_address",
+          "src": "1556:38:9"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_packsToken",
+          "astId": 3955,
+          "type": "t_address",
+          "src": "1600:41:9"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_cardsToken",
+          "astId": 3957,
+          "type": "t_address",
+          "src": "1647:41:9"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_gumTokenOld",
+          "astId": 3959,
+          "type": "t_address",
+          "src": "1716:41:9"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_packsOld",
+          "astId": 3961,
+          "type": "t_address",
+          "src": "1763:37:9"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_cardsOld",
+          "astId": 3963,
+          "type": "t_address",
+          "src": "1806:33:9"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_cardsTokenOld",
+          "astId": 3965,
+          "type": "t_address",
+          "src": "1845:47:9"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_initialAccounts",
+          "astId": 3969,
+          "type": "t_array:6<t_address>",
+          "src": "2372:36:9"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_initialAmounts",
+          "astId": 3973,
+          "type": "t_array:6<t_uint256>",
+          "src": "2414:35:9"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_initialTokensDistributed",
+          "astId": 3975,
+          "type": "t_bool",
+          "src": "2456:39:9"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_migratedGum",
+          "astId": 3977,
+          "type": "t_uint256",
+          "src": "2502:29:9"
+        },
+        {
+          "contract": "CryptoCardsTokenMigrator",
+          "path": "contracts/CryptoCardsTokenMigrator.sol",
+          "label": "_isMigrated",
+          "astId": 3981,
+          "type": "t_mapping<t_bool>",
+          "src": "2538:46:9"
         }
       ],
       "warnings": {
@@ -497,7 +518,7 @@
       }
     },
     "CryptoCardsOracle": {
-      "address": "0x7894c0998d9d9c13196a63d3ed5b5c394af34f7d",
+      "address": "0xc119d3a0815e5fd08493e0e2f0a8d27fd2182113",
       "constructorCode": "608060405234801561001057600080fd5b50613feb806100206000396000f3fe",
       "bodyBytecodeHash": "b3702f386f49e0c359ccc1fde2e2839a49961a86be547a3d663ab48ddc15a584",
       "localBytecodeHash": "2e001c663117570b0672799f59213ffe4ed0c4780bcfa17ce4fb11a001b035d9",
@@ -570,7 +591,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 13790,
+          "astId": 14149,
           "type": "t_bool",
           "src": "757:24:19"
         },
@@ -578,7 +599,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 13792,
+          "astId": 14151,
           "type": "t_bool",
           "src": "876:25:19"
         },
@@ -586,7 +607,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 13848,
+          "astId": 14207,
           "type": "t_array:50<t_uint256>",
           "src": "1951:29:19"
         },
@@ -594,7 +615,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "_owner",
-          "astId": 13634,
+          "astId": 13993,
           "type": "t_address",
           "src": "302:22:17"
         },
@@ -602,7 +623,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "______gap",
-          "astId": 13745,
+          "astId": 14104,
           "type": "t_array:50<t_uint256>",
           "src": "2186:29:17"
         },
@@ -610,7 +631,7 @@
           "contract": "usingOraclize",
           "path": "contracts/usingOraclize.sol",
           "label": "oraclize",
-          "astId": 7559,
+          "astId": 7918,
           "type": "t_address",
           "src": "10959:18:12"
         },
@@ -618,7 +639,7 @@
           "contract": "usingOraclize",
           "path": "contracts/usingOraclize.sol",
           "label": "OAR",
-          "astId": 7561,
+          "astId": 7920,
           "type": "t_address",
           "src": "10983:25:12"
         },
@@ -626,7 +647,7 @@
           "contract": "usingOraclize",
           "path": "contracts/usingOraclize.sol",
           "label": "oraclize_network_name",
-          "astId": 7606,
+          "astId": 7965,
           "type": "t_string",
           "src": "11404:28:12"
         },
@@ -634,7 +655,7 @@
           "contract": "usingOraclize",
           "path": "contracts/usingOraclize.sol",
           "label": "oraclize_randomDS_args",
-          "astId": 7625,
+          "astId": 7984,
           "type": "t_mapping<t_bytes32>",
           "src": "11649:50:12"
         },
@@ -642,7 +663,7 @@
           "contract": "usingOraclize",
           "path": "contracts/usingOraclize.sol",
           "label": "oraclize_randomDS_sessionKeysHashVerified",
-          "astId": 7629,
+          "astId": 7988,
           "type": "t_mapping<t_bool>",
           "src": "11705:66:12"
         },
@@ -650,81 +671,81 @@
           "contract": "CryptoCardsOracle",
           "path": "contracts/CryptoCardsOracle.sol",
           "label": "cryptoCardsLib",
-          "astId": 3184,
+          "astId": 2807,
           "type": "t_address",
-          "src": "784:38:7"
+          "src": "784:38:6"
         },
         {
           "contract": "CryptoCardsOracle",
           "path": "contracts/CryptoCardsOracle.sol",
           "label": "cryptoCardsPacks",
-          "astId": 3186,
+          "astId": 2809,
           "type": "t_address",
-          "src": "828:42:7"
+          "src": "828:42:6"
         },
         {
           "contract": "CryptoCardsOracle",
           "path": "contracts/CryptoCardsOracle.sol",
           "label": "cryptoCardsGum",
-          "astId": 3188,
+          "astId": 2811,
           "type": "t_address",
-          "src": "876:38:7"
+          "src": "876:38:6"
         },
         {
           "contract": "CryptoCardsOracle",
           "path": "contracts/CryptoCardsOracle.sol",
           "label": "cryptoCardsController",
-          "astId": 3190,
+          "astId": 2813,
           "type": "t_address",
-          "src": "920:52:7"
+          "src": "920:52:6"
         },
         {
           "contract": "CryptoCardsOracle",
           "path": "contracts/CryptoCardsOracle.sol",
           "label": "oracleGasLimit",
-          "astId": 3192,
+          "astId": 2815,
           "type": "t_uint256",
-          "src": "979:31:7"
+          "src": "979:31:6"
         },
         {
           "contract": "CryptoCardsOracle",
           "path": "contracts/CryptoCardsOracle.sol",
           "label": "oracleIdToOwner",
-          "astId": 3196,
+          "astId": 2819,
           "type": "t_mapping<t_address>",
-          "src": "1017:50:7"
+          "src": "1017:50:6"
         },
         {
           "contract": "CryptoCardsOracle",
           "path": "contracts/CryptoCardsOracle.sol",
           "label": "oracleIdToUUID",
-          "astId": 3200,
+          "astId": 2823,
           "type": "t_mapping<t_bytes16>",
-          "src": "1073:49:7"
+          "src": "1073:49:6"
         },
         {
           "contract": "CryptoCardsOracle",
           "path": "contracts/CryptoCardsOracle.sol",
           "label": "oracleIds",
-          "astId": 3204,
+          "astId": 2827,
           "type": "t_mapping<t_bool>",
-          "src": "1128:41:7"
+          "src": "1128:41:6"
         },
         {
           "contract": "CryptoCardsOracle",
           "path": "contracts/CryptoCardsOracle.sol",
           "label": "uuids",
-          "astId": 3208,
+          "astId": 2831,
           "type": "t_mapping<t_bool>",
-          "src": "1175:37:7"
+          "src": "1175:37:6"
         },
         {
           "contract": "CryptoCardsOracle",
           "path": "contracts/CryptoCardsOracle.sol",
           "label": "apiEndpoint",
-          "astId": 3210,
+          "astId": 2833,
           "type": "t_string",
-          "src": "1219:27:7"
+          "src": "1219:27:6"
         }
       ],
       "warnings": {
@@ -735,12 +756,12 @@
         "uninitializedBaseContracts": []
       }
     },
-    "CryptoCardsGumDistributor": {
-      "address": "0xa7d87c4427be6bcb174c59b71cd7ea03ad1ac9de",
-      "constructorCode": "608060405234801561001057600080fd5b5061189f806100206000396000f3fe",
-      "bodyBytecodeHash": "4601e2506cdb622716e63d5921d28f924fe556fd96ea17a13e9e186e98d33695",
-      "localBytecodeHash": "dd983b0a26c3d8c6bcad117df5b7b744d7f137b1d2939894f8356f502d63525a",
-      "deployedBytecodeHash": "dd983b0a26c3d8c6bcad117df5b7b744d7f137b1d2939894f8356f502d63525a",
+    "CryptoCardsGum": {
+      "address": "0x529733a666ea8c4af5170f8d9dcca2146ac86c50",
+      "constructorCode": "608060405234801561001057600080fd5b50611c71806100206000396000f3fe",
+      "bodyBytecodeHash": "e49c6cdcbf2a1d5229aa3c38012d3c82bd01bb88ca5aa004feca44145ad700ff",
+      "localBytecodeHash": "4d3eb5bab86111c6b0c19c163638c91bdeed0a3c72ce976c4d4a856aced5e9ea",
+      "deployedBytecodeHash": "4d3eb5bab86111c6b0c19c163638c91bdeed0a3c72ce976c4d4a856aced5e9ea",
       "types": {
         "t_bool": {
           "id": "t_bool",
@@ -764,25 +785,28 @@
           "kind": "elementary",
           "label": "address"
         },
-        "t_array:6<t_address>": {
-          "id": "t_array:6<t_address>",
+        "t_array:undefined<t_address>": {
+          "id": "t_array:undefined<t_address>",
           "valueType": "t_address",
-          "length": "6",
           "kind": "array",
-          "label": "address[6]"
+          "label": "address[undefined]"
         },
-        "t_array:6<t_uint256>": {
-          "id": "t_array:6<t_uint256>",
+        "t_bytes32": {
+          "id": "t_bytes32",
+          "kind": "elementary",
+          "label": "bytes32"
+        },
+        "t_array:undefined<t_bytes32>": {
+          "id": "t_array:undefined<t_bytes32>",
+          "valueType": "t_bytes32",
+          "kind": "array",
+          "label": "bytes32[undefined]"
+        },
+        "t_array:undefined<t_uint256>": {
+          "id": "t_array:undefined<t_uint256>",
           "valueType": "t_uint256",
-          "length": "6",
           "kind": "array",
-          "label": "uint256[6]"
-        },
-        "t_mapping<t_bool>": {
-          "id": "t_mapping<t_bool>",
-          "valueType": "t_bool",
-          "label": "mapping(key => bool)",
-          "kind": "mapping"
+          "label": "uint256[undefined]"
         }
       },
       "storage": [
@@ -790,7 +814,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 13790,
+          "astId": 14149,
           "type": "t_bool",
           "src": "757:24:19"
         },
@@ -798,7 +822,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 13792,
+          "astId": 14151,
           "type": "t_bool",
           "src": "876:25:19"
         },
@@ -806,7 +830,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 13848,
+          "astId": 14207,
           "type": "t_array:50<t_uint256>",
           "src": "1951:29:19"
         },
@@ -814,7 +838,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "_owner",
-          "astId": 13634,
+          "astId": 13993,
           "type": "t_address",
           "src": "302:22:17"
         },
@@ -822,73 +846,73 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "______gap",
-          "astId": 13745,
+          "astId": 14104,
           "type": "t_array:50<t_uint256>",
           "src": "2186:29:17"
         },
         {
-          "contract": "CryptoCardsGumDistributor",
-          "path": "contracts/CryptoCardsGumDistributor.sol",
+          "contract": "CryptoCardsGum",
+          "path": "contracts/CryptoCardsGum.sol",
+          "label": "_cardToken",
+          "astId": 1709,
+          "type": "t_address",
+          "src": "686:40:3"
+        },
+        {
+          "contract": "CryptoCardsGum",
+          "path": "contracts/CryptoCardsGum.sol",
           "label": "_gumToken",
-          "astId": 2179,
-          "type": "t_address",
-          "src": "608:38:4"
+          "astId": 1713,
+          "type": "t_array:undefined<t_address>",
+          "src": "732:51:3"
         },
         {
-          "contract": "CryptoCardsGumDistributor",
-          "path": "contracts/CryptoCardsGumDistributor.sol",
-          "label": "_gumTokenOld",
-          "astId": 2181,
-          "type": "t_address",
-          "src": "652:41:4"
+          "contract": "CryptoCardsGum",
+          "path": "contracts/CryptoCardsGum.sol",
+          "label": "_flavorName",
+          "astId": 1717,
+          "type": "t_array:undefined<t_bytes32>",
+          "src": "789:41:3"
         },
         {
-          "contract": "CryptoCardsGumDistributor",
-          "path": "contracts/CryptoCardsGumDistributor.sol",
-          "label": "_packsOld",
-          "astId": 2183,
-          "type": "t_address",
-          "src": "699:34:4"
+          "contract": "CryptoCardsGum",
+          "path": "contracts/CryptoCardsGum.sol",
+          "label": "_gumPerPack",
+          "astId": 1721,
+          "type": "t_array:undefined<t_uint256>",
+          "src": "836:41:3"
         },
         {
-          "contract": "CryptoCardsGumDistributor",
-          "path": "contracts/CryptoCardsGumDistributor.sol",
-          "label": "_initialAccounts",
-          "astId": 2187,
-          "type": "t_array:6<t_address>",
-          "src": "1213:36:4"
-        },
-        {
-          "contract": "CryptoCardsGumDistributor",
-          "path": "contracts/CryptoCardsGumDistributor.sol",
-          "label": "_initialAmounts",
-          "astId": 2191,
-          "type": "t_array:6<t_uint256>",
-          "src": "1255:35:4"
-        },
-        {
-          "contract": "CryptoCardsGumDistributor",
-          "path": "contracts/CryptoCardsGumDistributor.sol",
-          "label": "_initialTokensDistributed",
-          "astId": 2193,
-          "type": "t_bool",
-          "src": "1297:39:4"
-        },
-        {
-          "contract": "CryptoCardsGumDistributor",
-          "path": "contracts/CryptoCardsGumDistributor.sol",
-          "label": "_migratedGum",
-          "astId": 2195,
+          "contract": "CryptoCardsGum",
+          "path": "contracts/CryptoCardsGum.sol",
+          "label": "_flavorsAvailable",
+          "astId": 1723,
           "type": "t_uint256",
-          "src": "1343:29:4"
+          "src": "883:31:3"
         },
         {
-          "contract": "CryptoCardsGumDistributor",
-          "path": "contracts/CryptoCardsGumDistributor.sol",
-          "label": "_isMigrated",
-          "astId": 2199,
-          "type": "t_mapping<t_bool>",
-          "src": "1379:46:4"
+          "contract": "CryptoCardsGum",
+          "path": "contracts/CryptoCardsGum.sol",
+          "label": "_earnedGumFlavor",
+          "astId": 1725,
+          "type": "t_uint256",
+          "src": "920:30:3"
+        },
+        {
+          "contract": "CryptoCardsGum",
+          "path": "contracts/CryptoCardsGum.sol",
+          "label": "_cryptoCardsController",
+          "astId": 1727,
+          "type": "t_address",
+          "src": "957:39:3"
+        },
+        {
+          "contract": "CryptoCardsGum",
+          "path": "contracts/CryptoCardsGum.sol",
+          "label": "_cryptoCardsOracle",
+          "astId": 1729,
+          "type": "t_address",
+          "src": "1002:35:3"
         }
       ],
       "warnings": {
@@ -900,7 +924,7 @@
       }
     },
     "CryptoCardsCards": {
-      "address": "0x519339315ce125400631c80ec47419e324c4d895",
+      "address": "0xd92364428a4523ece27c03ff1329ebfc58c27982",
       "constructorCode": "608060405234801561001057600080fd5b5061409e806100206000396000f3fe",
       "bodyBytecodeHash": "fd87788690ccdfdb0c528cd05539d2556a479c0434ad4b79f8a62c8daa9205bb",
       "localBytecodeHash": "520a6dd36470106e7e4706b8263df421cb39bbbc439e7928ee95603a54c0cc06",
@@ -962,7 +986,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 13790,
+          "astId": 14149,
           "type": "t_bool",
           "src": "757:24:19"
         },
@@ -970,7 +994,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 13792,
+          "astId": 14151,
           "type": "t_bool",
           "src": "876:25:19"
         },
@@ -978,7 +1002,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 13848,
+          "astId": 14207,
           "type": "t_array:50<t_uint256>",
           "src": "1951:29:19"
         },
@@ -986,7 +1010,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "_owner",
-          "astId": 13634,
+          "astId": 13993,
           "type": "t_address",
           "src": "302:22:17"
         },
@@ -994,7 +1018,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "______gap",
-          "astId": 13745,
+          "astId": 14104,
           "type": "t_array:50<t_uint256>",
           "src": "2186:29:17"
         },
@@ -1002,7 +1026,7 @@
           "contract": "CryptoCardsCards",
           "path": "contracts/CryptoCardsCards.sol",
           "label": "_cardToken",
-          "astId": 131,
+          "astId": 138,
           "type": "t_address",
           "src": "735:40:1"
         },
@@ -1010,7 +1034,7 @@
           "contract": "CryptoCardsCards",
           "path": "contracts/CryptoCardsCards.sol",
           "label": "_lib",
-          "astId": 133,
+          "astId": 140,
           "type": "t_address",
           "src": "781:28:1"
         },
@@ -1018,7 +1042,7 @@
           "contract": "CryptoCardsCards",
           "path": "contracts/CryptoCardsCards.sol",
           "label": "_controller",
-          "astId": 135,
+          "astId": 142,
           "type": "t_address",
           "src": "852:28:1"
         },
@@ -1026,7 +1050,7 @@
           "contract": "CryptoCardsCards",
           "path": "contracts/CryptoCardsCards.sol",
           "label": "_cardSalePriceById",
-          "astId": 139,
+          "astId": 146,
           "type": "t_mapping<t_uint256>",
           "src": "930:55:1"
         },
@@ -1034,7 +1058,7 @@
           "contract": "CryptoCardsCards",
           "path": "contracts/CryptoCardsCards.sol",
           "label": "_cardAllowedTradeRank",
-          "astId": 143,
+          "astId": 150,
           "type": "t_mapping<t_uint16>",
           "src": "1045:57:1"
         },
@@ -1042,7 +1066,7 @@
           "contract": "CryptoCardsCards",
           "path": "contracts/CryptoCardsCards.sol",
           "label": "_cardAllowedTradeGens",
-          "astId": 147,
+          "astId": 154,
           "type": "t_mapping<t_uint8>",
           "src": "1159:56:1"
         },
@@ -1050,7 +1074,7 @@
           "contract": "CryptoCardsCards",
           "path": "contracts/CryptoCardsCards.sol",
           "label": "_cardAllowedTradeYears",
-          "astId": 151,
+          "astId": 158,
           "type": "t_mapping<t_uint8>",
           "src": "1266:57:1"
         }
@@ -1064,7 +1088,7 @@
       }
     },
     "CryptoCardsTreasury": {
-      "address": "0xbc0a8cfbe60e0abacba6560891e11a667cfdf28e",
+      "address": "0x659b075b46e0384acd218a03c4907bb155354d72",
       "constructorCode": "608060405234801561001057600080fd5b50612ed2806100206000396000f3fe",
       "bodyBytecodeHash": "502e26456677eeb25dd064805b345038334074c696a14cb3cb51e4080141c84e",
       "localBytecodeHash": "2ee4265c8add510b6eec28f575eaabb8563433655f52d3f57ef047a511108021",
@@ -1109,7 +1133,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 13790,
+          "astId": 14149,
           "type": "t_bool",
           "src": "757:24:19"
         },
@@ -1117,7 +1141,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 13792,
+          "astId": 14151,
           "type": "t_bool",
           "src": "876:25:19"
         },
@@ -1125,7 +1149,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 13848,
+          "astId": 14207,
           "type": "t_array:50<t_uint256>",
           "src": "1951:29:19"
         },
@@ -1133,7 +1157,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "_owner",
-          "astId": 13634,
+          "astId": 13993,
           "type": "t_address",
           "src": "302:22:17"
         },
@@ -1141,7 +1165,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "______gap",
-          "astId": 13745,
+          "astId": 14104,
           "type": "t_array:50<t_uint256>",
           "src": "2186:29:17"
         },
@@ -1149,7 +1173,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_contractController",
-          "astId": 4250,
+          "astId": 4609,
           "type": "t_address",
           "src": "2635:36:10"
         },
@@ -1157,7 +1181,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_inHouseAccount",
-          "astId": 4252,
+          "astId": 4611,
           "type": "t_address_payable",
           "src": "2752:40:10"
         },
@@ -1165,7 +1189,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_inHouseEscrow_paid",
-          "astId": 4254,
+          "astId": 4613,
           "type": "t_uint256",
           "src": "2798:36:10"
         },
@@ -1173,7 +1197,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_inHouseEscrow_unpaid",
-          "astId": 4256,
+          "astId": 4615,
           "type": "t_uint256",
           "src": "2840:38:10"
         },
@@ -1181,7 +1205,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_outSourcePool_total",
-          "astId": 4258,
+          "astId": 4617,
           "type": "t_uint256",
           "src": "2928:37:10"
         },
@@ -1189,7 +1213,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_outSourcePool_limit",
-          "astId": 4260,
+          "astId": 4619,
           "type": "t_uint256",
           "src": "3006:37:10"
         },
@@ -1197,7 +1221,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_outSourcePool_interval",
-          "astId": 4262,
+          "astId": 4621,
           "type": "t_uint256",
           "src": "3074:40:10"
         },
@@ -1205,7 +1229,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_outSourcePool_unpaid",
-          "astId": 4264,
+          "astId": 4623,
           "type": "t_uint256",
           "src": "3143:38:10"
         },
@@ -1213,7 +1237,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_outSourcePool_paid",
-          "astId": 4266,
+          "astId": 4625,
           "type": "t_uint256",
           "src": "3215:36:10"
         },
@@ -1221,7 +1245,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_outSourcePool_memberCount",
-          "astId": 4268,
+          "astId": 4627,
           "type": "t_uint256",
           "src": "3284:43:10"
         },
@@ -1229,7 +1253,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_outSourcePool_percentOnDeposit",
-          "astId": 4270,
+          "astId": 4629,
           "type": "t_uint256",
           "src": "3333:48:10"
         },
@@ -1237,7 +1261,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_outsourcedMembers_payoutIndex",
-          "astId": 4274,
+          "astId": 4633,
           "type": "t_mapping<t_uint256>",
           "src": "3388:67:10"
         },
@@ -1245,7 +1269,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_outsourcedMembers_limit",
-          "astId": 4278,
+          "astId": 4637,
           "type": "t_mapping<t_uint256>",
           "src": "3461:61:10"
         },
@@ -1253,7 +1277,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_outsourcedMembers_paid",
-          "astId": 4282,
+          "astId": 4641,
           "type": "t_mapping<t_uint256>",
           "src": "3528:60:10"
         },
@@ -1261,7 +1285,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_referrals_unpaid",
-          "astId": 4286,
+          "astId": 4645,
           "type": "t_mapping<t_uint256>",
           "src": "3627:54:10"
         },
@@ -1269,7 +1293,7 @@
           "contract": "CryptoCardsTreasury",
           "path": "contracts/CryptoCardsTreasury.sol",
           "label": "_referrals_paid",
-          "astId": 4290,
+          "astId": 4649,
           "type": "t_mapping<t_uint256>",
           "src": "3687:52:10"
         }
@@ -1282,12 +1306,12 @@
         "uninitializedBaseContracts": []
       }
     },
-    "CryptoCardsGum": {
-      "address": "0x4716353d8add38aba0d329153ec52e3917705b05",
-      "constructorCode": "608060405234801561001057600080fd5b50611c71806100206000396000f3fe",
-      "bodyBytecodeHash": "e49c6cdcbf2a1d5229aa3c38012d3c82bd01bb88ca5aa004feca44145ad700ff",
-      "localBytecodeHash": "4d3eb5bab86111c6b0c19c163638c91bdeed0a3c72ce976c4d4a856aced5e9ea",
-      "deployedBytecodeHash": "4d3eb5bab86111c6b0c19c163638c91bdeed0a3c72ce976c4d4a856aced5e9ea",
+    "CryptoCardsLib": {
+      "address": "0x858f8e8d482e38e2c8167fccec6848e725e799d6",
+      "constructorCode": "608060405234801561001057600080fd5b50612189806100206000396000f3fe",
+      "bodyBytecodeHash": "5d7e11cba4b2b302ddd002c2fc9d7e942e4c4a4649b8696923c6e5b7200ee141",
+      "localBytecodeHash": "da7414719eb223bbcd6042988e502f9c39d9979936d73bb98b00055fe80ba723",
+      "deployedBytecodeHash": "da7414719eb223bbcd6042988e502f9c39d9979936d73bb98b00055fe80ba723",
       "types": {
         "t_bool": {
           "id": "t_bool",
@@ -1311,28 +1335,36 @@
           "kind": "elementary",
           "label": "address"
         },
-        "t_array:undefined<t_address>": {
-          "id": "t_array:undefined<t_address>",
-          "valueType": "t_address",
-          "kind": "array",
-          "label": "address[undefined]"
+        "t_struct<Roles.Role>": {
+          "id": "t_struct<Roles.Role>",
+          "kind": "struct",
+          "label": "Roles.Role",
+          "members": [
+            {
+              "label": "bearer",
+              "astId": 13560,
+              "type": "t_mapping<t_bool>",
+              "src": "150:32:13"
+            }
+          ]
         },
-        "t_bytes32": {
-          "id": "t_bytes32",
-          "kind": "elementary",
-          "label": "bytes32"
-        },
-        "t_array:undefined<t_bytes32>": {
-          "id": "t_array:undefined<t_bytes32>",
-          "valueType": "t_bytes32",
-          "kind": "array",
-          "label": "bytes32[undefined]"
+        "t_mapping<t_bool>": {
+          "id": "t_mapping<t_bool>",
+          "valueType": "t_bool",
+          "label": "mapping(key => bool)",
+          "kind": "mapping"
         },
         "t_array:undefined<t_uint256>": {
           "id": "t_array:undefined<t_uint256>",
           "valueType": "t_uint256",
           "kind": "array",
           "label": "uint256[undefined]"
+        },
+        "t_mapping<t_uint256>": {
+          "id": "t_mapping<t_uint256>",
+          "valueType": "t_uint256",
+          "label": "mapping(key => uint256)",
+          "kind": "mapping"
         }
       },
       "storage": [
@@ -1340,7 +1372,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initialized",
-          "astId": 13790,
+          "astId": 14149,
           "type": "t_bool",
           "src": "757:24:19"
         },
@@ -1348,7 +1380,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "initializing",
-          "astId": 13792,
+          "astId": 14151,
           "type": "t_bool",
           "src": "876:25:19"
         },
@@ -1356,7 +1388,7 @@
           "contract": "Initializable",
           "path": "zos-lib/contracts/Initializable.sol",
           "label": "______gap",
-          "astId": 13848,
+          "astId": 14207,
           "type": "t_array:50<t_uint256>",
           "src": "1951:29:19"
         },
@@ -1364,7 +1396,7 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "_owner",
-          "astId": 13634,
+          "astId": 13993,
           "type": "t_address",
           "src": "302:22:17"
         },
@@ -1372,73 +1404,73 @@
           "contract": "Ownable",
           "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
           "label": "______gap",
-          "astId": 13745,
+          "astId": 14104,
           "type": "t_array:50<t_uint256>",
           "src": "2186:29:17"
         },
         {
-          "contract": "CryptoCardsGum",
-          "path": "contracts/CryptoCardsGum.sol",
-          "label": "_cardToken",
-          "astId": 1702,
-          "type": "t_address",
-          "src": "686:40:3"
+          "contract": "SignerRole",
+          "path": "openzeppelin-eth/contracts/access/roles/SignerRole.sol",
+          "label": "_signers",
+          "astId": 13786,
+          "type": "t_struct<Roles.Role>",
+          "src": "271:27:15"
         },
         {
-          "contract": "CryptoCardsGum",
-          "path": "contracts/CryptoCardsGum.sol",
-          "label": "_gumToken",
-          "astId": 1706,
-          "type": "t_array:undefined<t_address>",
-          "src": "732:51:3"
+          "contract": "SignerRole",
+          "path": "openzeppelin-eth/contracts/access/roles/SignerRole.sol",
+          "label": "______gap",
+          "astId": 13885,
+          "type": "t_array:50<t_uint256>",
+          "src": "1081:29:15"
         },
         {
-          "contract": "CryptoCardsGum",
-          "path": "contracts/CryptoCardsGum.sol",
-          "label": "_flavorName",
-          "astId": 1710,
-          "type": "t_array:undefined<t_bytes32>",
-          "src": "789:41:3"
+          "contract": "CryptoCardsLib",
+          "path": "contracts/CryptoCardsLib.sol",
+          "label": "_packPrice",
+          "astId": 2210,
+          "type": "t_uint256",
+          "src": "704:27:5"
         },
         {
-          "contract": "CryptoCardsGum",
-          "path": "contracts/CryptoCardsGum.sol",
-          "label": "_gumPerPack",
-          "astId": 1714,
+          "contract": "CryptoCardsLib",
+          "path": "contracts/CryptoCardsLib.sol",
+          "label": "_referralLevels",
+          "astId": 2214,
           "type": "t_array:undefined<t_uint256>",
-          "src": "836:41:3"
+          "src": "738:44:5"
         },
         {
-          "contract": "CryptoCardsGum",
-          "path": "contracts/CryptoCardsGum.sol",
-          "label": "_flavorsAvailable",
-          "astId": 1716,
-          "type": "t_uint256",
-          "src": "883:31:3"
+          "contract": "CryptoCardsLib",
+          "path": "contracts/CryptoCardsLib.sol",
+          "label": "_promoCodes",
+          "astId": 2218,
+          "type": "t_array:undefined<t_uint256>",
+          "src": "788:39:5"
         },
         {
-          "contract": "CryptoCardsGum",
-          "path": "contracts/CryptoCardsGum.sol",
-          "label": "_earnedGumFlavor",
-          "astId": 1718,
-          "type": "t_uint256",
-          "src": "920:30:3"
+          "contract": "CryptoCardsLib",
+          "path": "contracts/CryptoCardsLib.sol",
+          "label": "_promoDiscounts",
+          "astId": 2222,
+          "type": "t_array:undefined<t_uint256>",
+          "src": "833:43:5"
         },
         {
-          "contract": "CryptoCardsGum",
-          "path": "contracts/CryptoCardsGum.sol",
-          "label": "_cryptoCardsController",
-          "astId": 1720,
+          "contract": "CryptoCardsLib",
+          "path": "contracts/CryptoCardsLib.sol",
+          "label": "_purchasedPackCount",
+          "astId": 2226,
+          "type": "t_mapping<t_uint256>",
+          "src": "883:56:5"
+        },
+        {
+          "contract": "CryptoCardsLib",
+          "path": "contracts/CryptoCardsLib.sol",
+          "label": "_controller",
+          "astId": 2228,
           "type": "t_address",
-          "src": "957:39:3"
-        },
-        {
-          "contract": "CryptoCardsGum",
-          "path": "contracts/CryptoCardsGum.sol",
-          "label": "_cryptoCardsOracle",
-          "astId": 1722,
-          "type": "t_address",
-          "src": "1002:35:3"
+          "src": "982:28:5"
         }
       ],
       "warnings": {
@@ -1454,63 +1486,63 @@
   "proxies": {
     "cryptocardscontracts/CryptoCardsOracle": [
       {
-        "address": "0xc072bf46dd9754d88244e785341be9b3d183ccdd",
-        "version": "2.0.0",
-        "implementation": "0x7894c0998d9d9c13196a63d3ed5b5c394af34f7d"
+        "address": "0xa2e34da9d8f11b5cf4ba0d6c772affac000d6266",
+        "version": "2.1.0",
+        "implementation": "0xc119d3a0815e5fd08493e0e2f0a8d27fd2182113"
       }
     ],
     "cryptocardscontracts/CryptoCardsTreasury": [
       {
-        "address": "0x4d64949a8b20c27b8e35f05f3f3846f0aaad84be",
-        "version": "2.0.0",
-        "implementation": "0xbc0a8cfbe60e0abacba6560891e11a667cfdf28e"
+        "address": "0xa0332a07225a69d8550b1979d08144a68acf428f",
+        "version": "2.1.0",
+        "implementation": "0x659b075b46e0384acd218a03c4907bb155354d72"
       }
     ],
     "cryptocardscontracts/CryptoCardsLib": [
       {
-        "address": "0xf4019e78d084585bb59aca76afb9a8fee73095fd",
-        "version": "2.0.0",
-        "implementation": "0x67d708e1d0dd94e96decf23a55d2aefefbf91475"
+        "address": "0xfb396e32e9dadd4f4e93b7a97d41138007007be1",
+        "version": "2.1.0",
+        "implementation": "0x858f8e8d482e38e2c8167fccec6848e725e799d6"
       }
     ],
     "cryptocardscontracts/CryptoCardsGum": [
       {
-        "address": "0x3738a67a9db1b6bf523a8f9234c7c38631019bcf",
-        "version": "2.0.0",
-        "implementation": "0x4716353d8add38aba0d329153ec52e3917705b05"
+        "address": "0xb1013e7633f78ac2a4815ac1015750a2d9561b2b",
+        "version": "2.1.0",
+        "implementation": "0x529733a666ea8c4af5170f8d9dcca2146ac86c50"
       }
     ],
     "cryptocardscontracts/CryptoCardsCards": [
       {
-        "address": "0x2c27979afd0619a4920f45780fa8520bc2067e66",
-        "version": "2.0.0",
-        "implementation": "0x519339315ce125400631c80ec47419e324c4d895"
+        "address": "0x17927e8b8524ac46c169320b944a5ad4942690ef",
+        "version": "2.1.0",
+        "implementation": "0xd92364428a4523ece27c03ff1329ebfc58c27982"
       }
     ],
     "cryptocardscontracts/CryptoCardsPacks": [
       {
-        "address": "0x702ab2e9b620424ab95a3829fee8c32bf109c418",
-        "version": "2.0.0",
-        "implementation": "0x980cde5332f8d9a41f836ae68fdb871f93c4a3e6"
+        "address": "0xf4f5b329739acf2d173281135a05a46903dacd6d",
+        "version": "2.1.0",
+        "implementation": "0x2fd0ac16b00f9a2b3f247488c4e6a4c79a45ad87"
       }
     ],
-    "cryptocardscontracts/CryptoCardsGumDistributor": [
+    "cryptocardscontracts/CryptoCardsTokenMigrator": [
       {
-        "address": "0x217cbdfcca3b87b2c62d7986e9c693f4b593d0fc",
-        "version": "2.0.0",
-        "implementation": "0xa7d87c4427be6bcb174c59b71cd7ea03ad1ac9de"
+        "address": "0xfd4d884de113d1945737250e83ba8135bf322f90",
+        "version": "2.1.0",
+        "implementation": "0x160a1421ada6a96c05294ed4928de126d75e55c1"
       }
     ],
     "cryptocardscontracts/CryptoCardsController": [
       {
-        "address": "0xa68bed468cefe76f2f918692f07e03659d44f3ef",
-        "version": "2.0.0",
-        "implementation": "0x039bcb1e4672b0f41eea83e31e8ba62d4a5901cc"
+        "address": "0xb3551046b2a935deebe6476ace322ba7f1d33b43",
+        "version": "2.1.0",
+        "implementation": "0x4ade27d54e19cb44cc2da9c2addba4429113b7c3"
       }
     ]
   },
   "zosversion": "2",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "dependencies": {
     "openzeppelin-eth": {
       "package": "0x2a9e7b63514438906a83a1e320dbbd814d417002",

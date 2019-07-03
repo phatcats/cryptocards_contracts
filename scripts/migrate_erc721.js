@@ -16,12 +16,15 @@ global.web3 = web3;
 const { Lib } = require('./common');
 const { networkOptions, migrationAccounts, contracts } = require('../config');
 const _ = require('lodash');
+const bigInt = require('big-integer');
 
 const ETH_UNIT = web3.utils.toBN(1e18);
+const GUM_PER_CARD = [15, 30];
 
-const CryptoCardsPacks = contracts.getFromLocal('CryptoCardsPacks');
-const CryptoCardsCards = contracts.getFromLocal('CryptoCardsCards');
-const CryptoCardsController = contracts.getFromLocal('CryptoCardsController');
+const MIGRATE_PACKS = false;
+const MIGRATE_CARDS = true;
+
+const CryptoCardsTokenMigrator = contracts.getFromLocal('CryptoCardsTokenMigrator');
 
 Lib.network = process.env.CCC_NETWORK_NAME;
 Lib.networkProvider = process.env.CCC_NETWORK_PROVIDER;
@@ -68,31 +71,138 @@ module.exports = async function() {
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Get Deployed Contracts
-        const ddCryptoCardsGumDistributor = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsGumDistributor');
-        const cryptoCardsGumDistributor = await Lib.getContractInstance(CryptoCardsGumDistributor, ddCryptoCardsGumDistributor.address);
+        const ddCryptoCardsTokenMigrator = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsTokenMigrator');
+        const cryptoCardsTokenMigrator = await Lib.getContractInstance(CryptoCardsTokenMigrator, ddCryptoCardsTokenMigrator.address);
 
+        const _convertOldCardToNewCard = async (oldCardHash) => {
+            const oldCardData = web3.utils.toBN(oldCardHash);
+
+            let rank = await cryptoCardsTokenMigrator.cardRankFromHash(oldCardData);
+            rank = rank.toNumber();
+
+            let issue = await cryptoCardsTokenMigrator.cardIssueFromHash(oldCardData);
+            issue = issue.toNumber();
+
+            const gum = _.random(GUM_PER_CARD[0], GUM_PER_CARD[1]);
+            const traits = (1 << 2); // OG Token
+            const newTokenData = {year: 0, gen: 0, rank, combined: 0, specialty: 0, issue, gum, eth: 0, traits};
+            return _packCardBits(newTokenData);
+        };
+
+        const _convertOldCardsToNewCards = async (oldCards, serialize = false) => {
+            if (_.isString(oldCards)) { oldCards = oldCards.split('.'); }
+            if (!_.isArray(oldCards)) { oldCards = [oldCards]; }
+
+            const newCards = [];
+            for (let i = 0; i < oldCards.length; i++) {
+                newCards.push(await _convertOldCardToNewCard(oldCards[i]));
+            }
+
+            if (serialize) {
+                return newCards.join('.');
+            }
+            return newCards;
+        };
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Contract Token Migration
 
-        //
-        // Migrate GUM (ERC20) Tokens
-        //
         let account;
-        let oldAmount;
-        let newAmount;
-        for (let i = 0; i < accountsToMigrate.erc20.length; i++) {
-            account = accountsToMigrate.erc20[i];
+        let response;
+        let tokenCount;
+        let oldTokenId;
+        let newTokenId;
+        let oldHash;
+        let newHash;
+        let txReceipt;
+        let tokenIndex;
 
-            Lib.log({separator: true});
-            Lib.log({spacer: true});
-            Lib.log({msg: `Migrating GUM for Token Holder "${account}"...`});
-            receipt = await cryptoCardsGumDistributor.migrateTokenHolder(account, _getTxOptions());
-            oldAmount = web3.utils.toBN(receipt.logs[0].args.oldAmount).div(ETH_UNIT).toString();
-            newAmount = web3.utils.toBN(receipt.logs[0].args.newAmount).div(ETH_UNIT).toString();
-            Lib.verbose && Lib.log({msg: ` - Migrated ${oldAmount} Old Tokens for ${newAmount} New Tokens`, indent: 1});
-            Lib.logTxResult(receipt);
-            totalGas += receipt.receipt.gasUsed;
+        //
+        // Migrate Pack (ERC721) Tokens
+        //
+        if (MIGRATE_PACKS) {
+            Lib.log({msg: `Pack Token Holders: ${accountsToMigrate.erc721.length}`});
+            for (let i = 0; i < accountsToMigrate.erc721.length; i++) {
+                account = accountsToMigrate.erc721[i];
+
+                Lib.log({separator: true});
+                Lib.log({spacer: true});
+                Lib.log({msg: `Get Packs for Token Holder "${account}"...`});
+                response = await cryptoCardsTokenMigrator.packsBalanceOf(account);
+                tokenCount = web3.utils.toBN(response).toNumber();
+                Lib.verbose && Lib.log({msg: `Migrating  ${tokenCount} Old Pack-Tokens...`, indent: 1});
+
+                for (tokenIndex = 0; tokenIndex < tokenCount; tokenIndex++) {
+                    Lib.log({spacer: true});
+                    Lib.log({separator: true});
+
+                    // Get Old Pack Token ID
+                    response = await cryptoCardsTokenMigrator.packsTokenOfOwnerByIndex(account, tokenIndex);
+                    oldTokenId = web3.utils.toBN(response).toString();
+
+                    // Get Hash of Cards in Pack
+                    oldHash = await cryptoCardsTokenMigrator.packHashById(oldTokenId);
+
+                    // Convert Old Card TokenIDs to New Card TokenIDs
+                    newHash = await _convertOldCardsToNewCards(oldHash, true);
+
+                    // Mint New Pack with New Cards
+                    receipt = await cryptoCardsTokenMigrator.mintNewPack(account, newHash, _getTxOptions());
+                    txReceipt = await web3.eth.getTransactionReceipt(receipt.tx);
+
+                    // Get Token ID from "Transfer" event; logs[].topics["fnSig", "from", "to", "tokenId"]
+                    newTokenId = web3.utils.toBN(txReceipt.logs[0].topics[3]).toString(10);
+
+                    // Logs
+                    Lib.verbose && Lib.log({msg: `Migrated [Pack] Old-Token "${oldTokenId}" for New-Token "${newTokenId}"`, indent: 1});
+                    Lib.verbose && Lib.log({msg: `Old Pack-Hash: "${oldHash}"`, indent: 2});
+                    Lib.verbose && Lib.log({msg: `New Pack-Hash: "${newHash}"`, indent: 2});
+                    Lib.logTxResult(receipt);
+                    totalGas += receipt.receipt.gasUsed;
+                }
+            }
+        }
+
+        //
+        // Migrate Card (ERC721) Tokens
+        //
+        if (MIGRATE_CARDS) {
+            Lib.log({msg: `Card Token Holders: ${accountsToMigrate.erc721.length}`});
+            for (let i = 0; i < accountsToMigrate.erc721.length; i++) {
+                account = accountsToMigrate.erc721[i];
+
+                Lib.log({separator: true});
+                Lib.log({spacer: true});
+                Lib.log({msg: `Get Cards for Token Holder "${account}"...`});
+                response = await cryptoCardsTokenMigrator.cardsBalanceOf(account);
+                tokenCount = web3.utils.toBN(response).toString();
+                Lib.verbose && Lib.log({msg: `Migrating ${tokenCount} Old Card-Tokens...`, indent: 1});
+
+                for (tokenIndex = 0; tokenIndex < tokenCount; tokenIndex++) {
+                    Lib.log({spacer: true});
+                    Lib.log({separator: true});
+
+                    // Get Old Card Token ID
+                    response = await cryptoCardsTokenMigrator.cardsTokenOfOwnerByIndex(account, tokenIndex);
+                    oldTokenId = web3.utils.toBN(response).toString();
+
+                    // Get Card-Hash for Card
+                    oldHash = await cryptoCardsTokenMigrator.cardHashById(oldTokenId);
+
+                    // Convert Old Card into New Card
+                    newTokenId = await _convertOldCardToNewCard(oldHash);
+
+                    // Mint New Card
+                    receipt = await cryptoCardsTokenMigrator.mintCard(account, newTokenId, _getTxOptions());
+
+                    // Logs
+                    Lib.verbose && Lib.log({msg: `Migrated [Card] Old-Token: "${oldTokenId}" for New-Token: "${newTokenId}"`, indent: 1});
+                    Lib.verbose && Lib.log({msg: `Old Card-Hash: "${oldHash}"`, indent: 2});
+                    Lib.verbose && Lib.log({msg: `New Card-Hash: "${newTokenId}"`, indent: 2});
+                    Lib.logTxResult(receipt);
+                    totalGas += receipt.receipt.gasUsed;
+                }
+            }
         }
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,7 +218,7 @@ module.exports = async function() {
         Lib.log({msg: `Actual Cost:    ${Lib.fromWeiToEther(totalGas * options.gasPrice)} ETH`});
 
         Lib.log({spacer: true});
-        Lib.log({msg: 'Token Migration Complete!'});
+        Lib.log({msg: 'ERC721 Token Migration Complete!'});
         process.exit(0);
     }
     catch (err) {
@@ -116,3 +226,21 @@ module.exports = async function() {
         process.exit(1);
     }
 };
+
+
+function _packCardBits({year, gen, rank, combined, specialty, issue, gum, eth, traits}) {
+    //
+    // From Solidity Contract:
+    //     return uint256(y) | (uint256(g) << 8) | (uint256(r) << 16) | (uint256(c) << 32) | (uint256(s) << 40) | (uint256(i) << 52) | (uint256(gm) << 84) | (uint256(e) << 116) | (uint256(t) << 148);
+    //
+    let cardInt = bigInt(year);
+    cardInt = cardInt.or(bigInt(gen).shiftLeft(8));
+    cardInt = cardInt.or(bigInt(rank).shiftLeft(16));
+    cardInt = cardInt.or(bigInt(combined).shiftLeft(32));
+    cardInt = cardInt.or(bigInt(specialty).shiftLeft(40));
+    cardInt = cardInt.or(bigInt(issue).shiftLeft(52));
+    cardInt = cardInt.or(bigInt(gum).shiftLeft(84));
+    cardInt = cardInt.or(bigInt(eth).shiftLeft(116));
+    cardInt = cardInt.or(bigInt(traits).shiftLeft(148));
+    return cardInt.toString(10);
+}

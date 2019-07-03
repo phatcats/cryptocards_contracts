@@ -20,7 +20,7 @@ const _ = require('lodash');
 const CryptoCardsPacks = contracts.getFromLocal('CryptoCardsPacks');
 const CryptoCardsCards = contracts.getFromLocal('CryptoCardsCards');
 const CryptoCardsGum = contracts.getFromLocal('CryptoCardsGum');
-const CryptoCardsGumDistributor = contracts.getFromLocal('CryptoCardsGumDistributor');
+const CryptoCardsTokenMigrator = contracts.getFromLocal('CryptoCardsTokenMigrator');
 const CryptoCardsController = contracts.getFromLocal('CryptoCardsController');
 
 const GUM_REGULAR_FLAVOR = 0;
@@ -79,8 +79,8 @@ module.exports = async function() {
         const ddCryptoCardsGum = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsGum');
         const cryptoCardsGum = await Lib.getContractInstance(CryptoCardsGum, ddCryptoCardsGum.address);
 
-        const ddCryptoCardsGumDistributor = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsGumDistributor');
-        const cryptoCardsGumDistributor = await Lib.getContractInstance(CryptoCardsGumDistributor, ddCryptoCardsGumDistributor.address);
+        const ddCryptoCardsTokenMigrator = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsTokenMigrator');
+        const cryptoCardsTokenMigrator = await Lib.getContractInstance(CryptoCardsTokenMigrator, ddCryptoCardsTokenMigrator.address);
 
         const ddCryptoCardsCards = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsCards');
         const cryptoCardsCards = await Lib.getContractInstance(CryptoCardsCards, ddCryptoCardsCards.address);
@@ -96,19 +96,37 @@ module.exports = async function() {
         // Contract Token Linking
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // Assign Distributor of Initial GUM
+        //
+        // CryptoCardsTokenMigrator
+        //
         Lib.log({spacer: true});
-        Lib.log({msg: 'Linking Distributor to Tokens...'});
+        Lib.log({msg: 'Linking Migrator to Tokens...'});
         Lib.verbose && Lib.log({msg: `CryptoCardsGumToken: ${tokenAddress.gumToken}`, indent: 1});
-        receipt = await cryptoCardsGumDistributor.setGumToken(tokenAddress.gumToken, _getTxOptions());
+        receipt = await cryptoCardsTokenMigrator.setGumToken(tokenAddress.gumToken, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
         Lib.verbose && Lib.log({msg: `OLD CryptoCardsGumToken: ${tokenAddress.oldGumToken}`, indent: 1});
-        receipt = await cryptoCardsGumDistributor.setOldGumToken(tokenAddress.oldGumToken, _getTxOptions());
+        receipt = await cryptoCardsTokenMigrator.setOldGumToken(tokenAddress.oldGumToken, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+        Lib.verbose && Lib.log({msg: `CryptoCardsPackToken: ${tokenAddress.packsToken}`, indent: 1});
+        receipt = await cryptoCardsTokenMigrator.setPacksToken(tokenAddress.packsToken, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
         Lib.verbose && Lib.log({msg: `OLD CryptoCardPacks (Packs-Controller): ${tokenAddress.oldPacksCtrl}`, indent: 1});
-        receipt = await cryptoCardsGumDistributor.setOldPacks(tokenAddress.oldPacksCtrl, _getTxOptions());
+        receipt = await cryptoCardsTokenMigrator.setOldPacks(tokenAddress.oldPacksCtrl, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cardsToken}`, indent: 1});
+        receipt = await cryptoCardsTokenMigrator.setCardsToken(tokenAddress.cardsToken, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+        Lib.verbose && Lib.log({msg: `OLD CryptoCardsCardToken (Cards-Token): ${tokenAddress.oldCardsToken}`, indent: 1});
+        receipt = await cryptoCardsTokenMigrator.setOldCardsToken(tokenAddress.oldCardsToken, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+        Lib.verbose && Lib.log({msg: `OLD CryptoCards (Cards-Controller): ${tokenAddress.oldCardsCtrl}`, indent: 1});
+        receipt = await cryptoCardsTokenMigrator.setOldCards(tokenAddress.oldCardsCtrl, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
@@ -164,7 +182,7 @@ module.exports = async function() {
         //
         Lib.log({separator: true});
         Lib.log({spacer: true});
-        Lib.log({msg: 'Updating GUM Initial Accounts...'});
+        Lib.log({msg: 'Updating Migrator with Initial Accounts...'});
         Lib.verbose && Lib.log({msg: `Reserve Account:   ${reserveAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `In-House Account:  ${inHouseAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Bounty Account:    ${bountyAccount}`, indent: 1});
@@ -172,7 +190,7 @@ module.exports = async function() {
         Lib.verbose && Lib.log({msg: `Airdrop Account:   ${airdropAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Gum Contract:      ${cryptoCardsGum.address}`, indent: 1});
         const accounts = [reserveAccount, inHouseAccount, bountyAccount, marketingAccount, airdropAccount, cryptoCardsGum.address];
-        receipt = await cryptoCardsGumDistributor.setInitialAccounts(accounts, _getTxOptions());
+        receipt = await cryptoCardsTokenMigrator.setInitialAccounts(accounts, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
         Lib.log({spacer: true});
@@ -183,7 +201,7 @@ module.exports = async function() {
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Distributing initial GUM to Reserve Accounts...'});
-        receipt = await cryptoCardsGumDistributor.distributeInitialGum(_getTxOptions());
+        receipt = await cryptoCardsTokenMigrator.distributeInitialGum(_getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 

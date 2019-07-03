@@ -1,6 +1,6 @@
 {
   "name": "cryptocardscontracts",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "Phat Cats, Inc.",
   "license": "UNLICENSED",
   "private": true,
@@ -16,6 +16,7 @@
     "merge-all": "sol-merger \"./contracts/*.sol\" ./merged"
   },
   "dependencies": {
+    "big-integer": "^1.6.36",
     "openzeppelin-eth": "^2.1.3",
     "openzeppelin-solidity": "^2.3.0",
     "web3": "^1.0.0-beta.37",

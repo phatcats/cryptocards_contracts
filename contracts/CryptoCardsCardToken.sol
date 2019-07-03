@@ -44,6 +44,7 @@ contract CryptoCardsCardToken {
     function tokenTransfer(address from, address to, uint256 tokenId) public;
 
     function mintCardsFromPack(address to, uint256[] memory tokenIds) public;
+    function mintCard(address to, uint256 tokenId) public;
     function printFor(address owner, uint256 tokenId) public;
     function combineFor(address owner, uint256 tokenA, uint256 tokenB) public returns (uint256);
     function meltFor(address owner, uint256 tokenId) public;

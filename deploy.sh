@@ -48,6 +48,10 @@ echoHeader() {
     echo "-----------------------------------------------------------"
 }
 
+echoBeep() {
+    afplay /System/Library/Sounds/Glass.aiff
+}
+
 setEnvVars() {
     export $(egrep -v '^#' .env | xargs)
 
@@ -150,8 +154,8 @@ deployFresh() {
     packsAddress=$(zos create CryptoCardsPacks --init initialize --args "$ownerAccount")
 
     echoHeader
-    echo "Creating Contract: CryptoCardsGumDistributor"
-    gumDistributor=$(zos create CryptoCardsGumDistributor --init initialize --args "$ownerAccount")
+    echo "Creating Contract: CryptoCardsTokenMigrator"
+    tokenMigrator=$(zos create CryptoCardsTokenMigrator --init initialize --args "$ownerAccount")
 
     echoHeader
     echo "Creating Contract: CryptoCardsController"
@@ -165,12 +169,13 @@ deployFresh() {
     echo " - packsAddress:      $packsAddress"
     echo " - cardsAddress:      $cardsAddress"
     echo " - gumAddress:        $gumAddress"
-    echo " - gumDistributor:    $gumDistributor"
+    echo " - tokenMigrator:     $tokenMigrator"
     echo " - libAddress:        $libAddress"
 
     echoHeader
     echo "Contract Deployment Complete!"
     echo " "
+    echoBeep
 }
 
 deployUpdate() {
@@ -192,12 +197,13 @@ deployUpdate() {
     zos update CryptoCardSPacks
     zos update CryptoCardsTreasury
     zos update CryptoCardsOracle
-    zos update CryptoCardsGumDistributor
+    zos update CryptoCardsTokenMigrator
     zos update CryptoCardsController
 
     echo " "
     echo "Contract Updates Complete!"
     echo " "
+    echoBeep
 }
 
 runInitializations() {
@@ -206,6 +212,7 @@ runInitializations() {
     echoHeader
     echo "Initializing Contracts..."
     truffle exec ./scripts/initializations.js --network "$networkName"
+    echoBeep
 }
 
 runContractLinking() {
@@ -214,6 +221,7 @@ runContractLinking() {
     echoHeader
     echo "Linking Token Contracts..."
     truffle exec ./scripts/link_tokens.js --network "$networkName"
+    echoBeep
 }
 
 runTransactions() {
@@ -222,6 +230,7 @@ runTransactions() {
     echoHeader
     echo "Running Test Transactions..."
     truffle exec ./scripts/transactions.js --network "$networkName"
+    echoBeep
 }
 
 runErc20Migration() {
@@ -230,6 +239,7 @@ runErc20Migration() {
     echoHeader
     echo "Running ERC20 Token Migration..."
     truffle exec ./scripts/migrate_erc20.js --network "$networkName"
+    echoBeep
 }
 
 runErc721Migration() {
@@ -238,6 +248,7 @@ runErc721Migration() {
     echoHeader
     echo "Running ERC721 Token Migration..."
     truffle exec ./scripts/migrate_erc721.js --network "$networkName"
+    echoBeep
 }
 
 
@@ -254,9 +265,9 @@ while [ "$1" != "" ]; do
                                 ;;
         -t | --transactions )   runTransactions="yes"
                                 ;;
-        -m | --migrate20 )      runErc20Migration="yes"
+        -m20 | --migrate20 )    runErc20Migration="yes"
                                 ;;
-        -m | --migrate721 )     runErc721Migration="yes"
+        -m721 | --migrate721 )  runErc721Migration="yes"
                                 ;;
         -v | --verbose )        verbose="yes"
                                 ;;

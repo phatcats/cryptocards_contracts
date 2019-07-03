@@ -67,7 +67,7 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
     //
 
     function getVersion() public pure returns (string memory) {
-        return "v2.0.0";
+        return "v2.0.1";
     }
 
     //

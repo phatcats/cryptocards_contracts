@@ -19,7 +19,7 @@ const _ = require('lodash');
 
 const ETH_UNIT = web3.utils.toBN(1e18);
 
-const CryptoCardsGumDistributor = contracts.getFromLocal('CryptoCardsGumDistributor');
+const CryptoCardsTokenMigrator = contracts.getFromLocal('CryptoCardsTokenMigrator');
 
 Lib.network = process.env.CCC_NETWORK_NAME;
 Lib.networkProvider = process.env.CCC_NETWORK_PROVIDER;
@@ -66,8 +66,8 @@ module.exports = async function() {
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Get Deployed Contracts
-        const ddCryptoCardsGumDistributor = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsGumDistributor');
-        const cryptoCardsGumDistributor = await Lib.getContractInstance(CryptoCardsGumDistributor, ddCryptoCardsGumDistributor.address);
+        const ddCryptoCardsTokenMigrator = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsTokenMigrator');
+        const cryptoCardsTokenMigrator = await Lib.getContractInstance(CryptoCardsTokenMigrator, ddCryptoCardsTokenMigrator.address);
 
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,8 +85,8 @@ module.exports = async function() {
             Lib.log({separator: true});
             Lib.log({spacer: true});
             Lib.log({msg: `Migrating GUM for Token Holder "${account}"...`});
-            receipt = await cryptoCardsGumDistributor.migrateTokenHolder(account, _getTxOptions());
-            oldAmount = web3.utils.toBN(receipt.logs[0].args.oldAmount).div(ETH_UNIT).toString();
+            receipt = await cryptoCardsTokenMigrator.migrateTokenHolder(account, _getTxOptions());
+            oldAmount = web3.utils.toBN(receipt.logs[0].args.oldAmount).toString();
             newAmount = web3.utils.toBN(receipt.logs[0].args.newAmount).div(ETH_UNIT).toString();
             Lib.verbose && Lib.log({msg: ` - Migrated ${oldAmount} Old Tokens for ${newAmount} New Tokens`, indent: 1});
             Lib.logTxResult(receipt);
@@ -106,7 +106,7 @@ module.exports = async function() {
         Lib.log({msg: `Actual Cost:    ${Lib.fromWeiToEther(totalGas * options.gasPrice)} ETH`});
 
         Lib.log({spacer: true});
-        Lib.log({msg: 'Token Migration Complete!'});
+        Lib.log({msg: 'ERC20 Token Migration Complete!'});
         process.exit(0);
     }
     catch (err) {
