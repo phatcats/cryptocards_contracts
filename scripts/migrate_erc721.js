@@ -84,8 +84,7 @@ module.exports = async function() {
             issue = issue.toNumber();
 
             const gum = _.random(GUM_PER_CARD[0], GUM_PER_CARD[1]);
-            const traits = (1 << 2); // OG Token
-            const newTokenData = {year: 0, gen: 0, rank, combined: 0, specialty: 0, issue, gum, eth: 0, traits};
+            const newTokenData = {year: 0, gen: 0, rank, issue, gum, eth: 0};
             return _packCardBits(newTokenData);
         };
 
@@ -147,7 +146,7 @@ module.exports = async function() {
                     newHash = await _convertOldCardsToNewCards(oldHash, true);
 
                     // Mint New Pack with New Cards
-                    receipt = await cryptoCardsTokenMigrator.mintNewPack(account, newHash, _getTxOptions());
+                    receipt = await cryptoCardsTokenMigrator.mintNewPack(account, `0.${newHash}`, _getTxOptions());
                     txReceipt = await web3.eth.getTransactionReceipt(receipt.tx);
 
                     // Get Token ID from "Transfer" event; logs[].topics["fnSig", "from", "to", "tokenId"]
@@ -228,19 +227,16 @@ module.exports = async function() {
 };
 
 
-function _packCardBits({year, gen, rank, combined, specialty, issue, gum, eth, traits}) {
+export function _packCardBits({year, gen, rank, issue, gum, eth}) {
     //
     // From Solidity Contract:
-    //     return uint256(y) | (uint256(g) << 8) | (uint256(r) << 16) | (uint256(c) << 32) | (uint256(s) << 40) | (uint256(i) << 52) | (uint256(gm) << 84) | (uint256(e) << 116) | (uint256(t) << 148);
+    //      (bits[0] | (bits[1] << 4) | (bits[2] << 10) | (bits[3] << 20) | (bits[4] << 32) | (bits[5] << 42);
     //
-    let cardInt = bigInt(year);
-    cardInt = cardInt.or(bigInt(gen).shiftLeft(8));
-    cardInt = cardInt.or(bigInt(rank).shiftLeft(16));
-    cardInt = cardInt.or(bigInt(combined).shiftLeft(32));
-    cardInt = cardInt.or(bigInt(specialty).shiftLeft(40));
-    cardInt = cardInt.or(bigInt(issue).shiftLeft(52));
-    cardInt = cardInt.or(bigInt(gum).shiftLeft(84));
-    cardInt = cardInt.or(bigInt(eth).shiftLeft(116));
-    cardInt = cardInt.or(bigInt(traits).shiftLeft(148));
-    return cardInt.toString(10);
+    let cardInt = bigint(year);
+    cardInt = cardInt.or(bigint(gen).shiftLeft(4));
+    cardInt = cardInt.or(bigint(rank).shiftLeft(10));
+    cardInt = cardInt.or(bigint(issue).shiftLeft(20));
+    cardInt = cardInt.or(bigint(gum).shiftLeft(32));
+    cardInt = cardInt.or(bigint(eth).shiftLeft(42));
+    return cardInt.toString(16);
 }

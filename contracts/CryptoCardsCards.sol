@@ -11,13 +11,10 @@
 
 pragma solidity 0.5.0;
 
-import "./strings.sol";
-
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 import "./CryptoCardsCardToken.sol";
-import "./CryptoCardsLib.sol";
 
 
 //
@@ -26,14 +23,12 @@ import "./CryptoCardsLib.sol";
 //
 
 contract CryptoCardsCards is Initializable, Ownable {
-    using strings for *;
     uint public constant MAX_TRADE_RANKS = 10;
 
     //
     // Storage
     //
     CryptoCardsCardToken internal _cardToken;
-    CryptoCardsLib internal _lib;
 
     // Contract Reference Addresses
     address internal _controller;
@@ -119,11 +114,6 @@ contract CryptoCardsCards is Initializable, Ownable {
     function setCryptoCardsCardToken(CryptoCardsCardToken token) public onlyOwner {
         require(address(token) != address(0), "Invalid address supplied");
         _cardToken = token;
-    }
-
-    function setLibAddress(CryptoCardsLib lib) public onlyOwner {
-        require(address(lib) != address(0), "Invalid address supplied");
-        _lib = lib;
     }
 
     //

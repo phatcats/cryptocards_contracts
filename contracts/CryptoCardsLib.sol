@@ -15,7 +15,6 @@ import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 import "openzeppelin-eth/contracts/access/roles/SignerRole.sol";
 
-
 //
 // NOTE on Ownable:
 //   Owner Account is attached to a Multi-Sig wallet controlled by a minimum of 3 C-Level Executives.
@@ -121,13 +120,37 @@ contract CryptoCardsLib is Initializable, Ownable, SignerRole {
     }
 
     // @dev from https://ethereum.stackexchange.com/questions/64998/converting-from-bytes-in-0-5-x
-    function bytesToUint(string memory _b) public pure returns (uint256){
-        bytes memory b = bytes(_b);
+    function bytesToUint(bytes memory b) public pure returns (uint256) {
         uint256 number;
-        for(uint i=0;i<b.length;i++){
-            number = number + uint256(uint8(b[i]))*(2**(8*(b.length-(i+1))));
+        for (uint i = 0; i < b.length; i++) {
+            number = number + uint256(uint8(b[i])) * (2**(8 * (b.length-(i+1))));
         }
         return number;
+    }
+
+    // Convert an hexadecimal character to their value
+    function fromHexChar(uint8 c) public pure returns (uint8) {
+        if (byte(c) >= byte('0') && byte(c) <= byte('9')) {
+            return c - uint8(byte('0'));
+        }
+        if (byte(c) >= byte('a') && byte(c) <= byte('f')) {
+            return 10 + c - uint8(byte('a'));
+        }
+        if (byte(c) >= byte('A') && byte(c) <= byte('F')) {
+            return 10 + c - uint8(byte('A'));
+        }
+        return 0;
+    }
+
+    // Convert an hexadecimal string to raw bytes
+    function fromHex(string memory s) public pure returns (bytes memory) {
+        bytes memory ss = bytes(s);
+        require(ss.length%2 == 0); // length must be even
+        bytes memory r = new bytes(ss.length/2);
+        for (uint i=0; i<ss.length/2; ++i) {
+            r[i] = byte(fromHexChar(uint8(ss[2*i])) * 16 + fromHexChar(uint8(ss[2*i+1])));
+        }
+        return r;
     }
 
     function _readBits(uint num, uint from, uint len) private pure returns (uint) {
@@ -141,6 +164,7 @@ contract CryptoCardsLib is Initializable, Ownable, SignerRole {
 
     function incrementPurchasedPackCount(address owner, uint256 amount) public onlyController returns (uint256) {
         _purchasedPackCount[owner] = _purchasedPackCount[owner] + amount;
+        return _purchasedPackCount[owner];
     }
 
     //

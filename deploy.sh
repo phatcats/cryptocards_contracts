@@ -99,7 +99,7 @@ startSession() {
     echo " - using proxyAdmin: $proxyAdmin"
     echo " - using owner:      $ownerAccount"
     echo " - using network:    $networkName"
-    zos session --network "$networkName" --from "$1" --expires 3600
+    zos session --network "$networkName" --from "$1" --expires 3600 --timeout 3600
 }
 
 deployFresh() {
@@ -180,11 +180,6 @@ deployFresh() {
 
 deployUpdate() {
     startSession "$proxyAdmin"
-
-    # Recompile All Contracts to avoid "No AST nodes ..." error
-    echo " "
-    echo "Clearing previous build..."
-    rm -rf build/
 
     echo " "
     echo "Pushing Contract Updates.."

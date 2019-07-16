@@ -157,9 +157,9 @@ contract CryptoCardsPacks is Initializable, Ownable {
         uint256[] memory mintedCards = new uint256[](8);
         strings.slice memory s = _packToken.packDataById(packId).toSlice();
         strings.slice memory d = ".".toSlice();
+        s.split(d); // Skip response code
         for (uint i = 0; i < 8; i++) {
-//            mintedCards[i] = _lib.bytesToUint(_lib.fromHex(s.split(d).toString()));
-            mintedCards[i] = _lib.strToUint(s.split(d).toString());
+            mintedCards[i] = _lib.bytesToUint(_lib.fromHex(s.split(d).toString()));
         }
         _cardToken.mintCardsFromPack(owner, mintedCards);
 

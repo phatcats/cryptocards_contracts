@@ -1,7 +1,7 @@
 {
-  "zosversion": "2",
+  "zosversion": "2.2",
   "name": "cryptocardscontracts",
-  "version": "2.0.1",
+  "version": "2.1.8",
   "contracts": {
     "CryptoCardsCards": "CryptoCardsCards",
     "CryptoCardsPacks": "CryptoCardsPacks",
@@ -14,5 +14,11 @@
   },
   "dependencies": {
     "openzeppelin-eth": "^2.1.3"
+  },
+  "compiler": {
+    "manager": "truffle",
+    "compilerSettings": {
+      "optimizer": {}
+    }
   }
 }

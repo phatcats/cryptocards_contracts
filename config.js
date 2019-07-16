@@ -60,10 +60,10 @@ module.exports = {
             packsToken    : '0x01b9707dD7782bB441ec57C1B62D669896859096',
             cardsToken    : '0x89eC3f11E1600BEd981DD2d12404bAAF21c7699c',
             gumToken      : '0xF70B61E3800dFFDA57cf167051CAa0Fb6bA1B0B3',
-            oldPacksCtrl  : '',
-            oldCardsCtrl  : '',
-            oldCardsToken : '',
-            oldGumToken   : ''
+            oldPacksCtrl  : '0x856ee8736b204f926c33db5929328ba950768b6a',
+            oldCardsCtrl  : '0xaad8b7860cf6bb209f9e60f68aae438b2d076ca6',
+            oldCardsToken : '0x81D7E3648579E27679bFc3010e673532BF77c379',
+            oldGumToken   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
         },
         ropsten: {
             packsToken    : '0xc0e043EB91aea2e4543b3a019bd5C8aa494813D6',

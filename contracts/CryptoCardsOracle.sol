@@ -11,13 +11,11 @@
 
 pragma solidity 0.5.0;
 
-import "./strings.sol";
 import "./usingOraclize.sol";
 
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
-import "./CryptoCardsLib.sol";
 import "./CryptoCardsPacks.sol";
 import "./CryptoCardsGum.sol";
 import "./CryptoCardsController.sol";
@@ -29,12 +27,10 @@ import "./CryptoCardsController.sol";
 //
 
 contract CryptoCardsOracle is Ownable, usingOraclize {
-    using strings for *;
 
     //
     // Storage
     //
-    CryptoCardsLib internal cryptoCardsLib;
     CryptoCardsPacks internal cryptoCardsPacks;
     CryptoCardsGum internal cryptoCardsGum;
     CryptoCardsController internal cryptoCardsController;
@@ -52,7 +48,7 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
     // Events
     //
     event ReceivedNewPack(address indexed receiver, bytes16 uuid, uint256 packId);
-    event PackError      (address indexed receiver, bytes16 uuid, uint256 errorCode);
+    event PackError      (address indexed receiver, bytes16 uuid, uint8 errorCode);
 
     //
     // Modifiers
@@ -70,12 +66,12 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Local Only
-//        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
-//        oraclize_setNetwork(networkID_testnet);
+        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
+        oraclize_setNetwork(networkID_testnet);
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        oraclize_setCustomGasPrice(10000000000); // 10 gwei
-        oracleGasLimit = 500000;                 // wei
+        oraclize_setCustomGasPrice(10000000000);  // 10 gwei
+        oracleGasLimit = 310000;                  // wei
     }
 
     //
@@ -92,13 +88,18 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
 
     function getNewPack(address receiver, uint256 gasReserve, bytes16 uuid) public onlyController payable {
         if (gasReserve > address(this).balance) {
-            emit PackError(receiver, uuid, uint256(100));  // Insufficient Funds for Oracle Error
+            emit PackError(receiver, uuid, uint8(100));  // Insufficient Funds for Oracle Error
         } else {
-            string[] memory apiArgs = new string[](2);
-            apiArgs[0] = string(abi.encodePacked('{"owner":"', receiver, '","uuid":"', uuid, '"}'));
-            apiArgs[1] = apiEndpoint;
+            string memory apiParams = string(abi.encodePacked('{"uuid":"', uuid, '"}'));
+            bytes32 queryId = oraclize_query("URL", apiEndpoint, apiParams, oracleGasLimit);
 
-            bytes32 queryId = oraclize_query("URL", apiArgs, oracleGasLimit);
+            // Not working due to address
+//            string memory apiParams = string(abi.encodePacked('{"owner":"', receiver, '","uuid":"', uuid, '"}'));
+//            bytes32 queryId = oraclize_query("URL", apiEndpoint, apiParams, oracleGasLimit);
+
+            // Old way
+//            bytes32 queryId = oraclize_query("URL", apiEndpoint, oracleGasLimit);
+
             uuids[uuid] = true;
             oracleIdToOwner[queryId] = receiver;
             oracleIdToUUID[queryId] = uuid;
@@ -113,18 +114,16 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
 
         address receiver = oracleIdToOwner[_queryId];
 
-        strings.slice memory s = _result.toSlice();
         // Code 0 = All-Good - Pack Generated
         // Code 1+ = Error Code
-        uint256 responseCode = cryptoCardsLib.strToUint(s.split(".".toSlice()).toString());
+        uint8 responseCode = _getResponseCode(_result);
 
         // Check for Error from API
         if (responseCode > 0) {
             emit PackError(receiver, oracleIdToUUID[_queryId], responseCode);  // API Error
         } else {
             // Mint Pack and Transfer GUM Reward
-            string memory packData = s.toString();
-            uint256 packId = cryptoCardsPacks.mintPack(receiver, packData);
+            uint256 packId = cryptoCardsPacks.mintPack(receiver, _result);
             cryptoCardsGum.transferPackGum(receiver, 1);
             emit ReceivedNewPack(receiver, oracleIdToUUID[_queryId], packId);
         }
@@ -153,11 +152,6 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
         cryptoCardsGum = _gum;
     }
 
-    function setLibAddress(CryptoCardsLib _lib) public onlyOwner {
-        require(address(_lib) != address(0), "Invalid address supplied");
-        cryptoCardsLib = _lib;
-    }
-
     function updateApiEndpoint(string memory _endpoint) public onlyOwner {
         apiEndpoint = _endpoint;
     }
@@ -168,5 +162,14 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
 
     function updateOracleGasLimit(uint _wei) public onlyOwner {
         oracleGasLimit = _wei;
+    }
+
+    //
+    // Private
+    //
+
+    function _getResponseCode(string memory str) internal pure returns (uint8) {
+        bytes memory b = bytes(str);
+        return uint8(b[0]) - 48;
     }
 }

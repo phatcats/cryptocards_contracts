@@ -25,21 +25,11 @@ contract CryptoCardsCardToken {
 //    function batchTransferFrom(address from, address to, uint256[] memory tokenIds) public;
 
     // CryptoCardsCardToken
-//    function getYear(uint256 tokenId) public pure returns (uint);
-//    function getGeneration(uint256 tokenId) public pure returns (uint);
-//    function getRank(uint256 tokenId) public pure returns (uint);
     function getTypeIndicators(uint256 tokenId) public pure returns (uint, uint, uint);
-//    function getCombinedCount(uint256 tokenId) public pure returns (uint);
-//    function getSpecialty(uint256 tokenId) public pure returns (uint);
-//    function getIssue(uint256 tokenId) public pure returns (uint);
-//    function getWrappedGum(uint256 tokenId) public pure returns (uint);
-//    function getTraits(uint256 tokenId) public pure returns (uint);
-//    function hasTrait(uint256 tokenId, uint256 trait) public pure returns (bool);
     function getTotalIssued(uint256 tokenId) public view returns (uint);
     function isTokenPrinted(uint256 tokenId) public view returns (bool);
     function canCombine(uint256 tokenA, uint256 tokenB) public view returns (bool);
     function getEarnedGum(address owner) public view returns (uint256);
-
     function claimEarnedGum(address owner, uint256 amountClaimed) public returns (uint256);
     function tokenTransfer(address from, address to, uint256 tokenId) public;
 
