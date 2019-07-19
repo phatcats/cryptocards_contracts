@@ -118,10 +118,6 @@ module.exports = async function() {
         receipt = await cryptoCardsOracle.setPacksAddress(ddCryptoCardsPacks.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `Gum: ${ddCryptoCardsGum.address}`, indent: 1});
-        receipt = await cryptoCardsOracle.setGumAddress(ddCryptoCardsGum.address, _getTxOptions());
-        Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
 
         //
         // CryptoCardsTreasury
@@ -152,12 +148,12 @@ module.exports = async function() {
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Gum to Contracts...'});
-        Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
-        receipt = await cryptoCardsGum.setContractController(ddCryptoCardsController.address, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardsPacks.address}`, indent: 1});
+        receipt = await cryptoCardsGum.setPacksAddress(ddCryptoCardsPacks.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `Oracle: ${ddCryptoCardsOracle.address}`, indent: 1});
-        receipt = await cryptoCardsGum.setOracleAddress(ddCryptoCardsOracle.address, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `Cards: ${ddCryptoCardsCards.address}`, indent: 1});
+        receipt = await cryptoCardsGum.setCardsAddress(ddCryptoCardsCards.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
@@ -169,6 +165,10 @@ module.exports = async function() {
         Lib.log({msg: 'Linking Cards to Contracts...'});
         Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
         receipt = await cryptoCardsCards.setContractController(ddCryptoCardsController.address, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+        Lib.verbose && Lib.log({msg: `Gum: ${ddCryptoCardsGum.address}`, indent: 1});
+        receipt = await cryptoCardsCards.setGumAddress(ddCryptoCardsGum.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
 
@@ -184,6 +184,10 @@ module.exports = async function() {
         totalGas += receipt.receipt.gasUsed;
         Lib.verbose && Lib.log({msg: `Oracle: ${ddCryptoCardsOracle.address}`, indent: 1});
         receipt = await cryptoCardsPacks.setOracleAddress(ddCryptoCardsOracle.address, _getTxOptions());
+        Lib.logTxResult(receipt);
+        totalGas += receipt.receipt.gasUsed;
+        Lib.verbose && Lib.log({msg: `Gum: ${ddCryptoCardsGum.address}`, indent: 1});
+        receipt = await cryptoCardsPacks.setGumAddress(ddCryptoCardsGum.address, _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
         Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});

@@ -140,10 +140,6 @@ module.exports = async function() {
         receipt = await cryptoCardsGum.setGumToken(tokenAddress.gumToken, GUM_REGULAR_FLAVOR, web3.utils.asciiToHex('Regular'), _getTxOptions());
         Lib.logTxResult(receipt);
         totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cardsToken}`, indent: 1});
-        receipt = await cryptoCardsGum.setCardToken(tokenAddress.cardsToken, _getTxOptions());
-        Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
 
         Lib.log({msg: 'Setting Gum per Pack...'});
         Lib.verbose && Lib.log({msg: `setGumPerPack: ${options.gumPerPack}`, indent: 1});

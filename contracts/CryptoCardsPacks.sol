@@ -9,7 +9,7 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.5.0;
+pragma solidity 0.5.2;
 
 import "./strings.sol";
 
@@ -18,6 +18,7 @@ import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 import "./CryptoCardsPackToken.sol";
 import "./CryptoCardsCardToken.sol";
+import "./CryptoCardsGum.sol";
 import "./CryptoCardsLib.sol";
 
 
@@ -34,6 +35,7 @@ contract CryptoCardsPacks is Initializable, Ownable {
     //
     CryptoCardsPackToken internal _packToken;
     CryptoCardsCardToken internal _cardToken;
+    CryptoCardsGum internal _gum;
     CryptoCardsLib internal _lib;
 
     // Contract Reference Addresses
@@ -94,6 +96,35 @@ contract CryptoCardsPacks is Initializable, Ownable {
 //        return _packToken.tokenOfOwnerByIndex(owner, index);
 //    }
 
+    function updatePackPrice(uint256 packId, uint256 packPrice, bytes16 uuid) public {
+        address packOwner = _packToken.ownerOf(packId); // will revert if owner == address(0)
+        require(msg.sender == packOwner, "Invalid owner supplied or owner is not pack-owner");
+        _packSalePriceById[packId] = packPrice;
+        emit PackPriceSet(packOwner, uuid, packId, packPrice);
+    }
+
+    function openPack(uint256 packId, bytes16 uuid) public {
+        address owner = _packToken.ownerOf(packId); // will revert if owner == address(0)
+        require(msg.sender == owner, "opener must be owner of pack");
+
+        uint256[] memory mintedCards = new uint256[](8);
+        strings.slice memory s = _packToken.packDataById(packId).toSlice();
+        strings.slice memory d = ".".toSlice();
+        s.split(d); // Skip response code
+        for (uint i = 0; i < 8; i++) {
+            mintedCards[i] = _lib.bytesToUint(_lib.fromHex(s.split(d).toString()));
+        }
+        _cardToken.mintCardsFromPack(owner, mintedCards);
+
+        // Burn Pack Token
+        _packToken.burnPack(owner, packId);
+
+        // Transfer Pack-Gum
+        _gum.transferPackGum(owner, 1);
+
+        emit OpenedPack(owner, uuid, packId, mintedCards);
+    }
+
     //
     // Only Owner
     //
@@ -118,6 +149,11 @@ contract CryptoCardsPacks is Initializable, Ownable {
         _cardToken = token;
     }
 
+    function setGumAddress(CryptoCardsGum gum) public onlyOwner {
+        require(address(gum) != address(0), "Invalid address supplied");
+        _gum = gum;
+    }
+
     function setLibAddress(CryptoCardsLib lib) public onlyOwner {
         require(address(lib) != address(0), "Invalid address supplied");
         _lib = lib;
@@ -126,13 +162,6 @@ contract CryptoCardsPacks is Initializable, Ownable {
     //
     // Only Controller Contract
     //
-
-    function updatePackPrice(address owner, uint256 packId, uint256 packPrice, bytes16 uuid) public onlyController {
-        address packOwner = _packToken.ownerOf(packId); // will revert if owner == address(0)
-        require(owner == packOwner, "Invalid owner supplied or owner is not pack-owner");
-        _packSalePriceById[packId] = packPrice;
-        emit PackPriceSet(owner, uuid, packId, packPrice);
-    }
 
     function transferPackForBuyer(address receiver, address owner, uint256 packId, uint256 pricePaid, bytes16 uuid) public onlyController returns (uint256) {
         address packOwner = _packToken.ownerOf(packId); // will revert if owner == address(0)
@@ -148,25 +177,6 @@ contract CryptoCardsPacks is Initializable, Ownable {
         emit PackSale(owner, receiver, uuid, packId, packPrice);
 
         return packPrice;
-    }
-
-    function openPack(address opener, uint256 packId, bytes16 uuid) public onlyController {
-        address owner = _packToken.ownerOf(packId); // will revert if owner == address(0)
-        require(opener == owner, "opener must be owner of pack");
-
-        uint256[] memory mintedCards = new uint256[](8);
-        strings.slice memory s = _packToken.packDataById(packId).toSlice();
-        strings.slice memory d = ".".toSlice();
-        s.split(d); // Skip response code
-        for (uint i = 0; i < 8; i++) {
-            mintedCards[i] = _lib.bytesToUint(_lib.fromHex(s.split(d).toString()));
-        }
-        _cardToken.mintCardsFromPack(owner, mintedCards);
-
-        // Burn Pack Token
-        _packToken.burnPack(opener, packId);
-
-        emit OpenedPack(opener, uuid, packId, mintedCards);
     }
 
     //

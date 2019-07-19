@@ -9,12 +9,13 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.5.0;
+pragma solidity 0.5.2;
 
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 import "./CryptoCardsCardToken.sol";
+import "./CryptoCardsGum.sol";
 
 
 //
@@ -29,6 +30,7 @@ contract CryptoCardsCards is Initializable, Ownable {
     // Storage
     //
     CryptoCardsCardToken internal _cardToken;
+    CryptoCardsGum internal _gum;
 
     // Contract Reference Addresses
     address internal _controller;
@@ -98,46 +100,35 @@ contract CryptoCardsCards is Initializable, Ownable {
         return _cardToken.canCombine(tokenA, tokenB);
     }
 
-    function getEarnedGum(address owner) public view returns (uint256) {
-        return _cardToken.getEarnedGum(owner);
+    function combineCards(uint256 tokenA, uint256 tokenB) public returns (uint256) {
+        uint256 newTokenId = _cardToken.combineFor(msg.sender, tokenA, tokenB);
+        _resetCardValue(tokenA);
+        _resetCardValue(tokenB);
+        return newTokenId;
     }
 
-    //
-    // Only Owner
-    //
-
-    function setContractController(address controller) public onlyOwner {
-        require(controller != address(0), "Invalid address supplied");
-        _controller = controller;
+    function meltCard(uint256 tokenId) public {
+        uint wrappedGum = _cardToken.meltFor(msg.sender, tokenId);
+        _resetCardValue(tokenId);
+        _gum.transferCardGum(msg.sender, wrappedGum);
     }
 
-    function setCryptoCardsCardToken(CryptoCardsCardToken token) public onlyOwner {
-        require(address(token) != address(0), "Invalid address supplied");
-        _cardToken = token;
-    }
-
-    //
-    // Only Controller Contract
-    //
-
-    function updateCardPrice(address owner, uint256 cardId, uint256 cardPrice, bytes16 uuid)
+    function updateCardPrice(uint256 cardId, uint256 cardPrice, bytes16 uuid)
         public
-        onlyController
         onlyUnprintedCards(cardId)
     {
         address cardOwner = _cardToken.ownerOf(cardId); // will revert if owner == address(0)
-        require(owner == cardOwner, "Invalid owner supplied or owner is not card-owner");
+        require(msg.sender == cardOwner, "Invalid owner supplied or owner is not card-owner");
         _cardSalePriceById[cardId] = cardPrice;
-        emit CardPriceSet(owner, uuid, cardId, cardPrice);
+        emit CardPriceSet(cardOwner, uuid, cardId, cardPrice);
     }
 
-    function updateCardTradeValue(address owner, uint256 cardId, uint16 cardRank, uint8[] memory cardGens, uint8[] memory cardYears, bytes16 uuid)
+    function updateCardTradeValue(uint256 cardId, uint16 cardRank, uint8[] memory cardGens, uint8[] memory cardYears, bytes16 uuid)
         public
-        onlyController
         onlyUnprintedCards(cardId)
     {
         address cardOwner = _cardToken.ownerOf(cardId); // will revert if owner == address(0)
-        require(owner == cardOwner, "Invalid owner supplied or owner is not card-owner");
+        require(msg.sender == cardOwner, "Invalid owner supplied or owner is not card-owner");
 
         // cardRanks are 1-based, but our storage is 0-based
         _cardAllowedTradeRank[cardId] = cardRank-1;
@@ -149,6 +140,29 @@ contract CryptoCardsCards is Initializable, Ownable {
         }
         emit CardTradeValueSet(cardOwner, uuid, cardId, cardRank, cardGens, cardYears);
     }
+
+    //
+    // Only Owner
+    //
+
+    function setContractController(address controller) public onlyOwner {
+        require(controller != address(0), "Invalid address supplied");
+        _controller = controller;
+    }
+
+    function setGumAddress(CryptoCardsGum gum) public onlyOwner {
+        require(address(gum) != address(0), "Invalid address supplied");
+        _gum = gum;
+    }
+
+    function setCryptoCardsCardToken(CryptoCardsCardToken token) public onlyOwner {
+        require(address(token) != address(0), "Invalid address supplied");
+        _cardToken = token;
+    }
+
+    //
+    // Only Controller Contract
+    //
 
     function transferCardForBuyer(address receiver, address owner, uint256 cardId, uint256 pricePaid, bytes16 uuid)
         public
@@ -191,37 +205,23 @@ contract CryptoCardsCards is Initializable, Ownable {
         emit CardTrade(owner, desiredCardRealOwner, uuid, ownerCardId, desiredCardId);
     }
 
-    function printCards(address owner, uint256[] memory cardIds)
-        public
-        onlyController
-    {
-        // Mark Cards as Printed
-        for (uint i = 0; i < cardIds.length; i++) {
-            if (_cardToken.ownerOf(cardIds[i]) == owner) {
-                _resetCardValue(cardIds[i]);
-                _cardToken.printFor(owner, cardIds[i]);
-            }
-        }
+    function printCard(uint256 tokenId) public onlyController {
+        uint wrappedGum = _cardToken.printFor(msg.sender, tokenId);
+        _gum.transferCardGum(msg.sender, wrappedGum);
     }
 
-    function combineCards(address owner, uint256 tokenA, uint256 tokenB)
-        public
-        onlyController
-        returns (uint256)
-    {
-        return _cardToken.combineFor(owner, tokenA, tokenB);
-    }
-
-    function meltCards(address owner, uint256[] memory cardIds)
-        public
-        onlyController
-    {
-        // Melt Cards (Burn and claim underlying assets)
-        for (uint i = 0; i < cardIds.length; i++) {
-            _resetCardValue(cardIds[i]);
-            _cardToken.meltFor(owner, cardIds[i]);
-        }
-    }
+//    function printCards(address owner, uint256[] memory cardIds)
+//        public
+//        onlyController
+//    {
+//        // Mark Cards as Printed
+//        for (uint i = 0; i < cardIds.length; i++) {
+//            if (_cardToken.ownerOf(cardIds[i]) == owner) {
+//                _resetCardValue(cardIds[i]);
+//                _cardToken.printFor(owner, cardIds[i]);
+//            }
+//        }
+//    }
 
     //
     // Private

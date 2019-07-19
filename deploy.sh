@@ -31,15 +31,15 @@ verbose=
 
 usage() {
     echo "usage: ./deploy.sh [[-n [local|ropsten|mainnet] [-f] [-v]] | [-h]]"
-    echo "  -n | --network [local|ropsten|mainnet]    Deploys contracts to the specified network (default is local)"
-    echo "  -f | --fresh                              Run all deployments from the beginning, instead of updating"
-    echo "  -i | --initialize                         Run Contract Initializations"
-    echo "  -l | --link                               Run Contract Linking"
-    echo "  -t | --transactions                       Run Test Transactions (Local Only)"
-    echo "  -m | --migrate20                          Run ERC20 Token Migration"
-    echo "  -m | --migrate721                         Run ERC721 Token Migration"
-    echo "  -v | --verbose                            Outputs verbose logging"
-    echo "  -h | --help                               Displays this help screen"
+    echo "  -n    | --network [local|ropsten|mainnet]    Deploys contracts to the specified network (default is local)"
+    echo "  -f    | --fresh                              Run all deployments from the beginning, instead of updating"
+    echo "  -i    | --initialize                         Run Contract Initializations"
+    echo "  -l    | --link                               Run Contract Linking"
+    echo "  -t    | --transactions                       Run Test Transactions (Local Only)"
+    echo "  -m20  | --migrate20                          Run ERC20 Token Migration"
+    echo "  -m721 | --migrate721                         Run ERC721 Token Migration"
+    echo "  -v    | --verbose                            Outputs verbose logging"
+    echo "  -h    | --help                               Displays this help screen"
 }
 
 echoHeader() {

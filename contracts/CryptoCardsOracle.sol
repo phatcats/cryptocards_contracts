@@ -9,7 +9,7 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.5.0;
+pragma solidity 0.5.2;
 
 import "./usingOraclize.sol";
 
@@ -17,7 +17,6 @@ import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 import "./CryptoCardsPacks.sol";
-import "./CryptoCardsGum.sol";
 import "./CryptoCardsController.sol";
 
 
@@ -32,7 +31,6 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
     // Storage
     //
     CryptoCardsPacks internal cryptoCardsPacks;
-    CryptoCardsGum internal cryptoCardsGum;
     CryptoCardsController internal cryptoCardsController;
 
     uint256 internal oracleGasLimit;
@@ -66,8 +64,8 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Local Only
-        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
-        oraclize_setNetwork(networkID_testnet);
+//        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
+//        oraclize_setNetwork(networkID_testnet);
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         oraclize_setCustomGasPrice(10000000000);  // 10 gwei
@@ -124,7 +122,6 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
         } else {
             // Mint Pack and Transfer GUM Reward
             uint256 packId = cryptoCardsPacks.mintPack(receiver, _result);
-            cryptoCardsGum.transferPackGum(receiver, 1);
             emit ReceivedNewPack(receiver, oracleIdToUUID[_queryId], packId);
         }
         delete uuids[oracleIdToUUID[_queryId]];
@@ -145,11 +142,6 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
     function setPacksAddress(CryptoCardsPacks _packs) public onlyOwner {
         require(address(_packs) != address(0), "Invalid address supplied");
         cryptoCardsPacks = _packs;
-    }
-
-    function setGumAddress(CryptoCardsGum _gum) public onlyOwner {
-        require(address(_gum) != address(0), "Invalid address supplied");
-        cryptoCardsGum = _gum;
     }
 
     function updateApiEndpoint(string memory _endpoint) public onlyOwner {

@@ -10,7 +10,7 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.5.0;
+pragma solidity 0.5.2;
 
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
@@ -62,7 +62,7 @@ contract CryptoCardsTokenMigrator is Initializable, Ownable {
     // [2] = Bounty Rewards         (Sent to Bounty-Rewards Account)
     // [3] = Marketing Rewards      (Sent to Marketing Rewards Account)
     // [4] = Airdrop                (Sent to Airdrop-Escrow Account)
-    // [5] = For Packs              (Sent to CryptoCardsGum Contract for distribution)
+    // [5] = For Packs and Cards    (Sent to CryptoCardsGum Contract for distribution)
     address[6] internal _initialAccounts;
     uint256[6] internal _initialAmounts;
 

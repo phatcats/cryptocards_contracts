@@ -9,13 +9,12 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.5.0;
+pragma solidity 0.5.2;
 
 import "zos-lib/contracts/Initializable.sol";
 import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 import "./CryptoCardsGumToken.sol";
-import "./CryptoCardsCardToken.sol";
 
 //
 // NOTE on Ownable:
@@ -28,26 +27,26 @@ contract CryptoCardsGum is Initializable, Ownable {
     //
     // Storage
     //
-    CryptoCardsCardToken internal _cardToken;
     CryptoCardsGumToken[MAX_FLAVORS] internal _gumToken;
+
     bytes32[MAX_FLAVORS] internal _flavorName;
     uint256[MAX_FLAVORS] internal _gumPerPack;
     uint internal _flavorsAvailable;
     uint internal _earnedGumFlavor;
 
-    address internal _cryptoCardsController;
-    address internal _cryptoCardsOracle;
+    address internal _cryptoCardsPacks;
+    address internal _cryptoCardsCards;
 
     //
     // Modifiers
     //
-    modifier onlyController() {
-        require(msg.sender == _cryptoCardsController, "Action only allowed by Controller contract");
+    modifier onlyPacks() {
+        require(msg.sender == _cryptoCardsPacks, "Action only allowed by Packs contract");
         _;
     }
 
-    modifier onlyOracle() {
-        require(msg.sender == _cryptoCardsOracle, "Action only allowed by Oracle contract");
+    modifier onlyCards() {
+        require(msg.sender == _cryptoCardsCards, "Action only allowed by Packs contract");
         _;
     }
 
@@ -95,19 +94,14 @@ contract CryptoCardsGum is Initializable, Ownable {
     // Only Owner
     //
 
-    function setContractController(address controller) public onlyOwner {
-        require(controller != address(0x0), "Invalid address supplied");
-        _cryptoCardsController = controller;
+    function setPacksAddress(address packs) public onlyOwner {
+        require(address(packs) != address(0x0), "Invalid address supplied");
+        _cryptoCardsPacks = packs;
     }
 
-    function setOracleAddress(address oracle) public onlyOwner {
-        require(oracle != address(0x0), "Invalid address supplied");
-        _cryptoCardsOracle = oracle;
-    }
-
-    function setCardToken(CryptoCardsCardToken token) public onlyOwner {
-        require(address(token) != address(0x0), "Invalid address supplied");
-        _cardToken = token;
+    function setCardsAddress(address cards) public onlyOwner {
+        require(address(cards) != address(0x0), "Invalid address supplied");
+        _cryptoCardsCards = cards;
     }
 
     function setGumToken(CryptoCardsGumToken token, uint flavor, bytes32 flavorName) public onlyOwner {
@@ -130,36 +124,37 @@ contract CryptoCardsGum is Initializable, Ownable {
     }
 
     //
-    // Only Controller Contract
+    // Only Cards Contract
     //
 
-    function claimEarnedGum(address to) public onlyController returns (uint256) {
+    function transferCardGum(address to, uint gumAmount) public onlyCards returns (uint256) {
         require(to != address(0x0), "Invalid address supplied");
 
-        uint256 earnedGum = _cardToken.getEarnedGum(to);
         uint256 available = packGumAvailable(_earnedGumFlavor);
-        if (earnedGum > available) {
-            earnedGum = available;
+        if (gumAmount > available) {
+            gumAmount = available;
         }
 
         // Transfer Gum Tokens
-        _cardToken.claimEarnedGum(to, earnedGum);
-        _gumToken[_earnedGumFlavor].transfer(to, earnedGum);
-        return earnedGum;
+        _gumToken[_earnedGumFlavor].transfer(to, gumAmount);
+        return gumAmount;
     }
 
     //
-    // Only Oracle Contract
+    // Only Packs Contract
     //
 
-    function transferPackGum(address to, uint packCount) public onlyOracle {
-        for (uint i = 0; i < _flavorsAvailable; i++) {
-            uint256 packGum = _gumPerPack[i] * packCount;
-            uint256 available = packGumAvailable(i);
-            if (packGum > available) {
-                packGum = available;
-            }
-            _gumToken[i].transfer(to, packGum);
+    function transferPackGum(address to, uint packCount) public onlyPacks returns (uint256) {
+        require(to != address(0x0), "Invalid address supplied");
+
+        uint256 gumAmount = _gumPerPack[_earnedGumFlavor] * packCount;
+        uint256 available = packGumAvailable(_earnedGumFlavor);
+        if (gumAmount > available) {
+            gumAmount = available;
         }
+
+        // Transfer Gum Tokens
+        _gumToken[_earnedGumFlavor].transfer(to, gumAmount);
+        return gumAmount;
     }
 }

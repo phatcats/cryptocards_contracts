@@ -9,7 +9,7 @@
  *   - Callisto Security Department - https://callisto.network/
  */
 
-pragma solidity 0.5.0;
+pragma solidity 0.5.2;
 
 
 contract CryptoCardsCardToken {
@@ -29,14 +29,12 @@ contract CryptoCardsCardToken {
     function getTotalIssued(uint256 tokenId) public view returns (uint);
     function isTokenPrinted(uint256 tokenId) public view returns (bool);
     function canCombine(uint256 tokenA, uint256 tokenB) public view returns (bool);
-    function getEarnedGum(address owner) public view returns (uint256);
-    function claimEarnedGum(address owner, uint256 amountClaimed) public returns (uint256);
     function tokenTransfer(address from, address to, uint256 tokenId) public;
 
     function mintCardsFromPack(address to, uint256[] memory tokenIds) public;
     function mintCard(address to, uint256 tokenId) public;
-    function printFor(address owner, uint256 tokenId) public;
-    function combineFor(address owner, uint256 tokenA, uint256 tokenB) public returns (uint256);
-    function meltFor(address owner, uint256 tokenId) public;
+    function printFor(address owner, uint256 tokenId) public returns (uint);
+    function combineFor(address owner, uint256 tokenA, uint256 tokenB) public returns (uint);
+    function meltFor(address owner, uint256 tokenId) public returns (uint);
 
 }

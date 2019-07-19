@@ -28,11 +28,11 @@ module.exports = {
         },
         ropsten: {
             // Return instance rather than a function, as per: https://github.com/trufflesuite/truffle-hdwallet-provider/issues/65#issuecomment-417417192
-            provider      : new HDWalletProvider(wallets.ropsten.mnemonic[walletMnemonicType], wallets.ropsten.apiEndpoint, wallets.ropsten.accountIndex), //, 1, true, "m/44'/1'/0'/0/"),
+            provider      : new HDWalletProvider(wallets.ropsten.mnemonic[walletMnemonicType], wallets.ropsten.apiEndpoint),//, wallets.ropsten.accountIndex), //, 1, true, "m/44'/1'/0'/0/"),
             network_id    : 3,                                  // Ropsten
             gas           : networkOptions.ropsten.gas,         // https://ropsten.etherscan.io/blocks
             gasPrice      : networkOptions.ropsten.gasPrice,    // https://ropsten.etherscan.io/gastracker
-            confirmations : 0,                                  // # of confs to wait between deployments. (default: 0)
+            confirmations : 1,                                  // # of confs to wait between deployments. (default: 0)
             timeoutBlocks : 200,                                // # of blocks before a deployment times out  (minimum/default: 50)
             skipDryRun    : false                               // Skip dry run before migrations? (default: false for public nets)
         },
@@ -48,7 +48,7 @@ module.exports = {
     },
     compilers: {
         solc: {
-            version: '0.5.0',
+            version: '0.5.2',
             optimizer: {
                 enabled: true,
                 runs: 200

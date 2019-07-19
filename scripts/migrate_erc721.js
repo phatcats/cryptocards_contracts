@@ -16,13 +16,13 @@ global.web3 = web3;
 const { Lib } = require('./common');
 const { networkOptions, migrationAccounts, contracts } = require('../config');
 const _ = require('lodash');
-const bigInt = require('big-integer');
+const bigint = require('big-integer');
 
 const ETH_UNIT = web3.utils.toBN(1e18);
 const GUM_PER_CARD = [15, 30];
 
-const MIGRATE_PACKS = false;
-const MIGRATE_CARDS = true;
+const MIGRATE_PACKS = true;
+const MIGRATE_CARDS = false;
 
 const CryptoCardsTokenMigrator = contracts.getFromLocal('CryptoCardsTokenMigrator');
 
@@ -227,7 +227,7 @@ module.exports = async function() {
 };
 
 
-export function _packCardBits({year, gen, rank, issue, gum, eth}) {
+function _packCardBits({year, gen, rank, issue, gum, eth}) {
     //
     // From Solidity Contract:
     //      (bits[0] | (bits[1] << 4) | (bits[2] << 10) | (bits[3] << 20) | (bits[4] << 32) | (bits[5] << 42);

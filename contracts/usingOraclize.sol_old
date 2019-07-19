@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 // This api is currently targeted at 0.4.18, please import oraclizeAPI_pre0.4.sol or oraclizeAPI_0.4 where necessary
 
-pragma solidity 0.5.0;
+pragma solidity 0.5.2;
 
 contract OraclizeI {
     address public cbAddress;

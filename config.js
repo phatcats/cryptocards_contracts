@@ -42,7 +42,7 @@ module.exports = {
             oracleApiEndpoint   : 'BEJLg+4QyJdFu5IeCfdZrVnurkh/GB9aEY6rGDuyHSBLtOs1BsPdo0/aTr6qaIVvLlPZUku8TT7PEFY6OwbQqa6l/+ATw2Uf+iWkhjsg5seU31FHvahFHELYm1Kuu5B46g0h1biap3OtXDzys4RZgQ6HDNbF3eq9Xw4Zwi2vzQlt/LSp3lJHpmuYWu78y/Ed5Ov4OiAaoVhPIkRFN+8rDpcQIXEXdzlHTZBAACWJ6gE=',
             gumPerPack          : 60,
             gas                 : 8000000,
-            gasPrice            : 30000000000          // https://ropsten.etherscan.io/gastracker  (30 Gwei)
+            gasPrice            : 20000000000          // https://ropsten.etherscan.io/gastracker  (30 Gwei)
         },
         mainnet: {
             oracleApiEndpoint   : 'BP00gRkhrJdkE9+lyEJmZZcmK1Pq1R6WpyZM1ZislsSxFhGo+YzxSOFT4/a9jfEbFlwKMog53Z6wMzem14mKXfvSQOklp1WpCit2KZ6nmTvGBx/96cpTXvtuH90eZglas5F9qPcv75tqSexG2Yb6zWVIwVV0C0sFXsElfg75Sf9tjyPgqaQuQOGxKhza1SUESziEYDy2onUbM12LBlL7H75nnyAoVpcdiMfGgMEGSrGZnsgM29uIxJmG',
@@ -66,9 +66,9 @@ module.exports = {
             oldGumToken   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
         },
         ropsten: {
-            packsToken    : '0xc0e043EB91aea2e4543b3a019bd5C8aa494813D6',
-            cardsToken    : '0x1f5B351E9E383d133bea2CD2F5506Db5e3f71e2B',
-            gumToken      : '0x1181C791a125c8Dd7DDF55Ee3c5471f5Da71F845',
+            packsToken    : '0x1730261723AE6E070299EaB630BDbf7248A0eD66',
+            cardsToken    : '0x2485592F7dD2609d12C637eb6776d99f052e06e2',
+            gumToken      : '0xA1166caE67923028452b207Ae886CBF1E2aB06c0',
             oldPacksCtrl  : '0x856ee8736b204f926c33db5929328ba950768b6a',
             oldCardsCtrl  : '0xaad8b7860cf6bb209f9e60f68aae438b2d076ca6',
             oldCardsToken : '0x81D7E3648579E27679bFc3010e673532BF77c379',
@@ -86,9 +86,12 @@ module.exports = {
     },
 
     migrationAccounts: {
-        local: [
-
-        ],
+        local: {
+            erc20: [
+            ],
+            erc721: [
+            ]
+        },
         ropsten: {
             erc20: [
                 '0x107EB6166d59350C634B1DcFDffBaD4846CCCD84', // Account 9
