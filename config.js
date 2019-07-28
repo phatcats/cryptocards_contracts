@@ -30,19 +30,16 @@ module.exports = {
 
     networkOptions: {
         local: {
-            // oracleApiEndpoint: 'BAUD89qAzoJsLlajETu6INZFbd5GnNfeg6ZTJbe0hq2ltEOctlwLrsDuMTMffqEUMbGoioZEzjDqhu314KVzZFw9/IVnbar5mVxS/mhmSN+NfrDRXW5Sxpsdds+epmMiSJ+URKsSCAAGljpjoesWcukFmU2UPy1apKKU5OpKpGc3AzowXOViIaG4BXG++rWZ1NMv/xVjHQKqSYTHx4qlQAJH94RcZtoQuz4+x0PwJv/RUQ==',
-            // oracleApiEndpoint: 'BL5iQLuZFIoMp3mXKb/Nt4C0cq/MDtCB6cZjYxve4bsvWzcvyWjp61XaENaMlc02cvbeK2jAohabMRXhj8q8jw1pFeSx8DQxkmMU0enzCqoxA/VcX2vvxJSuq71RmBTLfqT/+gu4tlHn1y7US2lGMYTCBI23775TkCKpS4c0Qe/KoHfxYAWFsWfcbKr0hcjMihobOJA7k0/8Jb3uaxA9Qf+92I/zQPwKVxY/RSXxdIU=',
             oracleApiEndpoint   : 'BEJLg+4QyJdFu5IeCfdZrVnurkh/GB9aEY6rGDuyHSBLtOs1BsPdo0/aTr6qaIVvLlPZUku8TT7PEFY6OwbQqa6l/+ATw2Uf+iWkhjsg5seU31FHvahFHELYm1Kuu5B46g0h1biap3OtXDzys4RZgQ6HDNbF3eq9Xw4Zwi2vzQlt/LSp3lJHpmuYWu78y/Ed5Ov4OiAaoVhPIkRFN+8rDpcQIXEXdzlHTZBAACWJ6gE=',
             gumPerPack          : 60,
             gas                 : 6721975,
-            gasPrice            : 20000000000          // (20 Gwei)
+            gasPrice            : 20000000000
         },
         ropsten: {
-            // oracleApiEndpoint: 'BL5iQLuZFIoMp3mXKb/Nt4C0cq/MDtCB6cZjYxve4bsvWzcvyWjp61XaENaMlc02cvbeK2jAohabMRXhj8q8jw1pFeSx8DQxkmMU0enzCqoxA/VcX2vvxJSuq71RmBTLfqT/+gu4tlHn1y7US2lGMYTCBI23775TkCKpS4c0Qe/KoHfxYAWFsWfcbKr0hcjMihobOJA7k0/8Jb3uaxA9Qf+92I/zQPwKVxY/RSXxdIU=',
-            oracleApiEndpoint   : 'BEJLg+4QyJdFu5IeCfdZrVnurkh/GB9aEY6rGDuyHSBLtOs1BsPdo0/aTr6qaIVvLlPZUku8TT7PEFY6OwbQqa6l/+ATw2Uf+iWkhjsg5seU31FHvahFHELYm1Kuu5B46g0h1biap3OtXDzys4RZgQ6HDNbF3eq9Xw4Zwi2vzQlt/LSp3lJHpmuYWu78y/Ed5Ov4OiAaoVhPIkRFN+8rDpcQIXEXdzlHTZBAACWJ6gE=',
+            oracleApiEndpoint   : 'BI33RiqK+ljYzlRuu0pdF23DTia8iiC+TCCbqCmQzZdpIH/WrKr8x1w92VNZgTzptK9HwbMQCBXH69bA0bVuo1O4PIRCDbXJdYp78VDKp1s4lFE8+W4q2X2w3nzB+dgcjEGC2GVyvqihLOwH0o7E1HEtlgeLdapzLcWeNwmIVtGHGpfk30i/qD14vwXnPT7lO9ndbwEHlb4w5Q2YkUDKrWyF3g10IgrBk1Wp8fYyTg4bji4=',
             gumPerPack          : 60,
             gas                 : 8000000,
-            gasPrice            : 20000000000          // https://ropsten.etherscan.io/gastracker  (30 Gwei)
+            gasPrice            : 18000000000          // https://ropsten.etherscan.io/gastracker
         },
         mainnet: {
             oracleApiEndpoint   : 'BP00gRkhrJdkE9+lyEJmZZcmK1Pq1R6WpyZM1ZislsSxFhGo+YzxSOFT4/a9jfEbFlwKMog53Z6wMzem14mKXfvSQOklp1WpCit2KZ6nmTvGBx/96cpTXvtuH90eZglas5F9qPcv75tqSexG2Yb6zWVIwVV0C0sFXsElfg75Sf9tjyPgqaQuQOGxKhza1SUESziEYDy2onUbM12LBlL7H75nnyAoVpcdiMfGgMEGSrGZnsgM29uIxJmG',
@@ -51,7 +48,7 @@ module.exports = {
             // For contract interactions
             gumPerPack          : 60,
             gas                 : 1000000,             // https://etherscan.io/blocks
-            gasPrice            : 2000000000           // https://etherscan.io/gastracker  (1 Gwei)
+            gasPrice            : 2000000000           // https://etherscan.io/gastracker
         }
     },
 
@@ -66,9 +63,9 @@ module.exports = {
             oldGumToken   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
         },
         ropsten: {
-            packsToken    : '0x1730261723AE6E070299EaB630BDbf7248A0eD66',
-            cardsToken    : '0x2485592F7dD2609d12C637eb6776d99f052e06e2',
-            gumToken      : '0xA1166caE67923028452b207Ae886CBF1E2aB06c0',
+            packsToken    : '0xfA6fECd7211332fEFf8Cf0a8C59c91B2D0f425CD',
+            cardsToken    : '0xD71f166C4A207Aa3132796F1ed4e984CC11604b0',
+            gumToken      : '0x479Ee33b8a9fc9389691ba4D3532d7E72B89E820',
             oldPacksCtrl  : '0x856ee8736b204f926c33db5929328ba950768b6a',
             oldCardsCtrl  : '0xaad8b7860cf6bb209f9e60f68aae438b2d076ca6',
             oldCardsToken : '0x81D7E3648579E27679bFc3010e673532BF77c379',
@@ -80,7 +77,7 @@ module.exports = {
             gumToken      : '',
             oldPacksCtrl  : '0x0683e840ea22b089dafa0bf8c59f1a9690de7c12',
             oldCardsCtrl  : '',
-            oldCardsToken : '',
+            oldCardsToken : '0xcb35d14759e2931022c7315f53e37cdcd38e570c',
             oldGumToken   : '0xaafa4bf1696732752a4ad4d27dd1ea6793f24fc0'
         }
     },
@@ -98,8 +95,8 @@ module.exports = {
                 '0x8b7ab7c6bb27c7ae707f751e444eed4998aaea7b', // Account 10 - migrated
             ],
             erc721: [
-                '0x107EB6166d59350C634B1DcFDffBaD4846CCCD84',
-                '0xcd3a3d04560b54f9af22a87005aec435d42ddb92'
+                {owner: '0x107EB6166d59350C634B1DcFDffBaD4846CCCD84', pass: 2},
+                {owner: '0xcd3a3d04560b54f9af22a87005aec435d42ddb92', pass: 2},
             ]
         },
         mainnet: {

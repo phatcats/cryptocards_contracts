@@ -37,6 +37,7 @@ contract CryptoCardPacksOld {
     function balanceOf(address owner) public view returns (uint256);
     function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256);
     function packDataById(uint256 tokenId) public view returns (string memory);
+    function isTokenFrozen(uint256 tokenId) public view returns (bool);
     function unclaimedGumOf(address owner) public view returns (uint256);
 }
 
@@ -148,8 +149,11 @@ contract CryptoCardsTokenMigrator is Initializable, Ownable {
     function cardRankFromHash(uint256 cardData) public pure returns (uint8) {
         return uint8(_readBits(cardData, 22, 8));
     }
-    function mintCard(address to, uint256 tokenId) public onlyOwner {
-        _cardsToken.mintCard(to, tokenId);
+    function cardExists(uint256 cardId) public view returns (bool) {
+        return _cardsToken.exists(cardId);
+    }
+    function mintNewCards(address to, uint[] memory tokenIds) public onlyOwner {
+        _cardsToken.migrateCards(to, tokenIds);
     }
 
     //
@@ -164,6 +168,9 @@ contract CryptoCardsTokenMigrator is Initializable, Ownable {
     }
     function packHashById(uint256 tokenId) public view returns (string memory) {
         return _packsOld.packDataById(tokenId);
+    }
+    function isTokenFrozen(uint256 tokenId) public view returns (bool) {
+        return _packsOld.isTokenFrozen(tokenId);
     }
     function mintNewPack(address owner, string memory packData) public onlyOwner returns (uint256) {
         return _packsToken.mintPack(owner, packData);

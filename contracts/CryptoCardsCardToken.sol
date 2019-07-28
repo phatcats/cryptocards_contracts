@@ -16,6 +16,7 @@ contract CryptoCardsCardToken {
     // ERC721
     function balanceOf(address owner) public view returns (uint256);
     function ownerOf(uint256 tokenId) public view returns (address);
+    function exists(uint256 tokenId) public view returns (bool);
     function totalSupply() public view returns (uint256);
 //    function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256);
 
@@ -32,7 +33,7 @@ contract CryptoCardsCardToken {
     function tokenTransfer(address from, address to, uint256 tokenId) public;
 
     function mintCardsFromPack(address to, uint256[] memory tokenIds) public;
-    function mintCard(address to, uint256 tokenId) public;
+    function migrateCards(address to, uint256[] memory tokenIds) public;
     function printFor(address owner, uint256 tokenId) public returns (uint);
     function combineFor(address owner, uint256 tokenA, uint256 tokenB) public returns (uint);
     function meltFor(address owner, uint256 tokenId) public returns (uint);

@@ -21,8 +21,9 @@ const bigint = require('big-integer');
 const ETH_UNIT = web3.utils.toBN(1e18);
 const GUM_PER_CARD = [15, 30];
 
-const MIGRATE_PACKS = true;
+const MIGRATE_PACKS = false;
 const MIGRATE_CARDS = false;
+const MAX_MIGRATE_CARDS = 10;
 
 const CryptoCardsTokenMigrator = contracts.getFromLocal('CryptoCardsTokenMigrator');
 
@@ -115,6 +116,10 @@ module.exports = async function() {
         let newHash;
         let txReceipt;
         let tokenIndex;
+        let batchPass;
+        let batchTokenIds;
+        let isFrozen;
+        let toBeMigrated;
 
         //
         // Migrate Pack (ERC721) Tokens
@@ -129,7 +134,7 @@ module.exports = async function() {
                 Lib.log({msg: `Get Packs for Token Holder "${account}"...`});
                 response = await cryptoCardsTokenMigrator.packsBalanceOf(account);
                 tokenCount = web3.utils.toBN(response).toNumber();
-                Lib.verbose && Lib.log({msg: `Migrating  ${tokenCount} Old Pack-Tokens...`, indent: 1});
+                Lib.verbose && Lib.log({msg: `Migrating ${tokenCount} Old Pack-Tokens...`, indent: 1});
 
                 for (tokenIndex = 0; tokenIndex < tokenCount; tokenIndex++) {
                     Lib.log({spacer: true});
@@ -138,6 +143,13 @@ module.exports = async function() {
                     // Get Old Pack Token ID
                     response = await cryptoCardsTokenMigrator.packsTokenOfOwnerByIndex(account, tokenIndex);
                     oldTokenId = web3.utils.toBN(response).toString();
+
+                    // Skip Opened Packs
+                    isFrozen = await cryptoCardsTokenMigrator.isTokenFrozen(oldTokenId);
+                    if (isFrozen) {
+                        Lib.verbose && Lib.log({msg: `Skipping Opened Pack Token "${oldTokenId}"...`, indent: 1});
+                        continue;
+                    }
 
                     // Get Hash of Cards in Pack
                     oldHash = await cryptoCardsTokenMigrator.packHashById(oldTokenId);
@@ -168,19 +180,30 @@ module.exports = async function() {
         if (MIGRATE_CARDS) {
             Lib.log({msg: `Card Token Holders: ${accountsToMigrate.erc721.length}`});
             for (let i = 0; i < accountsToMigrate.erc721.length; i++) {
-                account = accountsToMigrate.erc721[i];
+                account = accountsToMigrate.erc721[i].owner;
+                batchPass = accountsToMigrate.erc721[i].pass;
+                tokenIndex = batchPass * MAX_MIGRATE_CARDS;
 
                 Lib.log({separator: true});
                 Lib.log({spacer: true});
                 Lib.log({msg: `Get Cards for Token Holder "${account}"...`});
                 response = await cryptoCardsTokenMigrator.cardsBalanceOf(account);
-                tokenCount = web3.utils.toBN(response).toString();
-                Lib.verbose && Lib.log({msg: `Migrating ${tokenCount} Old Card-Tokens...`, indent: 1});
+                tokenCount = web3.utils.toBN(response).toNumber();
 
-                for (tokenIndex = 0; tokenIndex < tokenCount; tokenIndex++) {
-                    Lib.log({spacer: true});
-                    Lib.log({separator: true});
+                if (tokenCount < 1) {
+                    Lib.log({msg: `No Cards found, skipping...`});
+                    continue;
+                }
+                if (tokenIndex >= tokenCount) {
+                    Lib.log({msg: `All Cards migrated, skipping...`});
+                    continue;
+                }
 
+                toBeMigrated = Math.min(MAX_MIGRATE_CARDS, tokenCount - tokenIndex);
+                Lib.log({msg: `Found ${tokenCount} Cards to be migrated.  Migrating ${toBeMigrated} Cards starting at ${tokenIndex}...`});
+
+                batchTokenIds = [];
+                for (; tokenIndex < tokenCount && batchTokenIds.length < MAX_MIGRATE_CARDS; tokenIndex++) {
                     // Get Old Card Token ID
                     response = await cryptoCardsTokenMigrator.cardsTokenOfOwnerByIndex(account, tokenIndex);
                     oldTokenId = web3.utils.toBN(response).toString();
@@ -191,16 +214,16 @@ module.exports = async function() {
                     // Convert Old Card into New Card
                     newTokenId = await _convertOldCardToNewCard(oldHash);
 
-                    // Mint New Card
-                    receipt = await cryptoCardsTokenMigrator.mintCard(account, newTokenId, _getTxOptions());
-
-                    // Logs
-                    Lib.verbose && Lib.log({msg: `Migrated [Card] Old-Token: "${oldTokenId}" for New-Token: "${newTokenId}"`, indent: 1});
-                    Lib.verbose && Lib.log({msg: `Old Card-Hash: "${oldHash}"`, indent: 2});
-                    Lib.verbose && Lib.log({msg: `New Card-Hash: "${newTokenId}"`, indent: 2});
-                    Lib.logTxResult(receipt);
-                    totalGas += receipt.receipt.gasUsed;
+                    Lib.verbose && Lib.log({msg: `Adding New Card "${newTokenId}" from Old Card "${oldTokenId} (${oldHash})"...`, indent: 1});
+                    batchTokenIds.push(newTokenId);
                 }
+                Lib.verbose && Lib.log({msg: `Migrating ${batchTokenIds.length} of ${tokenCount} Old Card-Tokens...`, indent: 1});
+
+                // Mint New Cards
+                receipt = await cryptoCardsTokenMigrator.mintNewCards(account, batchTokenIds, _getTxOptions());
+                Lib.verbose && Lib.log({msg: `Successfully migrated ${batchTokenIds.length} Old Card-Tokens!`, indent: 1});
+                Lib.logTxResult(receipt);
+                totalGas += receipt.receipt.gasUsed;
             }
         }
 
@@ -238,5 +261,10 @@ function _packCardBits({year, gen, rank, issue, gum, eth}) {
     cardInt = cardInt.or(bigint(issue).shiftLeft(20));
     cardInt = cardInt.or(bigint(gum).shiftLeft(32));
     cardInt = cardInt.or(bigint(eth).shiftLeft(42));
-    return cardInt.toString(16);
+
+    let cardHex = cardInt.toString(16);
+    if (cardHex.length % 2 !== 0) { // length must be even
+        cardHex = `0${cardHex}`;
+    }
+    return cardHex;
 }

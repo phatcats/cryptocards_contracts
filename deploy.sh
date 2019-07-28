@@ -28,6 +28,7 @@ inHouseAccount=
 networkId=
 networkName="local"
 verbose=
+silent=
 
 usage() {
     echo "usage: ./deploy.sh [[-n [local|ropsten|mainnet] [-f] [-v]] | [-h]]"
@@ -39,6 +40,7 @@ usage() {
     echo "  -m20  | --migrate20                          Run ERC20 Token Migration"
     echo "  -m721 | --migrate721                         Run ERC721 Token Migration"
     echo "  -v    | --verbose                            Outputs verbose logging"
+    echo "  -s    | --silent                             Suppresses the Beep at the end of the script"
     echo "  -h    | --help                               Displays this help screen"
 }
 
@@ -49,13 +51,15 @@ echoHeader() {
 }
 
 echoBeep() {
-    afplay /System/Library/Sounds/Glass.aiff
+    [[ -z "$silent" ]] && {
+        afplay /System/Library/Sounds/Glass.aiff
+    }
 }
 
 setEnvVars() {
     export $(egrep -v '^#' .env | xargs)
 
-    if [ "$networkName" == "ropsten" ]; then
+    if [[ "$networkName" == "ropsten" ]]; then
         networkId="3"
         networkProvider="ropsten"
         proxyAdmin="$ROPSTEN_PROXY_ADMIN"
@@ -77,7 +81,7 @@ setEnvVars() {
     fi
 
     walletMnemonicType="proxy"
-    [ -n "$initialize" -o -n "$runTransactions" -o -n "$linkContracts" -o -n "$runErc20Migration" -o -n "$runErc721Migration" ] && {
+    [[ -n "$initialize" || -n "$runTransactions" || -n "$linkContracts" || -n "$runErc20Migration" || -n "$runErc721Migration" ]] && {
         walletMnemonicType="owner"
     }
 
@@ -92,7 +96,7 @@ setEnvVars() {
 startSession() {
     echoHeader
     fromAccount="Contract Owner"
-    [ "$1" == "$proxyAdmin" ] && {
+    [[ "$1" == "$proxyAdmin" ]] && {
         fromAccount="Proxy Admin"
     }
     echo "Starting ZOS Session from $fromAccount"
@@ -105,7 +109,7 @@ startSession() {
 deployFresh() {
     startSession "$proxyAdmin"
 
-    if [ "$networkName" == "local" ]; then
+    if [[ "$networkName" == "local" ]]; then
         echoHeader
         echo "NOTE: Be sure to run the Oraclize Ethereum-bridge first!"
         echo "CMD: ethereum-bridge -H localhost:7545 -a 1 --dev"
@@ -121,7 +125,7 @@ deployFresh() {
     rm -r "./zos.$networkProvider.json"
 
     echoHeader
-    if [ "$networkName" == "local" ]; then
+    if [[ "$networkName" == "local" ]]; then
         echo "Deploying with dependencies..."
         zos push --deploy-dependencies
     else
@@ -247,7 +251,7 @@ runErc721Migration() {
 }
 
 
-while [ "$1" != "" ]; do
+while [[ "$1" != "" ]]; do
     case $1 in
         -n | --network )        shift
                                 networkName=$1
@@ -266,6 +270,8 @@ while [ "$1" != "" ]; do
                                 ;;
         -v | --verbose )        verbose="yes"
                                 ;;
+        -s | --silent )         silent="yes"
+                                ;;
         -h | --help )           usage
                                 exit
                                 ;;
@@ -277,17 +283,17 @@ done
 
 setEnvVars
 
-if [ -n "$freshLoad" ]; then
+if [[ -n "$freshLoad" ]]; then
     deployFresh
-elif [ -n "$linkContracts" ]; then
+elif [[ -n "$linkContracts" ]]; then
     runContractLinking
-elif [ -n "$runTransactions" ]; then
+elif [[ -n "$runTransactions" ]]; then
     runTransactions
-elif [ -n "$runErc20Migration" ]; then
+elif [[ -n "$runErc20Migration" ]]; then
     runErc20Migration
-elif [ -n "$runErc721Migration" ]; then
+elif [[ -n "$runErc721Migration" ]]; then
     runErc721Migration
-elif [ -n "$initialize" ]; then
+elif [[ -n "$initialize" ]]; then
     runInitializations
 else
     deployUpdate

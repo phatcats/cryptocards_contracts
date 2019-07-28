@@ -45,7 +45,7 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
     //
     // Events
     //
-    event ReceivedNewPack(address indexed receiver, bytes16 uuid, uint256 packId);
+    event ReceivedNewPack(address indexed receiver, bytes16 uuid, uint256 packId, string packData);
     event PackError      (address indexed receiver, bytes16 uuid, uint8 errorCode);
 
     //
@@ -95,9 +95,6 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
 //            string memory apiParams = string(abi.encodePacked('{"owner":"', receiver, '","uuid":"', uuid, '"}'));
 //            bytes32 queryId = oraclize_query("URL", apiEndpoint, apiParams, oracleGasLimit);
 
-            // Old way
-//            bytes32 queryId = oraclize_query("URL", apiEndpoint, oracleGasLimit);
-
             uuids[uuid] = true;
             oracleIdToOwner[queryId] = receiver;
             oracleIdToUUID[queryId] = uuid;
@@ -122,7 +119,7 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
         } else {
             // Mint Pack and Transfer GUM Reward
             uint256 packId = cryptoCardsPacks.mintPack(receiver, _result);
-            emit ReceivedNewPack(receiver, oracleIdToUUID[_queryId], packId);
+            emit ReceivedNewPack(receiver, oracleIdToUUID[_queryId], packId, _result);
         }
         delete uuids[oracleIdToUUID[_queryId]];
         delete oracleIdToOwner[_queryId];
