@@ -26,6 +26,7 @@ contract CryptoCardsPackToken {
 
     // CryptoCardsPackToken
     function packDataById(uint256 tokenId) public view returns (string memory);
+    function totalMintedPacks() public view returns (uint256);
     function mintPack(address to, string memory packData) public returns (uint256);
     function burnPack(address from, uint256 tokenId) public;
     function tokenTransfer(address from, address to, uint256 tokenId) public;

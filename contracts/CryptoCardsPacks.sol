@@ -77,7 +77,7 @@ contract CryptoCardsPacks is Initializable, Ownable {
     //
 
     function totalMintedPacks() public view returns (uint256) {
-        return _packToken.totalSupply();
+        return _packToken.totalMintedPacks();
     }
 
     function balanceOf(address owner) public view returns (uint256) {

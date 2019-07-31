@@ -61,6 +61,10 @@ contract CryptoCardsGum is Initializable, Ownable {
     // Public
     //
 
+    function availableFlavors() public view returns (uint) {
+        return _flavorsAvailable;
+    }
+
     function gumFlavorAvailable(uint flavor) public view returns (bool) {
         if (flavor < 0 || flavor > MAX_FLAVORS) { return false; }
         return address(_gumToken[flavor]) != address(0x0);
