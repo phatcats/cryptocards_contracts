@@ -39,16 +39,16 @@ contract CryptoCardsCards is Initializable, Ownable {
     mapping(uint256 => uint256) internal _cardSalePriceById;
 
     // Mapping from Token ID to Allowed Trade Values
-    mapping(uint256 => uint16) internal _cardAllowedTradeRank;  // tokenId => cardRank  (ONE-for-ONE TRADES ONLY)
-    mapping(uint256 => uint8) internal _cardAllowedTradeGens; // tokenId => 0 = Any, > 0 = Bits == Gen + 1
-    mapping(uint256 => uint8) internal _cardAllowedTradeYears; // tokenId => 0 = Any, > 0 = Bits == Year + 1
+
+    mapping(uint256 => uint16[]) internal _cardAllowedTradeRanks;
+    mapping(uint256 => uint16[]) internal _cardAllowedTradeGens;
+    mapping(uint256 => uint16[]) internal _cardAllowedTradeYears;
 
     //
     // Events
     //
     event CardPriceSet      (address indexed owner, bytes16 uuid, uint256 cardId, uint256 price);
-    event CardTradeValueSet (address indexed owner, bytes16 uuid, uint256 cardId, uint16 cardRank, uint8[] cardGens, uint8[] cardYears);
-//    event CardTradeValueSet (address indexed owner, bytes16 uuid, uint256 cardId, uint16[] memory cardRanks, uint8[] memory cardGens, uint8[] memory cardYears);
+    event CardTradeValueSet (address indexed owner, bytes16 uuid, uint256 cardId, uint16[] cardRanks, uint16[] cardGens, uint16[] cardYears);
     event CardSale          (address indexed owner, address indexed receiver, bytes16 uuid, uint256 cardId, uint256 price);
     event CardTrade         (address indexed owner, address indexed receiver, bytes16 uuid, uint256 ownerCardId, uint256 tradeCardId);
 
@@ -123,22 +123,32 @@ contract CryptoCardsCards is Initializable, Ownable {
         emit CardPriceSet(cardOwner, uuid, cardId, cardPrice);
     }
 
-    function updateCardTradeValue(uint256 cardId, uint16 cardRank, uint8[] memory cardGens, uint8[] memory cardYears, bytes16 uuid)
+    function updateCardTradeValue(uint256 cardId, uint16[] memory cardRanks, uint16[] memory cardGens, uint16[] memory cardYears, bytes16 uuid)
         public
         onlyUnprintedCards(cardId)
     {
         address cardOwner = _cardToken.ownerOf(cardId); // will revert if owner == address(0)
         require(msg.sender == cardOwner, "Invalid owner supplied or owner is not card-owner");
 
-        // cardRanks are 1-based, but our storage is 0-based
-        _cardAllowedTradeRank[cardId] = cardRank-1;
+        delete _cardAllowedTradeRanks[cardId];
+        delete _cardAllowedTradeGens[cardId];
+        delete _cardAllowedTradeYears[cardId];
 
-        // Add New Trade Values
-        for (uint i = 0; i < cardGens.length; i++) {
-            _cardAllowedTradeGens[cardId] = cardGens[i];
-            _cardAllowedTradeYears[cardId] = cardYears[i];
+        uint i;
+        uint n = cardRanks.length;
+        for (i = 0; i < n; i++) {
+            _cardAllowedTradeRanks[cardId].push(cardRanks[i]);
         }
-        emit CardTradeValueSet(cardOwner, uuid, cardId, cardRank, cardGens, cardYears);
+        n = cardGens.length;
+        for (i = 0; i < n; i++) {
+            _cardAllowedTradeGens[cardId].push(cardGens[i]);
+        }
+        n = cardYears.length;
+        for (i = 0; i < n; i++) {
+            _cardAllowedTradeYears[cardId].push(cardYears[i]);
+        }
+
+        emit CardTradeValueSet(cardOwner, uuid, cardId, cardRanks, cardGens, cardYears);
     }
 
     //
@@ -172,7 +182,7 @@ contract CryptoCardsCards is Initializable, Ownable {
     {
         address cardOwner = _cardToken.ownerOf(cardId); // will revert if owner == address(0)
         require(owner == cardOwner , "Invalid owner supplied or owner is not card-owner");
-        require(receiver != cardOwner, "Cannot transfer card to self");
+        require(receiver != address(0) || receiver != cardOwner, "Invalid receiver address supplied");
 
         uint256 cardPrice = _cardSalePriceById[cardId];
         require(cardPrice > 0, "Card is not for sale");
@@ -206,8 +216,7 @@ contract CryptoCardsCards is Initializable, Ownable {
     }
 
     function printCard(uint256 tokenId) public onlyController {
-        uint wrappedGum = _cardToken.printFor(msg.sender, tokenId);
-        _gum.transferCardGum(msg.sender, wrappedGum);
+        _cardToken.printFor(msg.sender, tokenId);
     }
 
 //    function printCards(address owner, uint256[] memory cardIds)
@@ -228,34 +237,36 @@ contract CryptoCardsCards is Initializable, Ownable {
     //
 
     function _transferCard(address from, address to, uint256 cardId) internal {
-        require(from != address(0), "Invalid from address supplied");
-        require(to != address(0), "Invalid to address supplied");
-
         _resetCardValue(cardId);
         _cardToken.tokenTransfer(from, to, cardId);
     }
 
     function _resetCardValue(uint256 cardId) internal {
-        _cardAllowedTradeRank[cardId] = 0;
-        _cardAllowedTradeGens[cardId] = 0;
-        _cardAllowedTradeYears[cardId] = 0;
+        delete _cardAllowedTradeRanks[cardId];
+        delete _cardAllowedTradeGens[cardId];
+        delete _cardAllowedTradeYears[cardId];
         _cardSalePriceById[cardId] = 0;
     }
 
     function _validateTradeValue(uint256 ownerCardId, uint256 desiredCardId) internal view {
         (uint oY, uint oG, uint oR) = _cardToken.getTypeIndicators(ownerCardId);
 
-        // Validate Rank (ONE-for-ONE TRADES ONLY)
-        require(_cardAllowedTradeRank[desiredCardId] == oR, "Owner card cannot be traded for desired card");
+        require(_isValidTradeValue(_cardAllowedTradeRanks[desiredCardId], oR, false), "Invalid Rank for Trade");
+        require(_isValidTradeValue(_cardAllowedTradeGens[desiredCardId], oG, true), "Invalid Generation for Trade");
+        require(_isValidTradeValue(_cardAllowedTradeYears[desiredCardId], oY, true), "Invalid Year for Trade");
+    }
 
-        // Validate Generation
-        if (_cardAllowedTradeGens[desiredCardId] > 0) { // If Not Any Gen
-            require(_cardAllowedTradeGens[desiredCardId] | (oG + 1) > 0, "Owner card does not match required generation of desired card");
-        }
+    function _isValidTradeValue(uint16[] memory allowedTradeValues, uint tradeValue, bool allowAny) internal pure returns (bool) {
+        uint n = allowedTradeValues.length;
+        if (n == 0) { return allowAny; }
 
-        // Validate Year
-        if (_cardAllowedTradeYears[desiredCardId] > 0) { // If Not Any Year
-            require(_cardAllowedTradeYears[desiredCardId] | (oY + 1) > 0, "Owner card does not match required year of desired card");
+        bool isValid = false;
+        for (uint i = 0; i < n; i++) {
+            if (allowedTradeValues[i] == tradeValue) {
+                isValid = true;
+                break;
+            }
         }
+        return isValid;
     }
 }
