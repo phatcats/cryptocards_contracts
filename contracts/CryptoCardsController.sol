@@ -124,15 +124,16 @@ contract CryptoCardsController is Initializable, Ownable, Pausable, ReentrancyGu
         }
     }
 
-    function buyCardFromOwner(address payable owner, uint256 cardId, bytes16 uuid) public nonReentrant whenNotPaused payable {
-        require(owner != address(0) && msg.sender != owner, "Invalid owner");
+    function buyCardFromOwner(address cardOwner, uint256 cardId, bytes16 uuid) public nonReentrant whenNotPaused payable {
+        require(cardOwner != address(0) && msg.sender != cardOwner, "Invalid card owner");
+        address payable ownerWallet = address(uint160(cardOwner));
 
         // Transfer Card
         uint256 pricePaid = msg.value;
-        uint256 cardPrice = _cryptoCardsCards.transferCardForBuyer(msg.sender, owner, cardId, pricePaid, uuid);
+        uint256 cardPrice = _cryptoCardsCards.transferCardForBuyer(msg.sender, cardOwner, cardId, pricePaid, uuid);
 
         // Pay for Card
-        owner.transfer(cardPrice);
+        ownerWallet.transfer(cardPrice);
 
         // Refund over-spend
         if (pricePaid > cardPrice) {

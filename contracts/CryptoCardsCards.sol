@@ -40,15 +40,15 @@ contract CryptoCardsCards is Initializable, Ownable {
 
     // Mapping from Token ID to Allowed Trade Values
 
-    mapping(uint256 => uint16[]) internal _cardAllowedTradeRanks;
-    mapping(uint256 => uint16[]) internal _cardAllowedTradeGens;
-    mapping(uint256 => uint16[]) internal _cardAllowedTradeYears;
+    mapping(uint256 => uint256[]) internal _cardAllowedTradeRanks;
+    mapping(uint256 => uint256[]) internal _cardAllowedTradeGens;
+    mapping(uint256 => uint256[]) internal _cardAllowedTradeYears;
 
     //
     // Events
     //
     event CardPriceSet      (address indexed owner, bytes16 uuid, uint256 cardId, uint256 price);
-    event CardTradeValueSet (address indexed owner, bytes16 uuid, uint256 cardId, uint16[] cardRanks, uint16[] cardGens, uint16[] cardYears);
+    event CardTradeValueSet (address indexed owner, bytes16 uuid, uint256 cardId, uint256[] cardRanks, uint256[] cardGens, uint256[] cardYears);
     event CardSale          (address indexed owner, address indexed receiver, bytes16 uuid, uint256 cardId, uint256 price);
     event CardTrade         (address indexed owner, address indexed receiver, bytes16 uuid, uint256 ownerCardId, uint256 tradeCardId);
 
@@ -57,11 +57,6 @@ contract CryptoCardsCards is Initializable, Ownable {
     //
     modifier onlyController() {
         require(msg.sender == _controller, "Action only allowed by Controller contract");
-        _;
-    }
-
-    modifier onlyUnprintedCards(uint256 cardId) {
-        require(_cardToken.isTokenPrinted(cardId) != true, "Action only allowed on Unprinted Cards");
         _;
     }
 
@@ -92,6 +87,10 @@ contract CryptoCardsCards is Initializable, Ownable {
         return _cardToken.getTotalIssued(tokenId);
     }
 
+    function getSalePrice(uint256 tokenId) public view returns (uint256) {
+        return _cardSalePriceById[tokenId];
+    }
+
     function isTokenPrinted(uint256 tokenId) public view returns (bool) {
         return _cardToken.isTokenPrinted(tokenId);
     }
@@ -115,7 +114,6 @@ contract CryptoCardsCards is Initializable, Ownable {
 
     function updateCardPrice(uint256 cardId, uint256 cardPrice, bytes16 uuid)
         public
-        onlyUnprintedCards(cardId)
     {
         address cardOwner = _cardToken.ownerOf(cardId); // will revert if owner == address(0)
         require(msg.sender == cardOwner, "Invalid owner supplied or owner is not card-owner");
@@ -123,9 +121,8 @@ contract CryptoCardsCards is Initializable, Ownable {
         emit CardPriceSet(cardOwner, uuid, cardId, cardPrice);
     }
 
-    function updateCardTradeValue(uint256 cardId, uint16[] memory cardRanks, uint16[] memory cardGens, uint16[] memory cardYears, bytes16 uuid)
+    function updateCardTradeValue(uint256 cardId, uint256[] memory cardRanks, uint256[] memory cardGens, uint256[] memory cardYears, bytes16 uuid)
         public
-        onlyUnprintedCards(cardId)
     {
         address cardOwner = _cardToken.ownerOf(cardId); // will revert if owner == address(0)
         require(msg.sender == cardOwner, "Invalid owner supplied or owner is not card-owner");
@@ -177,12 +174,11 @@ contract CryptoCardsCards is Initializable, Ownable {
     function transferCardForBuyer(address receiver, address owner, uint256 cardId, uint256 pricePaid, bytes16 uuid)
         public
         onlyController
-        onlyUnprintedCards(cardId)
         returns (uint256)
     {
         address cardOwner = _cardToken.ownerOf(cardId); // will revert if owner == address(0)
-        require(owner == cardOwner , "Invalid owner supplied or owner is not card-owner");
-        require(receiver != address(0) || receiver != cardOwner, "Invalid receiver address supplied");
+        require(owner == cardOwner, "Invalid owner supplied or owner is not card-owner");
+        require(receiver != address(0) && receiver != cardOwner, "Invalid receiver address supplied");
 
         uint256 cardPrice = _cardSalePriceById[cardId];
         require(cardPrice > 0, "Card is not for sale");
@@ -198,8 +194,6 @@ contract CryptoCardsCards is Initializable, Ownable {
     function tradeCardForCard(address owner, uint256 ownerCardId, uint256 desiredCardId, bytes16 uuid)
         public
         onlyController
-        onlyUnprintedCards(ownerCardId)
-        onlyUnprintedCards(desiredCardId)
     {
         address ownerCardRealOwner = _cardToken.ownerOf(ownerCardId); // will revert if owner == address(0)
         address desiredCardRealOwner = _cardToken.ownerOf(desiredCardId); // will revert if owner == address(0)
@@ -256,13 +250,13 @@ contract CryptoCardsCards is Initializable, Ownable {
         require(_isValidTradeValue(_cardAllowedTradeYears[desiredCardId], oY, true), "Invalid Year for Trade");
     }
 
-    function _isValidTradeValue(uint16[] memory allowedTradeValues, uint tradeValue, bool allowAny) internal pure returns (bool) {
+    function _isValidTradeValue(uint256[] memory allowedTradeValues, uint tradeValue, bool allowAny) internal pure returns (bool) {
         uint n = allowedTradeValues.length;
         if (n == 0) { return allowAny; }
 
         bool isValid = false;
         for (uint i = 0; i < n; i++) {
-            if (allowedTradeValues[i] == tradeValue) {
+            if (allowedTradeValues[i] == uint256(tradeValue)) {
                 isValid = true;
                 break;
             }
