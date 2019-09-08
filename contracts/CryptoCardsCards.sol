@@ -99,15 +99,15 @@ contract CryptoCardsCards is Initializable, Ownable {
         return _cardToken.canCombine(tokenA, tokenB);
     }
 
-    function combineCards(uint256 tokenA, uint256 tokenB) public returns (uint256) {
-        uint256 newTokenId = _cardToken.combineFor(msg.sender, tokenA, tokenB);
+    function combineCards(uint256 tokenA, uint256 tokenB, uint newIssue, bytes16 uuid) public returns (uint256) {
+        uint256 newTokenId = _cardToken.combineFor(msg.sender, tokenA, tokenB, newIssue, uuid);
         _resetCardValue(tokenA);
         _resetCardValue(tokenB);
         return newTokenId;
     }
 
-    function meltCard(uint256 tokenId) public {
-        uint wrappedGum = _cardToken.meltFor(msg.sender, tokenId);
+    function meltCard(uint256 tokenId, bytes16 uuid) public {
+        uint wrappedGum = _cardToken.meltFor(msg.sender, tokenId, uuid);
         _resetCardValue(tokenId);
         _gum.transferCardGum(msg.sender, wrappedGum);
     }
@@ -209,8 +209,8 @@ contract CryptoCardsCards is Initializable, Ownable {
         emit CardTrade(owner, desiredCardRealOwner, uuid, ownerCardId, desiredCardId);
     }
 
-    function printCard(uint256 tokenId) public onlyController {
-        _cardToken.printFor(msg.sender, tokenId);
+    function printCard(uint256 tokenId, bytes16 uuid) public onlyController {
+        _cardToken.printFor(msg.sender, tokenId, uuid);
     }
 
 //    function printCards(address owner, uint256[] memory cardIds)
