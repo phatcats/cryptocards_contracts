@@ -39,7 +39,7 @@ module.exports = {
             oracleApiEndpoint   : 'BI33RiqK+ljYzlRuu0pdF23DTia8iiC+TCCbqCmQzZdpIH/WrKr8x1w92VNZgTzptK9HwbMQCBXH69bA0bVuo1O4PIRCDbXJdYp78VDKp1s4lFE8+W4q2X2w3nzB+dgcjEGC2GVyvqihLOwH0o7E1HEtlgeLdapzLcWeNwmIVtGHGpfk30i/qD14vwXnPT7lO9ndbwEHlb4w5Q2YkUDKrWyF3g10IgrBk1Wp8fYyTg4bji4=',
             gumPerPack          : 60,
             gas                 : 8000000,
-            gasPrice            : 21000000000          // https://ropsten.etherscan.io/gastracker
+            gasPrice            : 30000000000          // https://ropsten.etherscan.io/gastracker
         },
         mainnet: {
             oracleApiEndpoint   : 'BP00gRkhrJdkE9+lyEJmZZcmK1Pq1R6WpyZM1ZislsSxFhGo+YzxSOFT4/a9jfEbFlwKMog53Z6wMzem14mKXfvSQOklp1WpCit2KZ6nmTvGBx/96cpTXvtuH90eZglas5F9qPcv75tqSexG2Yb6zWVIwVV0C0sFXsElfg75Sf9tjyPgqaQuQOGxKhza1SUESziEYDy2onUbM12LBlL7H75nnyAoVpcdiMfGgMEGSrGZnsgM29uIxJmG',
@@ -63,9 +63,9 @@ module.exports = {
             oldGumToken   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
         },
         ropsten: {
-            packsToken    : '0xc04AD9a68ab96b6f8766ec59a7A0d125Ce7e491E',
-            cardsToken    : '0x3ee99aDbFd84111D46B9A18cbA2529eaeC41709d',
-            gumToken      : '0x12205aCBE5cce156b3Ac60BC5CCF72ed92dB1A99',
+            packsToken    : '0x6E0ae149050115306eBA371F81843d4541a8A30F',
+            cardsToken    : '0x75A6bB3Fe8411cC656839A49712981E25B631c7e',
+            gumToken      : '0x867b09c898157A91989D088aCEa9253958A29Bb8',
             oldPacksCtrl  : '0x856ee8736b204f926c33db5929328ba950768b6a',
             oldCardsCtrl  : '0xaad8b7860cf6bb209f9e60f68aae438b2d076ca6',
             oldCardsToken : '0x81D7E3648579E27679bFc3010e673532BF77c379',
@@ -75,10 +75,10 @@ module.exports = {
             packsToken    : '',
             cardsToken    : '',
             gumToken      : '',
-            oldPacksCtrl  : '0x0683e840ea22b089dafa0bf8c59f1a9690de7c12',
-            oldCardsCtrl  : '',
+            oldPacksCtrl  : '0x56b3c4957cc15e2ad81563b0560a680a433db43e',
+            oldCardsCtrl  : '0x4b9134c7484907fe683d6521ad743c18fe1375c2',
             oldCardsToken : '0xcb35d14759e2931022c7315f53e37cdcd38e570c',
-            oldGumToken   : '0xaafa4bf1696732752a4ad4d27dd1ea6793f24fc0'
+            oldGumToken   : '0xaAFa4Bf1696732752a4AD4D27DD1Ea6793F24Fc0'
         }
     },
 

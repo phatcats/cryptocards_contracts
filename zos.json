@@ -13,7 +13,7 @@
     "CryptoCardsTokenMigrator": "CryptoCardsTokenMigrator"
   },
   "dependencies": {
-    "openzeppelin-eth": "^2.1.3"
+    "openzeppelin-eth": "^2.2.0"
   },
   "compiler": {
     "manager": "truffle",

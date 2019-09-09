@@ -136,34 +136,42 @@ deployFresh() {
     echoHeader
     echo "Creating Contract: CryptoCardsOracle"
     oracleAddress=$(zos create CryptoCardsOracle --init initialize --args "$ownerAccount")
+    sleep 1s
 
     echoHeader
     echo "Creating Contract: CryptoCardsTreasury"
     treasuryAddress=$(zos create CryptoCardsTreasury --init initialize --args "$ownerAccount")
+    sleep 1s
 
     echoHeader
     echo "Creating Contract: CryptoCardsLib"
     libAddress=$(zos create CryptoCardsLib --init initialize --args "$ownerAccount")
+    sleep 1s
 
     echoHeader
     echo "Creating Contract: CryptoCardsGum"
     gumAddress=$(zos create CryptoCardsGum --init initialize --args "$ownerAccount")
+    sleep 1s
 
     echoHeader
     echo "Creating Contract: CryptoCardsCards"
     cardsAddress=$(zos create CryptoCardsCards --init initialize --args "$ownerAccount")
+    sleep 1s
 
     echoHeader
     echo "Creating Contract: CryptoCardsPacks"
     packsAddress=$(zos create CryptoCardsPacks --init initialize --args "$ownerAccount")
+    sleep 1s
 
     echoHeader
     echo "Creating Contract: CryptoCardsTokenMigrator"
     tokenMigrator=$(zos create CryptoCardsTokenMigrator --init initialize --args "$ownerAccount")
+    sleep 1s
 
     echoHeader
     echo "Creating Contract: CryptoCardsController"
     controllerAddress=$(zos create CryptoCardsController --init initialize --args "$ownerAccount")
+    sleep 1s
 
     echoHeader
     echo "Contract Addresses: "
