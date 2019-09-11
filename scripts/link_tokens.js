@@ -191,17 +191,6 @@ module.exports = async function() {
         totalGas += receipt.receipt.gasUsed;
         Lib.log({spacer: true});
 
-        //
-        // Distribute Initial GUM Tokens
-        //
-        Lib.log({separator: true});
-        Lib.log({spacer: true});
-        Lib.log({msg: 'Distributing initial GUM to Reserve Accounts...'});
-        receipt = await cryptoCardsTokenMigrator.distributeInitialGum(_getTxOptions());
-        Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
-
-
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Linking Complete
         Lib.log({separator: true});

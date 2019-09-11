@@ -175,14 +175,14 @@ deployFresh() {
 
     echoHeader
     echo "Contract Addresses: "
-    echo " - controllerAddress: $controllerAddress"
-    echo " - oracleAddress:     $oracleAddress"
-    echo " - treasuryAddress:   $treasuryAddress"
-    echo " - packsAddress:      $packsAddress"
-    echo " - cardsAddress:      $cardsAddress"
-    echo " - gumAddress:        $gumAddress"
-    echo " - tokenMigrator:     $tokenMigrator"
-    echo " - libAddress:        $libAddress"
+    echo " - controllerAddress: ${controllerAddress:(-42)}"
+    echo " - oracleAddress:     ${oracleAddress:(-42)}"
+    echo " - treasuryAddress:   ${treasuryAddress:(-42)}"
+    echo " - packsAddress:      ${packsAddress:(-42)}"
+    echo " - cardsAddress:      ${cardsAddress:(-42)}"
+    echo " - gumAddress:        ${gumAddress:(-42)}"
+    echo " - tokenMigrator:     ${tokenMigrator:(-42)}"
+    echo " - libAddress:        ${libAddress:(-42)}"
 
     echoHeader
     echo "Contract Deployment Complete!"

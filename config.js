@@ -39,7 +39,7 @@ module.exports = {
             oracleApiEndpoint   : 'BI33RiqK+ljYzlRuu0pdF23DTia8iiC+TCCbqCmQzZdpIH/WrKr8x1w92VNZgTzptK9HwbMQCBXH69bA0bVuo1O4PIRCDbXJdYp78VDKp1s4lFE8+W4q2X2w3nzB+dgcjEGC2GVyvqihLOwH0o7E1HEtlgeLdapzLcWeNwmIVtGHGpfk30i/qD14vwXnPT7lO9ndbwEHlb4w5Q2YkUDKrWyF3g10IgrBk1Wp8fYyTg4bji4=',
             gumPerPack          : 60,
             gas                 : 8000000,
-            gasPrice            : 30000000000          // https://ropsten.etherscan.io/gastracker
+            gasPrice            : 22000000000          // https://ropsten.etherscan.io/gastracker
         },
         mainnet: {
             oracleApiEndpoint   : 'BP00gRkhrJdkE9+lyEJmZZcmK1Pq1R6WpyZM1ZislsSxFhGo+YzxSOFT4/a9jfEbFlwKMog53Z6wMzem14mKXfvSQOklp1WpCit2KZ6nmTvGBx/96cpTXvtuH90eZglas5F9qPcv75tqSexG2Yb6zWVIwVV0C0sFXsElfg75Sf9tjyPgqaQuQOGxKhza1SUESziEYDy2onUbM12LBlL7H75nnyAoVpcdiMfGgMEGSrGZnsgM29uIxJmG',
@@ -63,9 +63,9 @@ module.exports = {
             oldGumToken   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
         },
         ropsten: {
-            packsToken    : '0x6E0ae149050115306eBA371F81843d4541a8A30F',
-            cardsToken    : '0x75A6bB3Fe8411cC656839A49712981E25B631c7e',
-            gumToken      : '0x867b09c898157A91989D088aCEa9253958A29Bb8',
+            packsToken    : '0x1010d10B7696E0b74d3f204F42Cc2F7aD30a597a',
+            cardsToken    : '0xE4752b8704ed6446221CeA1b5EE5596192BB9e8E',
+            gumToken      : '0x364B429211BF1e3F20896D2AdBD148c74aECb7C3',
             oldPacksCtrl  : '0x856ee8736b204f926c33db5929328ba950768b6a',
             oldCardsCtrl  : '0xaad8b7860cf6bb209f9e60f68aae438b2d076ca6',
             oldCardsToken : '0x81D7E3648579E27679bFc3010e673532BF77c379',

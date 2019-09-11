@@ -108,11 +108,11 @@ contract CryptoCardsTokenMigrator is Initializable, Ownable {
 
     function distributeInitialGum() public onlyOwner {
         require(!_initialTokensDistributed, "Tokens have already been distributed to initial accounts");
-        require(_initialAmounts[0] - _migratedGum > 0, "Migrated GUM is more than Reserve GUM");
+        require((_initialAmounts[0] * (1 ether)) - _migratedGum > 0, "Migrated GUM is more than Reserve GUM");
 
-        _transferGum(_initialAccounts[0], _initialAmounts[0] - _migratedGum);
+        _transferGum(_initialAccounts[0], (_initialAmounts[0] * (1 ether)) - _migratedGum);
         for (uint i = 1; i < _initialAccounts.length; i++) {
-            _transferGum(_initialAccounts[i], _initialAmounts[i]);
+            _transferGum(_initialAccounts[i], (_initialAmounts[i] * (1 ether)));
         }
 
         _initialTokensDistributed = true;
