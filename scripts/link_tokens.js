@@ -23,6 +23,7 @@ const CryptoCardsGum = contracts.getFromLocal('CryptoCardsGum');
 const CryptoCardsTokenMigrator = contracts.getFromLocal('CryptoCardsTokenMigrator');
 const CryptoCardsController = contracts.getFromLocal('CryptoCardsController');
 
+const GWEI_UNIT = 1e9;
 const GUM_REGULAR_FLAVOR = 0;
 
 Lib.network = process.env.CCC_NETWORK_NAME;
@@ -33,15 +34,21 @@ Lib.verbose = (process.env.CCC_VERBOSE_LOGS === 'yes');
 module.exports = async function() {
     Lib.log({separator: true});
     let nonce = 0;
-    let totalGas = 0;
     let receipt;
+    let gasPrice;
     if (_.isUndefined(networkOptions[Lib.network])) {
         Lib.network = 'local';
     }
 
     const options = networkOptions[Lib.network];
     const owner = process.env[`${_.toUpper(Lib.network)}_OWNER_ACCOUNT`];
-    const tokenAddress = tokenAddresses[Lib.network];
+
+    // Get Old Contract Addresses
+    const oldAddresses = tokenAddresses[Lib.network];
+
+    // Merge with New Contract Addresses
+    const deployedState = Lib.getDeployedAddresses(Lib.networkProvider);
+    const contractAddresses = _.assignIn({}, oldAddresses, _.get(deployedState, 'data', {}));
 
     const inHouseAccount = process.env[`${_.toUpper(Lib.network)}_IN_HOUSE_ACCOUNT`];
     const reserveAccount = process.env[`${_.toUpper(Lib.network)}_RESERVE_ACCOUNT`];
@@ -51,16 +58,23 @@ module.exports = async function() {
 
     Lib.deployData = require(`../zos.${Lib.networkProvider}.json`);
 
-    const _getTxOptions = () => {
-        return {from: owner, nonce: nonce++, gasPrice: options.gasPrice};
+    const _getCurrentGasPrice = async () => {
+        const suggestedWei = await web3.eth.getGasPrice();
+        const suggested = Math.floor(suggestedWei / GWEI_UNIT) * GWEI_UNIT;
+        const actual = _.clamp(suggested, options.minGasPrice, options.gasPrice);
+        return {actual, suggested};
+    };
+    const _getTxOptions = (currentPrice) => {
+        Lib.verbose && Lib.log({msg: `Paying Gas Price: ${Lib.fromWeiToGwei(currentPrice.actual)} GWEI  (${Lib.fromWeiToGwei(currentPrice.suggested)} suggested)`, indent: 2});
+        return {from: owner, nonce: nonce++, gasPrice: currentPrice.actual};
     };
 
     if (Lib.verbose) {
         Lib.log({separator: true});
-        Lib.log({msg: `Network:   ${Lib.network}`});
-        Lib.log({msg: `Web3:      ${web3.version}`});
-        Lib.log({msg: `Gas Price: ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
-        Lib.log({msg: `Owner:     ${owner}`});
+        Lib.log({msg: `Network:       ${Lib.network}`});
+        Lib.log({msg: `Web3:          ${web3.version}`});
+        Lib.log({msg: `Max Gas Price: ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
+        Lib.log({msg: `Owner:         ${owner}`});
         Lib.log({separator: true});
     }
 
@@ -101,34 +115,41 @@ module.exports = async function() {
         //
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Migrator to Tokens...'});
-        Lib.verbose && Lib.log({msg: `CryptoCardsGumToken: ${tokenAddress.gumToken}`, indent: 1});
-        receipt = await cryptoCardsTokenMigrator.setGumToken(tokenAddress.gumToken, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `CryptoCardsGumToken: ${contractAddresses.gumToken}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsTokenMigrator.setGumToken(contractAddresses.gumToken, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `OLD CryptoCardsGumToken: ${tokenAddress.oldGumToken}`, indent: 1});
-        receipt = await cryptoCardsTokenMigrator.setOldGumToken(tokenAddress.oldGumToken, _getTxOptions());
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
+        Lib.verbose && Lib.log({msg: `OLD CryptoCardsGumToken: ${contractAddresses.oldGumToken}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsTokenMigrator.setOldGumToken(contractAddresses.oldGumToken, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `CryptoCardsPackToken: ${tokenAddress.packsToken}`, indent: 1});
-        receipt = await cryptoCardsTokenMigrator.setPacksToken(tokenAddress.packsToken, _getTxOptions());
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
+        Lib.verbose && Lib.log({msg: `CryptoCardsPackToken: ${contractAddresses.packsToken}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsTokenMigrator.setPacksToken(contractAddresses.packsToken, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `OLD CryptoCardPacks (Packs-Controller): ${tokenAddress.oldPacksCtrl}`, indent: 1});
-        receipt = await cryptoCardsTokenMigrator.setOldPacks(tokenAddress.oldPacksCtrl, _getTxOptions());
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
+        Lib.verbose && Lib.log({msg: `OLD CryptoCardPacks (Packs-Controller): ${contractAddresses.oldPacksCtrl}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsTokenMigrator.setOldPacks(contractAddresses.oldPacksCtrl, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cardsToken}`, indent: 1});
-        receipt = await cryptoCardsTokenMigrator.setCardsToken(tokenAddress.cardsToken, _getTxOptions());
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
+        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${contractAddresses.cardsToken}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsTokenMigrator.setCardsToken(contractAddresses.cardsToken, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `OLD CryptoCardsCardToken (Cards-Token): ${tokenAddress.oldCardsToken}`, indent: 1});
-        receipt = await cryptoCardsTokenMigrator.setOldCardsToken(tokenAddress.oldCardsToken, _getTxOptions());
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
+        Lib.verbose && Lib.log({msg: `OLD CryptoCardsCardToken (Cards-Token): ${contractAddresses.oldCardsToken}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsTokenMigrator.setOldCardsToken(contractAddresses.oldCardsToken, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `OLD CryptoCards (Cards-Controller): ${tokenAddress.oldCardsCtrl}`, indent: 1});
-        receipt = await cryptoCardsTokenMigrator.setOldCards(tokenAddress.oldCardsCtrl, _getTxOptions());
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
+        Lib.verbose && Lib.log({msg: `OLD CryptoCards (Cards-Controller): ${contractAddresses.oldCardsCtrl}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsTokenMigrator.setOldCards(contractAddresses.oldCardsCtrl, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // CryptoCardsGum
@@ -136,16 +157,18 @@ module.exports = async function() {
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Gum to Tokens...'});
-        Lib.verbose && Lib.log({msg: `CryptoCardsGumToken: ${tokenAddress.gumToken}`, indent: 1});
-        receipt = await cryptoCardsGum.setGumToken(tokenAddress.gumToken, GUM_REGULAR_FLAVOR, web3.utils.asciiToHex('Regular'), _getTxOptions());
+        Lib.verbose && Lib.log({msg: `CryptoCardsGumToken: ${contractAddresses.gumToken}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsGum.setGumToken(contractAddresses.gumToken, GUM_REGULAR_FLAVOR, web3.utils.asciiToHex('Regular'), _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         Lib.log({msg: 'Setting Gum per Pack...'});
         Lib.verbose && Lib.log({msg: `setGumPerPack: ${options.gumPerPack}`, indent: 1});
-        receipt = await cryptoCardsGum.setGumPerPack(GUM_REGULAR_FLAVOR, options.gumPerPack, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsGum.setGumPerPack(GUM_REGULAR_FLAVOR, options.gumPerPack, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // CryptoCardsCards
@@ -153,10 +176,11 @@ module.exports = async function() {
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Cards to Tokens...'});
-        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cardsToken}`, indent: 1});
-        receipt = await cryptoCardsCards.setCryptoCardsCardToken(tokenAddress.cardsToken, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${contractAddresses.cardsToken}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsCards.setCryptoCardsCardToken(contractAddresses.cardsToken, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // CryptoCardPacks
@@ -164,14 +188,16 @@ module.exports = async function() {
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Packs to Tokens...'});
-        Lib.verbose && Lib.log({msg: `CryptoCardsPackToken: ${tokenAddress.packsToken}`, indent: 1});
-        receipt = await cryptoCardsPacks.setCryptoCardsPackToken(tokenAddress.packsToken, _getTxOptions());
+        Lib.verbose && Lib.log({msg: `CryptoCardsPackToken: ${contractAddresses.packsToken}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsPacks.setCryptoCardsPackToken(contractAddresses.packsToken, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
-        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${tokenAddress.cardsToken}`, indent: 1});
-        receipt = await cryptoCardsPacks.setCryptoCardsCardToken(tokenAddress.cardsToken, _getTxOptions());
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
+        Lib.verbose && Lib.log({msg: `CryptoCardsCardToken: ${contractAddresses.cardsToken}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsPacks.setCryptoCardsCardToken(contractAddresses.cardsToken, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // GUM Initial Accounts
@@ -185,10 +211,11 @@ module.exports = async function() {
         Lib.verbose && Lib.log({msg: `Marketing Account: ${marketingAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Airdrop Account:   ${airdropAccount}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Gum Contract:      ${cryptoCardsGum.address}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
         const accounts = [reserveAccount, inHouseAccount, bountyAccount, marketingAccount, airdropAccount, cryptoCardsGum.address];
-        receipt = await cryptoCardsTokenMigrator.setInitialAccounts(accounts, _getTxOptions());
+        receipt = await cryptoCardsTokenMigrator.setInitialAccounts(accounts, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
         Lib.log({spacer: true});
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -199,9 +226,8 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({spacer: true});
 
-        Lib.log({msg: `Total Gas Used: ${totalGas} WEI`});
-        Lib.log({msg: `Gas Price:      ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
-        Lib.log({msg: `Actual Cost:    ${Lib.fromWeiToEther(totalGas * options.gasPrice)} ETH`});
+        Lib.log({msg: `Total Gas Used: ${Lib.totalGasCosts.gas} WEI`});
+        Lib.log({msg: `Total Cost:     ${Lib.totalGasCosts.eth} ETH`});
 
         Lib.log({spacer: true});
         Lib.log({msg: 'Token Linking Complete!'});

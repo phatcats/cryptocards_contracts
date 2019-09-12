@@ -1,7 +1,7 @@
 {
   "contracts": {
     "CryptoCardsCards": {
-      "address": "0xB273f9ECF04947512CAEfD79dCD5c09886a263c7",
+      "address": "0x767183BF26be02b951ca60f6a6E03712372821f7",
       "constructorCode": "608060405234801561001057600080fd5b50613200806100206000396000f3fe",
       "bodyBytecodeHash": "3c84b03bb605145a4cbded54727bc1e7212c85c9303bca5898aaaeabe9d26236",
       "localBytecodeHash": "05bb4db2311b3b025c6a0e903be18c1b8385db4c1941a16d62d62ae36851f504",
@@ -156,7 +156,7 @@
       }
     },
     "CryptoCardsPacks": {
-      "address": "0x7b6F6115b91c1965741f5fb97075c8067CC90D21",
+      "address": "0xb722660F4fce7D0abbCBe0086B04fc0d0C47Eb3d",
       "constructorCode": "608060405234801561001057600080fd5b50612eff806100206000396000f3fe",
       "bodyBytecodeHash": "7ee69a77bd93c199b6e2d0406e9d659fe3f77ee54267413b3e44c419276d1df2",
       "localBytecodeHash": "dbca0fb07e645e473d5c3b6d191c524ad3a3cbdb3e91d45f93a21f5530efb3fa",
@@ -298,7 +298,7 @@
       }
     },
     "CryptoCardsGum": {
-      "address": "0x562fD505B62E2C536C07044D460Eba87D975954d",
+      "address": "0xBEBBf64632e8c62727654444727ff138D7dD9212",
       "constructorCode": "608060405234801561001057600080fd5b50611897806100206000396000f3fe",
       "bodyBytecodeHash": "39d8950d4b9a339c6861a98ea7782351d037146951341bf65adfc7a4e363be20",
       "localBytecodeHash": "08bc2affbe0053047c0d0a36f0ae0d4759745c2d4b9b04a431d55b23f33883c0",
@@ -457,7 +457,7 @@
       }
     },
     "CryptoCardsLib": {
-      "address": "0x86e3A7465eC9FD9AbeCDB4Dd62efDbAA71B2c010",
+      "address": "0xb1807965a3E96D684AbD21747D6704D6a4BDD199",
       "constructorCode": "608060405234801561001057600080fd5b5061280a806100206000396000f3fe",
       "bodyBytecodeHash": "b78f5756a7113fe266599a8d8a921d4dadaf4977a168b84cb80c6384340c53e9",
       "localBytecodeHash": "1a739bc766aea8ca4ad3eafee475bdbd95e044b6a4482881a40139d9ed8c2198",
@@ -632,7 +632,7 @@
       }
     },
     "CryptoCardsTreasury": {
-      "address": "0x669E16636CEC4C1aEc7b24E50BF5aCc5000cD724",
+      "address": "0xAd75cb8009c90fA8730d0353424b0cF883A56642",
       "constructorCode": "608060405234801561001057600080fd5b50612cea806100206000396000f3fe",
       "bodyBytecodeHash": "71da8990c7ebeb5f0e704f85523d64ceaf746d89f033a3ed43b02c29e1880f2c",
       "localBytecodeHash": "aff28f958f6de91d712e1f6364355d07b4504c2b5758fbfa8533eb4464ba9b4c",
@@ -851,7 +851,7 @@
       }
     },
     "CryptoCardsOracle": {
-      "address": "0xe7Dc7d329A273458618a843100170A3D40671E66",
+      "address": "0xE5516F9905e3450B42fE74E4AfF4843dB83D5b16",
       "constructorCode": "608060405234801561001057600080fd5b506133a6806100206000396000f3fe",
       "bodyBytecodeHash": "f4be31f86d579e08fa62e10fdcdf0e0938f974d77e24cee51cde5c83fdc20437",
       "localBytecodeHash": "2d0f9ecd76a0c2310c5da300ac28a2550be6193cd9ddbe3f9970b140859d672c",
@@ -1074,7 +1074,7 @@
       }
     },
     "CryptoCardsController": {
-      "address": "0x4334A3e10A70874003c6679181ddA6E10d763c5D",
+      "address": "0xEC22e78A2AA92d65F103122c5b09ca88a652D0C6",
       "constructorCode": "608060405234801561001057600080fd5b50612b50806100206000396000f3fe",
       "bodyBytecodeHash": "371fa23cd2ce494c2bfd8d748fa411a4dfe6a6d2bfb62f88f12097d3a7469dc3",
       "localBytecodeHash": "192fad0d49c09c25fdb6be73da7caf97454cbad067864b22b020ce143d454b86",
@@ -1261,11 +1261,11 @@
       }
     },
     "CryptoCardsTokenMigrator": {
-      "address": "0x0C4773C13305B8a95DC270d7BC8F5d97f9096b97",
+      "address": "0xD101D9aB7dE03557d242e5688A489A77121E1009",
       "constructorCode": "608060405234801561001057600080fd5b50612e6f806100206000396000f3fe",
-      "bodyBytecodeHash": "92ae019edd91a878f859acbbbd6bcafabb17568b2b45cfd68c78447077da3c65",
-      "localBytecodeHash": "04aeea9cf0843bdbf6e7cb11fdaa2d47d5251d99cc9192d41b79bc4318e3b06c",
-      "deployedBytecodeHash": "04aeea9cf0843bdbf6e7cb11fdaa2d47d5251d99cc9192d41b79bc4318e3b06c",
+      "bodyBytecodeHash": "a108464af35aa921dee1711a1175ce6ac5946ea41074ef1ffce8c59f53a5d3a4",
+      "localBytecodeHash": "7cf2f6c9569685d6e52cd75a5c2dbbee3c377cc84671fc5f2dadab87f1fa65a7",
+      "deployedBytecodeHash": "7cf2f6c9569685d6e52cd75a5c2dbbee3c377cc84671fc5f2dadab87f1fa65a7",
       "types": {
         "t_bool": {
           "id": "t_bool",
@@ -1357,7 +1357,7 @@
           "label": "_gumToken",
           "astId": 3833,
           "type": "t_address",
-          "src": "1628:38:9"
+          "src": "1627:38:9"
         },
         {
           "contract": "CryptoCardsTokenMigrator",
@@ -1365,7 +1365,7 @@
           "label": "_packsToken",
           "astId": 3835,
           "type": "t_address",
-          "src": "1672:41:9"
+          "src": "1671:41:9"
         },
         {
           "contract": "CryptoCardsTokenMigrator",
@@ -1373,7 +1373,7 @@
           "label": "_cardsToken",
           "astId": 3837,
           "type": "t_address",
-          "src": "1719:41:9"
+          "src": "1718:41:9"
         },
         {
           "contract": "CryptoCardsTokenMigrator",
@@ -1381,7 +1381,7 @@
           "label": "_gumTokenOld",
           "astId": 3839,
           "type": "t_address",
-          "src": "1788:41:9"
+          "src": "1787:41:9"
         },
         {
           "contract": "CryptoCardsTokenMigrator",
@@ -1389,7 +1389,7 @@
           "label": "_packsOld",
           "astId": 3841,
           "type": "t_address",
-          "src": "1835:37:9"
+          "src": "1834:37:9"
         },
         {
           "contract": "CryptoCardsTokenMigrator",
@@ -1397,7 +1397,7 @@
           "label": "_cardsOld",
           "astId": 3843,
           "type": "t_address",
-          "src": "1878:33:9"
+          "src": "1877:33:9"
         },
         {
           "contract": "CryptoCardsTokenMigrator",
@@ -1405,7 +1405,7 @@
           "label": "_cardsTokenOld",
           "astId": 3845,
           "type": "t_address",
-          "src": "1917:47:9"
+          "src": "1916:47:9"
         },
         {
           "contract": "CryptoCardsTokenMigrator",
@@ -1413,7 +1413,7 @@
           "label": "_initialAccounts",
           "astId": 3849,
           "type": "t_array:6<t_address>",
-          "src": "2444:36:9"
+          "src": "2443:36:9"
         },
         {
           "contract": "CryptoCardsTokenMigrator",
@@ -1421,7 +1421,7 @@
           "label": "_initialAmounts",
           "astId": 3853,
           "type": "t_array:6<t_uint256>",
-          "src": "2486:35:9"
+          "src": "2485:35:9"
         },
         {
           "contract": "CryptoCardsTokenMigrator",
@@ -1429,7 +1429,7 @@
           "label": "_initialTokensDistributed",
           "astId": 3855,
           "type": "t_bool",
-          "src": "2528:39:9"
+          "src": "2527:39:9"
         },
         {
           "contract": "CryptoCardsTokenMigrator",
@@ -1437,7 +1437,7 @@
           "label": "_migratedGum",
           "astId": 3857,
           "type": "t_uint256",
-          "src": "2574:29:9"
+          "src": "2573:29:9"
         },
         {
           "contract": "CryptoCardsTokenMigrator",
@@ -1445,7 +1445,7 @@
           "label": "_isMigrated",
           "astId": 3861,
           "type": "t_mapping<t_bool>",
-          "src": "2610:46:9"
+          "src": "2609:46:9"
         }
       ],
       "warnings": {
@@ -1461,73 +1461,72 @@
   "proxies": {
     "cryptocardscontracts/CryptoCardsOracle": [
       {
-        "address": "0x7456323683EB1E7D80F39397d104113850294390",
+        "address": "0x8d0FE486aEa2E796222b12526f45c9F114a556A4",
         "version": "2.2.0",
-        "implementation": "0xe7Dc7d329A273458618a843100170A3D40671E66",
-        "admin": "0xdd17f1286C72f3bE022Dd402326DF07dfA6e7C9C",
+        "implementation": "0xE5516F9905e3450B42fE74E4AfF4843dB83D5b16",
         "kind": "Upgradeable"
       }
     ],
     "cryptocardscontracts/CryptoCardsTreasury": [
       {
-        "address": "0xbf845981D03A16e9733C696Df69000EeCD568BdE",
+        "address": "0xc6e7EcBfb2Bb8D6979505fF17962032703962A71",
         "version": "2.2.0",
-        "implementation": "0x669E16636CEC4C1aEc7b24E50BF5aCc5000cD724",
-        "admin": "0xdd17f1286C72f3bE022Dd402326DF07dfA6e7C9C",
+        "implementation": "0xAd75cb8009c90fA8730d0353424b0cF883A56642",
+        "admin": "0x154Bf9D57A59b8852f15e9855911FdeE873ee277",
         "kind": "Upgradeable"
       }
     ],
     "cryptocardscontracts/CryptoCardsLib": [
       {
-        "address": "0x8D03de8C00888e37963bEcfd22e61e35d7E61Dd2",
+        "address": "0x4E26D917f6a64582F04744652E2826e85039e27C",
         "version": "2.2.0",
-        "implementation": "0x86e3A7465eC9FD9AbeCDB4Dd62efDbAA71B2c010",
-        "admin": "0xdd17f1286C72f3bE022Dd402326DF07dfA6e7C9C",
+        "implementation": "0xb1807965a3E96D684AbD21747D6704D6a4BDD199",
+        "admin": "0x154Bf9D57A59b8852f15e9855911FdeE873ee277",
         "kind": "Upgradeable"
       }
     ],
     "cryptocardscontracts/CryptoCardsGum": [
       {
-        "address": "0x15E942Df4D025e02E3219dF6d310b68C81B1204E",
+        "address": "0xDe902A3f205b52918ACbb24CBDB1d79fd2009113",
         "version": "2.2.0",
-        "implementation": "0x562fD505B62E2C536C07044D460Eba87D975954d",
-        "admin": "0xdd17f1286C72f3bE022Dd402326DF07dfA6e7C9C",
+        "implementation": "0xBEBBf64632e8c62727654444727ff138D7dD9212",
+        "admin": "0x154Bf9D57A59b8852f15e9855911FdeE873ee277",
         "kind": "Upgradeable"
       }
     ],
     "cryptocardscontracts/CryptoCardsCards": [
       {
-        "address": "0x442C1BDe0178D093849498a1C2D249A3832C863A",
+        "address": "0x014ACf25D97263a072346aE6950FDce2bdBA627a",
         "version": "2.2.0",
-        "implementation": "0xB273f9ECF04947512CAEfD79dCD5c09886a263c7",
-        "admin": "0xdd17f1286C72f3bE022Dd402326DF07dfA6e7C9C",
+        "implementation": "0x767183BF26be02b951ca60f6a6E03712372821f7",
+        "admin": "0x154Bf9D57A59b8852f15e9855911FdeE873ee277",
         "kind": "Upgradeable"
       }
     ],
     "cryptocardscontracts/CryptoCardsPacks": [
       {
-        "address": "0x7CBcd1e32De8672eb193eBe67C8301b6C8996400",
+        "address": "0x82DE687981ed6cfcDA798B912a535d02cc66C4e2",
         "version": "2.2.0",
-        "implementation": "0x7b6F6115b91c1965741f5fb97075c8067CC90D21",
-        "admin": "0xdd17f1286C72f3bE022Dd402326DF07dfA6e7C9C",
+        "implementation": "0xb722660F4fce7D0abbCBe0086B04fc0d0C47Eb3d",
+        "admin": "0x154Bf9D57A59b8852f15e9855911FdeE873ee277",
         "kind": "Upgradeable"
       }
     ],
     "cryptocardscontracts/CryptoCardsTokenMigrator": [
       {
-        "address": "0xB6BA8e7Ac26aea2b29e057eF3b81C0474d7d5b9f",
+        "address": "0x536A4712242Ded32c54a9760C7E0b9763FeB6496",
         "version": "2.2.0",
-        "implementation": "0x0C4773C13305B8a95DC270d7BC8F5d97f9096b97",
-        "admin": "0xdd17f1286C72f3bE022Dd402326DF07dfA6e7C9C",
+        "implementation": "0xD101D9aB7dE03557d242e5688A489A77121E1009",
+        "admin": "0x154Bf9D57A59b8852f15e9855911FdeE873ee277",
         "kind": "Upgradeable"
       }
     ],
     "cryptocardscontracts/CryptoCardsController": [
       {
-        "address": "0xa21686a6020565979D5eD6f6389b2B5A2D3d3bAE",
+        "address": "0x58eD980f3FA1C98F7A98534108779A58df48da66",
         "version": "2.2.0",
-        "implementation": "0x4334A3e10A70874003c6679181ddA6E10d763c5D",
-        "admin": "0xdd17f1286C72f3bE022Dd402326DF07dfA6e7C9C",
+        "implementation": "0xEC22e78A2AA92d65F103122c5b09ca88a652D0C6",
+        "admin": "0x154Bf9D57A59b8852f15e9855911FdeE873ee277",
         "kind": "Upgradeable"
       }
     ]
@@ -1541,6 +1540,6 @@
     }
   },
   "proxyAdmin": {
-    "address": "0xdd17f1286C72f3bE022Dd402326DF07dfA6e7C9C"
+    "address": "0x154Bf9D57A59b8852f15e9855911FdeE873ee277"
   }
 }

@@ -8,6 +8,7 @@
 'use strict';
 
 const _ = require('lodash');
+const fs = require('fs');
 
 const Lib = {};
 
@@ -65,6 +66,23 @@ Lib.logTxResult = (result) => {
     Lib.log({spacer: true});
 };
 
+Lib.getGasUsed = (result) => {
+    let gasUsed = 0;
+    if (result.receipt) {
+        gasUsed = result.receipt.gasUsed;
+    } else if (result.gasUsed) {
+        gasUsed = result.gasUsed;
+    }
+    return gasUsed;
+};
+
+Lib.totalGasCosts = {gas: 0, eth: 0};
+Lib.trackTotalGasCosts = (txReceipt, gasPrice) => {
+    const gasUsed = Lib.getGasUsed(txReceipt);
+    Lib.totalGasCosts.gas += gasUsed;
+    Lib.totalGasCosts.eth += ((gasUsed * gasPrice) / 1e18);
+};
+
 Lib.delay = (timeout) => new Promise((resolve) => {
     setTimeout(() => { resolve(); }, timeout);
 });
@@ -83,6 +101,32 @@ Lib.getDeployDataFor = (contractNamespace, index = 0) => {
         throw new Error(`No Deploy-Data found for ${contractNamespace} at index [${index}]!  Did the contract get deployed correctly?`);
     }
     return dd;
+};
+
+
+Lib.readStateFile = (stateObj = {filename: '', data: {}}) => {
+    if (_.isEmpty(_.get(stateObj, 'filename', ''))) {
+        throw new Error('No "filename" provided on "stateObj" when calling "Lib.readStateFile"');
+    }
+    if (!fs.existsSync(stateObj.filename)) {
+        Lib.writeStateFile(stateObj);
+    }
+    _.set(stateObj, 'data', JSON.parse(fs.readFileSync(stateObj.filename, 'utf-8')));
+};
+
+Lib.writeStateFile = (stateObj) => {
+    return fs.writeFileSync(stateObj.filename, JSON.stringify(stateObj.data));
+};
+
+Lib.getDeployedAddresses = (network) => {
+    // Store in parent dir so that other repos can read it
+    const stateObj = {filename: `../contract-addresses-${network}.json`, data: {}};
+    Lib.readStateFile(stateObj);
+    return stateObj;
+};
+
+Lib.setDeployedAddresses = (deployState) => {
+    return Lib.writeStateFile(deployState);
 };
 
 Lib.getContractInstance = async (contract, contractAddress) => {

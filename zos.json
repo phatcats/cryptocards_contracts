@@ -1,7 +1,7 @@
 {
   "zosversion": "2.2",
   "name": "cryptocardscontracts",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "contracts": {
     "CryptoCardsCards": "CryptoCardsCards",
     "CryptoCardsPacks": "CryptoCardsPacks",

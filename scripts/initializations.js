@@ -26,17 +26,18 @@ const CryptoCardsPacks = contracts.getFromLocal('CryptoCardsPacks');
 const CryptoCardsTokenMigrator = contracts.getFromLocal('CryptoCardsTokenMigrator');
 const CryptoCardsController = contracts.getFromLocal('CryptoCardsController');
 
+const GWEI_UNIT = 1e9;
+
 Lib.network = process.env.CCC_NETWORK_NAME;
 Lib.networkProvider = process.env.CCC_NETWORK_PROVIDER;
 Lib.networkId = process.env.CCC_NETWORK_ID;
 Lib.verbose = (process.env.CCC_VERBOSE_LOGS === 'yes');
 
-
 module.exports = async function() {
     Lib.log({separator: true});
     let nonce = 0;
-    let totalGas = 0;
     let receipt;
+    let gasPrice;
     if (_.isUndefined(networkOptions[Lib.network])) {
         Lib.network = 'local';
     }
@@ -52,16 +53,23 @@ module.exports = async function() {
 
     Lib.deployData = require(`../zos.${Lib.networkProvider}.json`);
 
-    const _getTxOptions = () => {
-        return {from: owner, nonce: nonce++, gasPrice: options.gasPrice};
+    const _getCurrentGasPrice = async () => {
+        const suggestedWei = await web3.eth.getGasPrice();
+        const suggested = Math.floor(suggestedWei / GWEI_UNIT) * GWEI_UNIT;
+        const actual = _.clamp(suggested, options.minGasPrice, options.gasPrice);
+        return {actual, suggested};
+    };
+    const _getTxOptions = (currentPrice) => {
+        Lib.verbose && Lib.log({msg: `Paying Gas Price: ${Lib.fromWeiToGwei(currentPrice.actual)} GWEI  (${Lib.fromWeiToGwei(currentPrice.suggested)} suggested)`, indent: 2});
+        return {from: owner, nonce: nonce++, gasPrice: currentPrice.actual};
     };
 
     if (Lib.verbose) {
         Lib.log({separator: true});
-        Lib.log({msg: `Network:   ${Lib.network}`});
-        Lib.log({msg: `Web3:      ${web3.version}`});
-        Lib.log({msg: `Gas Price: ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
-        Lib.log({msg: `Owner:     ${owner}`});
+        Lib.log({msg: `Network:       ${Lib.network}`});
+        Lib.log({msg: `Web3:          ${web3.version}`});
+        Lib.log({msg: `Max Gas Price: ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
+        Lib.log({msg: `Owner:         ${owner}`});
         Lib.log({separator: true});
     }
 
@@ -103,6 +111,20 @@ module.exports = async function() {
 
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Store Contract Addresses for other Scripts
+        const deployedState = Lib.getDeployedAddresses(Lib.networkProvider);
+        deployedState.data.controller = ddCryptoCardsController.address;
+        deployedState.data.oracle     = ddCryptoCardsOracle.address;
+        deployedState.data.treasury   = ddCryptoCardsTreasury.address;
+        deployedState.data.packs      = ddCryptoCardsPacks.address;
+        deployedState.data.cards      = ddCryptoCardsCards.address;
+        deployedState.data.gum        = ddCryptoCardsGum.address;
+        deployedState.data.lib        = ddCryptoCardsLib.address;
+        deployedState.data.migrator   = ddCryptoCardsTokenMigrator.address;
+        Lib.setDeployedAddresses(deployedState);
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Contract Initialization
 
         //
@@ -111,13 +133,15 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Oracle to Contracts...'});
         Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
-        receipt = await cryptoCardsOracle.setContractController(ddCryptoCardsController.address, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsOracle.setContractController(ddCryptoCardsController.address, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
         Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardsPacks.address}`, indent: 1});
-        receipt = await cryptoCardsOracle.setPacksAddress(ddCryptoCardsPacks.address, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsOracle.setPacksAddress(ddCryptoCardsPacks.address, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // CryptoCardsTreasury
@@ -127,9 +151,10 @@ module.exports = async function() {
         Lib.log({msg: 'Linking Treasury to Contracts...'});
         Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `In-House Account: ${inHouseAccount}`, indent: 1});
-        receipt = await cryptoCardsTreasury.setContractAddresses(ddCryptoCardsController.address, inHouseAccount, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsTreasury.setContractAddresses(ddCryptoCardsController.address, inHouseAccount, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // CryptoCardsLib
@@ -138,9 +163,10 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Lib to Contracts...'});
         Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
-        receipt = await cryptoCardsLib.setContractController(ddCryptoCardsController.address, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsLib.setContractController(ddCryptoCardsController.address, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // CryptoCardsGum
@@ -149,13 +175,15 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Gum to Contracts...'});
         Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardsPacks.address}`, indent: 1});
-        receipt = await cryptoCardsGum.setPacksAddress(ddCryptoCardsPacks.address, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsGum.setPacksAddress(ddCryptoCardsPacks.address, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
         Lib.verbose && Lib.log({msg: `Cards: ${ddCryptoCardsCards.address}`, indent: 1});
-        receipt = await cryptoCardsGum.setCardsAddress(ddCryptoCardsCards.address, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsGum.setCardsAddress(ddCryptoCardsCards.address, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // CryptoCardsCards
@@ -164,13 +192,15 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Cards to Contracts...'});
         Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
-        receipt = await cryptoCardsCards.setContractController(ddCryptoCardsController.address, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsCards.setContractController(ddCryptoCardsController.address, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
         Lib.verbose && Lib.log({msg: `Gum: ${ddCryptoCardsGum.address}`, indent: 1});
-        receipt = await cryptoCardsCards.setGumAddress(ddCryptoCardsGum.address, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsCards.setGumAddress(ddCryptoCardsGum.address, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // CryptoCardsPacks
@@ -179,21 +209,25 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({msg: 'Linking Packs to Contracts...'});
         Lib.verbose && Lib.log({msg: `Controller: ${ddCryptoCardsController.address}`, indent: 1});
-        receipt = await cryptoCardsPacks.setContractController(ddCryptoCardsController.address, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsPacks.setContractController(ddCryptoCardsController.address, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
         Lib.verbose && Lib.log({msg: `Oracle: ${ddCryptoCardsOracle.address}`, indent: 1});
-        receipt = await cryptoCardsPacks.setOracleAddress(ddCryptoCardsOracle.address, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsPacks.setOracleAddress(ddCryptoCardsOracle.address, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
         Lib.verbose && Lib.log({msg: `Gum: ${ddCryptoCardsGum.address}`, indent: 1});
-        receipt = await cryptoCardsPacks.setGumAddress(ddCryptoCardsGum.address, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsPacks.setGumAddress(ddCryptoCardsGum.address, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
         Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});
-        receipt = await cryptoCardsPacks.setLibAddress(ddCryptoCardsLib.address, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsPacks.setLibAddress(ddCryptoCardsLib.address, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // CryptoCardsController
@@ -206,16 +240,17 @@ module.exports = async function() {
         Lib.verbose && Lib.log({msg: `Cards: ${ddCryptoCardsCards.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Packs: ${ddCryptoCardsPacks.address}`, indent: 1});
         Lib.verbose && Lib.log({msg: `Lib: ${ddCryptoCardsLib.address}`, indent: 1});
+        gasPrice = await _getCurrentGasPrice();
         receipt = await cryptoCardsController.setContractAddresses(
             ddCryptoCardsOracle.address,
             ddCryptoCardsCards.address,
             ddCryptoCardsPacks.address,
             ddCryptoCardsTreasury.address,
             ddCryptoCardsLib.address,
-            _getTxOptions()
+            _getTxOptions(gasPrice)
         );
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // Oracle API Endpoint
@@ -224,9 +259,10 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({msg: 'Updating Oracle API Endpoint...'});
         Lib.verbose && Lib.log({msg: `API Endpoint: ${options.oracleApiEndpoint}`, indent: 1});
-        receipt = await cryptoCardsOracle.updateApiEndpoint(options.oracleApiEndpoint, _getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsOracle.updateApiEndpoint(options.oracleApiEndpoint, _getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         //
         // Pause the Controller
@@ -235,9 +271,10 @@ module.exports = async function() {
             Lib.log({separator: true});
             Lib.log({spacer: true});
             Lib.log({msg: 'Pausing Controller...'});
-            receipt = await cryptoCardsController.pause(_getTxOptions());
+            gasPrice = await _getCurrentGasPrice();
+            receipt = await cryptoCardsController.pause(_getTxOptions(gasPrice));
             Lib.logTxResult(receipt);
-            totalGas += receipt.receipt.gasUsed;
+            Lib.trackTotalGasCosts(receipt, gasPrice.actual);
         }
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -267,9 +304,8 @@ module.exports = async function() {
         Lib.log({msg: `Marketing:       ${marketingAccount}`, indent: 1});
         Lib.log({msg: `Airdrop:         ${airdropAccount}`, indent: 1});
         Lib.log({spacer: true});
-        Lib.log({msg: `Total Gas Used:  ${totalGas} WEI`});
-        Lib.log({msg: `Gas Price:       ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
-        Lib.log({msg: `Actual Cost:     ${Lib.fromWeiToEther(totalGas * options.gasPrice)} ETH`});
+        Lib.log({msg: `Total Gas Used:  ${Lib.totalGasCosts.gas} WEI`});
+        Lib.log({msg: `Total Cost:      ${Lib.totalGasCosts.eth} ETH`});
 
         Lib.log({spacer: true});
         Lib.log({msg: 'Initializations Complete!'});

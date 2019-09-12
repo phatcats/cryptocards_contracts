@@ -18,6 +18,7 @@ const { networkOptions, migrationAccounts, contracts } = require('../config');
 const _ = require('lodash');
 
 const ETH_UNIT = web3.utils.toBN(1e18);
+const GWEI_UNIT = 1e9;
 
 const CryptoCardsTokenMigrator = contracts.getFromLocal('CryptoCardsTokenMigrator');
 
@@ -29,7 +30,6 @@ Lib.verbose = (process.env.CCC_VERBOSE_LOGS === 'yes');
 module.exports = async function() {
     Lib.log({separator: true});
     let nonce = 0;
-    let totalGas = 0;
     let receipt;
     if (_.isUndefined(networkOptions[Lib.network])) {
         Lib.network = 'local';
@@ -41,16 +41,23 @@ module.exports = async function() {
 
     Lib.deployData = require(`../zos.${Lib.networkProvider}.json`);
 
-    const _getTxOptions = () => {
-        return {from: owner, nonce: nonce++, gasPrice: options.gasPrice};
+    const _getCurrentGasPrice = async () => {
+        const suggestedWei = await web3.eth.getGasPrice();
+        const suggested = Math.floor(suggestedWei / GWEI_UNIT) * GWEI_UNIT;
+        const actual = _.clamp(suggested, options.minGasPrice, options.gasPrice);
+        return {actual, suggested};
+    };
+    const _getTxOptions = (currentPrice) => {
+        Lib.verbose && Lib.log({msg: `Paying Gas Price: ${Lib.fromWeiToGwei(currentPrice.actual)} GWEI  (${Lib.fromWeiToGwei(currentPrice.suggested)} suggested)`, indent: 2});
+        return {from: owner, nonce: nonce++, gasPrice: currentPrice.actual};
     };
 
     if (Lib.verbose) {
         Lib.log({separator: true});
-        Lib.log({msg: `Network:   ${Lib.network}`});
-        Lib.log({msg: `Web3:      ${web3.version}`});
-        Lib.log({msg: `Gas Price: ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
-        Lib.log({msg: `Owner:     ${owner}`});
+        Lib.log({msg: `Network:       ${Lib.network}`});
+        Lib.log({msg: `Web3:          ${web3.version}`});
+        Lib.log({msg: `Max Gas Price: ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
+        Lib.log({msg: `Owner:         ${owner}`});
         Lib.log({separator: true});
     }
 
@@ -79,18 +86,20 @@ module.exports = async function() {
         let account;
         let oldAmount;
         let newAmount;
+        let gasPrice;
         for (let i = 0; i < accountsToMigrate.erc20.length; i++) {
             account = accountsToMigrate.erc20[i];
 
             Lib.log({separator: true});
             Lib.log({spacer: true});
             Lib.log({msg: `Migrating GUM for Token Holder "${account}"...`});
-            receipt = await cryptoCardsTokenMigrator.migrateTokenHolder(account, _getTxOptions());
+            gasPrice = await _getCurrentGasPrice();
+            receipt = await cryptoCardsTokenMigrator.migrateTokenHolder(account, _getTxOptions(gasPrice));
             oldAmount = web3.utils.toBN(receipt.logs[0].args.oldAmount).toString();
             newAmount = web3.utils.toBN(receipt.logs[0].args.newAmount).div(ETH_UNIT).toString();
             Lib.verbose && Lib.log({msg: ` - Migrated ${oldAmount} Old Tokens for ${newAmount} New Tokens`, indent: 1});
             Lib.logTxResult(receipt);
-            totalGas += receipt.receipt.gasUsed;
+            Lib.trackTotalGasCosts(receipt, gasPrice.actual);
         }
 
         //
@@ -99,9 +108,10 @@ module.exports = async function() {
         Lib.log({separator: true});
         Lib.log({spacer: true});
         Lib.log({msg: 'Distributing initial GUM to Reserve Accounts...'});
-        receipt = await cryptoCardsTokenMigrator.distributeInitialGum(_getTxOptions());
+        gasPrice = await _getCurrentGasPrice();
+        receipt = await cryptoCardsTokenMigrator.distributeInitialGum(_getTxOptions(gasPrice));
         Lib.logTxResult(receipt);
-        totalGas += receipt.receipt.gasUsed;
+        Lib.trackTotalGasCosts(receipt, gasPrice.actual);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // ERC20 Migration Complete
@@ -111,9 +121,8 @@ module.exports = async function() {
         Lib.log({spacer: true});
         Lib.log({spacer: true});
 
-        Lib.log({msg: `Total Gas Used: ${totalGas} WEI`});
-        Lib.log({msg: `Gas Price:      ${Lib.fromWeiToGwei(options.gasPrice)} GWEI`});
-        Lib.log({msg: `Actual Cost:    ${Lib.fromWeiToEther(totalGas * options.gasPrice)} ETH`});
+        Lib.log({msg: `Total Gas Used: ${Lib.totalGasCosts.gas} WEI`});
+        Lib.log({msg: `Total Cost:     ${Lib.totalGasCosts.eth} ETH`});
 
         Lib.log({spacer: true});
         Lib.log({msg: 'ERC20 Token Migration Complete!'});

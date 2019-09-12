@@ -33,53 +33,56 @@ module.exports = {
             oracleApiEndpoint   : 'BEJLg+4QyJdFu5IeCfdZrVnurkh/GB9aEY6rGDuyHSBLtOs1BsPdo0/aTr6qaIVvLlPZUku8TT7PEFY6OwbQqa6l/+ATw2Uf+iWkhjsg5seU31FHvahFHELYm1Kuu5B46g0h1biap3OtXDzys4RZgQ6HDNbF3eq9Xw4Zwi2vzQlt/LSp3lJHpmuYWu78y/Ed5Ov4OiAaoVhPIkRFN+8rDpcQIXEXdzlHTZBAACWJ6gE=',
             gumPerPack          : 60,
             gas                 : 6721975,
-            gasPrice            : 20000000000
+            minGasPrice         : 10 * 1e9,
+            gasPrice            : 90 * 1e9
         },
         ropsten: {
             oracleApiEndpoint   : 'BI33RiqK+ljYzlRuu0pdF23DTia8iiC+TCCbqCmQzZdpIH/WrKr8x1w92VNZgTzptK9HwbMQCBXH69bA0bVuo1O4PIRCDbXJdYp78VDKp1s4lFE8+W4q2X2w3nzB+dgcjEGC2GVyvqihLOwH0o7E1HEtlgeLdapzLcWeNwmIVtGHGpfk30i/qD14vwXnPT7lO9ndbwEHlb4w5Q2YkUDKrWyF3g10IgrBk1Wp8fYyTg4bji4=',
             gumPerPack          : 60,
-            gas                 : 8000000,
-            gasPrice            : 22000000000          // https://ropsten.etherscan.io/gastracker
+            // For contract deployments
+            // gas                : 8000000,  // https://ropsten.etherscan.io/blocks
+            // For contract interactions
+            gas                 : 1000000,
+            minGasPrice         : 20 * 1e9,
+            gasPrice            : 50 * 1e9   // Max Gas Price to Pay; https://ropsten.etherscan.io/gastracker
         },
         mainnet: {
             oracleApiEndpoint   : 'BP00gRkhrJdkE9+lyEJmZZcmK1Pq1R6WpyZM1ZislsSxFhGo+YzxSOFT4/a9jfEbFlwKMog53Z6wMzem14mKXfvSQOklp1WpCit2KZ6nmTvGBx/96cpTXvtuH90eZglas5F9qPcv75tqSexG2Yb6zWVIwVV0C0sFXsElfg75Sf9tjyPgqaQuQOGxKhza1SUESziEYDy2onUbM12LBlL7H75nnyAoVpcdiMfGgMEGSrGZnsgM29uIxJmG',
-            // For contract deployments
-            // gas                : 8000000,           // https://etherscan.io/blocks
-            // For contract interactions
             gumPerPack          : 60,
-            gas                 : 1000000,             // https://etherscan.io/blocks
-            gasPrice            : 2000000000           // https://etherscan.io/gastracker
+            // For contract deployments
+            // gas                : 8000000,  // https://etherscan.io/blocks
+            // For contract interactions
+            gas                 : 1000000,  // https://etherscan.io/blocks
+            minGasPrice         : 1 * 1e9,
+            gasPrice            : 2 * 1e9   // Max Gas Price to Pay; https://etherscan.io/gastracker
         }
     },
 
     tokenAddresses: {
         local: {
-            packsToken    : '0x01b9707dD7782bB441ec57C1B62D669896859096',
-            cardsToken    : '0x89eC3f11E1600BEd981DD2d12404bAAF21c7699c',
-            gumToken      : '0xF70B61E3800dFFDA57cf167051CAa0Fb6bA1B0B3',
             oldPacksCtrl  : '0x856ee8736b204f926c33db5929328ba950768b6a',
             oldCardsCtrl  : '0xaad8b7860cf6bb209f9e60f68aae438b2d076ca6',
             oldCardsToken : '0x81D7E3648579E27679bFc3010e673532BF77c379',
             oldGumToken   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
         },
         ropsten: {
-            packsToken    : '0x1010d10B7696E0b74d3f204F42Cc2F7aD30a597a',
-            cardsToken    : '0xE4752b8704ed6446221CeA1b5EE5596192BB9e8E',
-            gumToken      : '0x364B429211BF1e3F20896D2AdBD148c74aECb7C3',
             oldPacksCtrl  : '0x856ee8736b204f926c33db5929328ba950768b6a',
             oldCardsCtrl  : '0xaad8b7860cf6bb209f9e60f68aae438b2d076ca6',
             oldCardsToken : '0x81D7E3648579E27679bFc3010e673532BF77c379',
             oldGumToken   : '0x529e6171559eFb0c49644d7b281BC5997c286CBF'
         },
         mainnet: {
-            packsToken    : '',
-            cardsToken    : '',
-            gumToken      : '',
             oldPacksCtrl  : '0x56b3c4957cc15e2ad81563b0560a680a433db43e',
             oldCardsCtrl  : '0x4b9134c7484907fe683d6521ad743c18fe1375c2',
             oldCardsToken : '0xcb35d14759e2931022c7315f53e37cdcd38e570c',
             oldGumToken   : '0xaAFa4Bf1696732752a4AD4D27DD1Ea6793F24Fc0'
         }
+    },
+
+    migrationPhase: {
+        migratePacks : true,
+        migrateCards : true,
+        batchSize    : 3,
     },
 
     migrationAccounts: {
@@ -92,11 +95,13 @@ module.exports = {
         ropsten: {
             erc20: [
                 '0x107EB6166d59350C634B1DcFDffBaD4846CCCD84', // Account 9
-                '0x8b7ab7c6bb27c7ae707f751e444eed4998aaea7b', // Account 10 - migrated
+                '0x8b7ab7c6bb27c7ae707f751e444eed4998aaea7b', // Account 10
             ],
             erc721: [
-                {owner: '0x107EB6166d59350C634B1DcFDffBaD4846CCCD84', pass: 2},
-                {owner: '0xcd3a3d04560b54f9af22a87005aec435d42ddb92', pass: 2},
+                '0xaf06e78152d5ba4df6b116fdbca87bc13181e994',
+                '0x107eb6166d59350c634b1dcfdffbad4846cccd84', // Account 9
+                '0x8b7ab7c6bb27c7ae707f751e444eed4998aaea7b', // Account 10
+                '0xcd3a3d04560b54f9af22a87005aec435d42ddb92',
             ]
         },
         mainnet: {
