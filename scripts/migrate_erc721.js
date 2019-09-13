@@ -53,7 +53,7 @@ module.exports = async function() {
     const owner = process.env[`${_.toUpper(Lib.network)}_OWNER_ACCOUNT`];
     const accountsToMigrate = migrationAccounts[Lib.network];
 
-    _migrationState.filename = `migration-state-${Lib.network}.json`;
+    _migrationState.filename = `../migration-state-${Lib.network}.json`;
     _readMigrationStateFile();
 
     Lib.deployData = require(`../zos.${Lib.networkProvider}.json`);

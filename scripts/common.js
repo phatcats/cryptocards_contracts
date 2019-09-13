@@ -115,7 +115,7 @@ Lib.readStateFile = (stateObj = {filename: '', data: {}}) => {
 };
 
 Lib.writeStateFile = (stateObj) => {
-    return fs.writeFileSync(stateObj.filename, JSON.stringify(stateObj.data));
+    return fs.writeFileSync(stateObj.filename, JSON.stringify(stateObj.data, null, '\t'));
 };
 
 Lib.getDeployedAddresses = (network) => {

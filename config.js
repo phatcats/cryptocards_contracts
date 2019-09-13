@@ -33,18 +33,18 @@ module.exports = {
             oracleApiEndpoint   : 'BEJLg+4QyJdFu5IeCfdZrVnurkh/GB9aEY6rGDuyHSBLtOs1BsPdo0/aTr6qaIVvLlPZUku8TT7PEFY6OwbQqa6l/+ATw2Uf+iWkhjsg5seU31FHvahFHELYm1Kuu5B46g0h1biap3OtXDzys4RZgQ6HDNbF3eq9Xw4Zwi2vzQlt/LSp3lJHpmuYWu78y/Ed5Ov4OiAaoVhPIkRFN+8rDpcQIXEXdzlHTZBAACWJ6gE=',
             gumPerPack          : 60,
             gas                 : 6721975,
-            minGasPrice         : 10 * 1e9,
-            gasPrice            : 90 * 1e9
+            minGasPrice         : 10e9,
+            gasPrice            : 90e9
         },
         ropsten: {
             oracleApiEndpoint   : 'BI33RiqK+ljYzlRuu0pdF23DTia8iiC+TCCbqCmQzZdpIH/WrKr8x1w92VNZgTzptK9HwbMQCBXH69bA0bVuo1O4PIRCDbXJdYp78VDKp1s4lFE8+W4q2X2w3nzB+dgcjEGC2GVyvqihLOwH0o7E1HEtlgeLdapzLcWeNwmIVtGHGpfk30i/qD14vwXnPT7lO9ndbwEHlb4w5Q2YkUDKrWyF3g10IgrBk1Wp8fYyTg4bji4=',
             gumPerPack          : 60,
             // For contract deployments
-            // gas                : 8000000,  // https://ropsten.etherscan.io/blocks
+            // gas                 : 8000000,  // https://ropsten.etherscan.io/blocks
             // For contract interactions
             gas                 : 1000000,
-            minGasPrice         : 20 * 1e9,
-            gasPrice            : 50 * 1e9   // Max Gas Price to Pay; https://ropsten.etherscan.io/gastracker
+            minGasPrice         : 20e9,
+            gasPrice            : 50e9      // Max Gas Price to Pay; https://ropsten.etherscan.io/gastracker
         },
         mainnet: {
             oracleApiEndpoint   : 'BP00gRkhrJdkE9+lyEJmZZcmK1Pq1R6WpyZM1ZislsSxFhGo+YzxSOFT4/a9jfEbFlwKMog53Z6wMzem14mKXfvSQOklp1WpCit2KZ6nmTvGBx/96cpTXvtuH90eZglas5F9qPcv75tqSexG2Yb6zWVIwVV0C0sFXsElfg75Sf9tjyPgqaQuQOGxKhza1SUESziEYDy2onUbM12LBlL7H75nnyAoVpcdiMfGgMEGSrGZnsgM29uIxJmG',
@@ -53,8 +53,8 @@ module.exports = {
             // gas                : 8000000,  // https://etherscan.io/blocks
             // For contract interactions
             gas                 : 1000000,  // https://etherscan.io/blocks
-            minGasPrice         : 1 * 1e9,
-            gasPrice            : 2 * 1e9   // Max Gas Price to Pay; https://etherscan.io/gastracker
+            minGasPrice         : 1e9,
+            gasPrice            : 2e9       // Max Gas Price to Pay; https://etherscan.io/gastracker
         }
     },
 
@@ -81,8 +81,8 @@ module.exports = {
 
     migrationPhase: {
         migratePacks : true,
-        migrateCards : true,
-        batchSize    : 3,
+        migrateCards : false,
+        batchSize    : 10,
     },
 
     migrationAccounts: {

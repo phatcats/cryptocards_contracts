@@ -21,7 +21,7 @@ module.exports = {
             port          : 7545,
             network_id    : '5777',                             // Ganache
             gas           : networkOptions.local.gas,
-            gasPrice      : networkOptions.local.gasPrice,
+            gasPrice      : networkOptions.local.minGasPrice,
             confirmations : 0,                                  // # of confs to wait between deployments. (default: 0)
             timeoutBlocks : 50,                                 // # of blocks before a deployment times out  (minimum/default: 50)
             skipDryRun    : true                                // Skip dry run before migrations? (default: false for public nets)
@@ -31,7 +31,7 @@ module.exports = {
             provider      : new HDWalletProvider(wallets.ropsten.mnemonic[walletMnemonicType], wallets.ropsten.apiEndpoint),//, wallets.ropsten.accountIndex), //, 1, true, "m/44'/1'/0'/0/"),
             network_id    : 3,                                  // Ropsten
             gas           : networkOptions.ropsten.gas,         // https://ropsten.etherscan.io/blocks
-            gasPrice      : networkOptions.ropsten.gasPrice,    // https://ropsten.etherscan.io/gastracker
+            gasPrice      : networkOptions.ropsten.minGasPrice, // https://ropsten.etherscan.io/gastracker
             confirmations : 1,                                  // # of confs to wait between deployments. (default: 0)
             timeoutBlocks : 200,                                // # of blocks before a deployment times out  (minimum/default: 50)
             skipDryRun    : false                               // Skip dry run before migrations? (default: false for public nets)
@@ -40,7 +40,7 @@ module.exports = {
             provider      : new HDWalletProvider(wallets.mainnet.mnemonic[walletMnemonicType], wallets.mainnet.apiEndpoint, wallets.mainnet.accountIndex),
             network_id    : 1,                                  // Mainnet
             gas           : networkOptions.mainnet.gas,         // https://etherscan.io/blocks
-            gasPrice      : networkOptions.mainnet.gasPrice,    // https://etherscan.io/gastracker
+            gasPrice      : networkOptions.mainnet.minGasPrice, // https://etherscan.io/gastracker
             confirmations : 1,                                  // # of confs to wait between deployments. (default: 0)
             timeoutBlocks : 200,                                // # of blocks before a deployment times out  (minimum/default: 50)
             skipDryRun    : false                               // Skip dry run before migrations? (default: false for public nets)
