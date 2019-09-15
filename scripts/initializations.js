@@ -267,15 +267,15 @@ module.exports = async function() {
         //
         // Pause the Controller
         //
-        if (Lib.network === 'mainnet') {
-            Lib.log({separator: true});
-            Lib.log({spacer: true});
-            Lib.log({msg: 'Pausing Controller...'});
-            gasPrice = await _getCurrentGasPrice();
-            receipt = await cryptoCardsController.pause(_getTxOptions(gasPrice));
-            Lib.logTxResult(receipt);
-            Lib.trackTotalGasCosts(receipt, gasPrice.actual);
-        }
+        // if (Lib.network === 'mainnet') {
+        //     Lib.log({separator: true});
+        //     Lib.log({spacer: true});
+        //     Lib.log({msg: 'Pausing Controller...'});
+        //     gasPrice = await _getCurrentGasPrice();
+        //     receipt = await cryptoCardsController.pause(_getTxOptions(gasPrice));
+        //     Lib.logTxResult(receipt);
+        //     Lib.trackTotalGasCosts(receipt, gasPrice.actual);
+        // }
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Deploy Complete

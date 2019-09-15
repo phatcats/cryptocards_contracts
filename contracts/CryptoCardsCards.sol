@@ -4,9 +4,6 @@
  *  - https://phatcats.co
  *
  * Copyright 2019 (c) Phat Cats, Inc.
- *
- * Contract Audits:
- *   - Callisto Security Department - https://callisto.network/
  */
 
 pragma solidity 0.5.2;
@@ -39,7 +36,6 @@ contract CryptoCardsCards is Initializable, Ownable {
     mapping(uint256 => uint256) internal _cardSalePriceById;
 
     // Mapping from Token ID to Allowed Trade Values
-
     mapping(uint256 => uint256[]) internal _cardAllowedTradeRanks;
     mapping(uint256 => uint256[]) internal _cardAllowedTradeGens;
     mapping(uint256 => uint256[]) internal _cardAllowedTradeYears;
@@ -112,18 +108,24 @@ contract CryptoCardsCards is Initializable, Ownable {
         _gum.transferCardGum(msg.sender, wrappedGum);
     }
 
-    function updateCardPrice(uint256 cardId, uint256 cardPrice, bytes16 uuid)
-        public
-    {
+    function printCard(uint256 tokenId, bytes16 uuid) public {
+        _cardToken.printFor(msg.sender, tokenId, uuid);
+    }
+
+    function printCards(uint256[] memory cardIds, bytes16 uuid) public {
+        for (uint i = 0; i < cardIds.length; i++) {
+            _cardToken.printFor(msg.sender, cardIds[i], uuid);
+        }
+    }
+
+    function updateCardPrice(uint256 cardId, uint256 cardPrice, bytes16 uuid) public {
         address cardOwner = _cardToken.ownerOf(cardId); // will revert if owner == address(0)
         require(msg.sender == cardOwner, "Invalid owner supplied or owner is not card-owner");
         _cardSalePriceById[cardId] = cardPrice;
         emit CardPriceSet(cardOwner, uuid, cardId, cardPrice);
     }
 
-    function updateCardTradeValue(uint256 cardId, uint256[] memory cardRanks, uint256[] memory cardGens, uint256[] memory cardYears, bytes16 uuid)
-        public
-    {
+    function updateCardTradeValue(uint256 cardId, uint256[] memory cardRanks, uint256[] memory cardGens, uint256[] memory cardYears, bytes16 uuid) public {
         address cardOwner = _cardToken.ownerOf(cardId); // will revert if owner == address(0)
         require(msg.sender == cardOwner, "Invalid owner supplied or owner is not card-owner");
 
@@ -208,23 +210,6 @@ contract CryptoCardsCards is Initializable, Ownable {
 
         emit CardTrade(owner, desiredCardRealOwner, uuid, ownerCardId, desiredCardId);
     }
-
-    function printCard(uint256 tokenId, bytes16 uuid) public onlyController {
-        _cardToken.printFor(msg.sender, tokenId, uuid);
-    }
-
-//    function printCards(address owner, uint256[] memory cardIds)
-//        public
-//        onlyController
-//    {
-//        // Mark Cards as Printed
-//        for (uint i = 0; i < cardIds.length; i++) {
-//            if (_cardToken.ownerOf(cardIds[i]) == owner) {
-//                _resetCardValue(cardIds[i]);
-//                _cardToken.printFor(owner, cardIds[i]);
-//            }
-//        }
-//    }
 
     //
     // Private

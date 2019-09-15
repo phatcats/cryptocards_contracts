@@ -4,9 +4,6 @@
  *  - https://phatcats.co
  *
  * Copyright 2019 (c) Phat Cats, Inc.
- *
- * Contract Audits:
- *   - Callisto Security Department - https://callisto.network/
  */
 
 pragma solidity 0.5.2;
@@ -18,12 +15,6 @@ contract CryptoCardsCardToken {
     function ownerOf(uint256 tokenId) public view returns (address);
     function exists(uint256 tokenId) public view returns (bool);
     function totalSupply() public view returns (uint256);
-//    function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256);
-
-    // ERC721-Batched
-//    function safeBatchTransferFrom(address from, address to, uint256[] memory tokenIds) public;
-//    function safeBatchTransferFrom(address from, address to, uint256[] memory tokenIds, bytes memory _data) public;
-//    function batchTransferFrom(address from, address to, uint256[] memory tokenIds) public;
 
     // CryptoCardsCardToken
     function getTypeIndicators(uint256 tokenId) public pure returns (uint, uint, uint);

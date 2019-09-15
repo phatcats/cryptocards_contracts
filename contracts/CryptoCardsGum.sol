@@ -4,9 +4,6 @@
  *  - https://phatcats.co
  *
  * Copyright 2019 (c) Phat Cats, Inc.
- *
- * Contract Audits:
- *   - Callisto Security Department - https://callisto.network/
  */
 
 pragma solidity 0.5.2;
@@ -31,6 +28,7 @@ contract CryptoCardsGum is Initializable, Ownable {
 
     bytes32[MAX_FLAVORS] internal _flavorName;
     uint256[MAX_FLAVORS] internal _gumPerPack;
+
     uint internal _flavorsAvailable;
     uint internal _earnedGumFlavor;
 

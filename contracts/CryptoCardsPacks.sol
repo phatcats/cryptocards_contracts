@@ -4,9 +4,6 @@
  *  - https://phatcats.co
  *
  * Copyright 2019 (c) Phat Cats, Inc.
- *
- * Contract Audits:
- *   - Callisto Security Department - https://callisto.network/
  */
 
 pragma solidity 0.5.2;
@@ -91,10 +88,6 @@ contract CryptoCardsPacks is Initializable, Ownable {
     function packDataById(uint256 tokenId) public view returns (string memory) {
         return _packToken.packDataById(tokenId);
     }
-
-//    function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256) {
-//        return _packToken.tokenOfOwnerByIndex(owner, index);
-//    }
 
     function updatePackPrice(uint256 packId, uint256 packPrice, bytes16 uuid) public {
         address packOwner = _packToken.ownerOf(packId); // will revert if owner == address(0)

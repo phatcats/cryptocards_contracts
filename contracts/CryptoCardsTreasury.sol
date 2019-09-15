@@ -4,9 +4,6 @@
  *  - https://phatcats.co
  *
  * Copyright 2019 (c) Phat Cats, Inc.
- *
- * Contract Audits:
- *   - Callisto Security Department - https://callisto.network/
  */
 /*
     - when receiving funds:

@@ -4,9 +4,6 @@
  *  - https://phatcats.co
  *
  * Copyright 2019 (c) Phat Cats, Inc.
- *
- * Contract Audits:
- *   - Callisto Security Department - https://callisto.network/
  */
 
 pragma solidity 0.5.2;
@@ -90,10 +87,6 @@ contract CryptoCardsOracle is Ownable, usingOraclize {
         } else {
             string memory apiParams = string(abi.encodePacked('{"uuid":"', uuid, '"}'));
             bytes32 queryId = oraclize_query("URL", apiEndpoint, apiParams, oracleGasLimit);
-
-            // Not working due to address
-//            string memory apiParams = string(abi.encodePacked('{"owner":"', receiver, '","uuid":"', uuid, '"}'));
-//            bytes32 queryId = oraclize_query("URL", apiEndpoint, apiParams, oracleGasLimit);
 
             uuids[uuid] = true;
             oracleIdToOwner[queryId] = receiver;

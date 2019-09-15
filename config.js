@@ -43,7 +43,7 @@ module.exports = {
             // gas                 : 8000000,  // https://ropsten.etherscan.io/blocks
             // For contract interactions
             gas                 : 1000000,
-            minGasPrice         : 20e9,
+            minGasPrice         : 19e9,
             gasPrice            : 50e9      // Max Gas Price to Pay; https://ropsten.etherscan.io/gastracker
         },
         mainnet: {
@@ -81,8 +81,8 @@ module.exports = {
 
     migrationPhase: {
         migratePacks : true,
-        migrateCards : false,
-        batchSize    : 10,
+        migrateCards : true,
+        batchSize    : 5,
     },
 
     migrationAccounts: {
@@ -98,10 +98,10 @@ module.exports = {
                 '0x8b7ab7c6bb27c7ae707f751e444eed4998aaea7b', // Account 10
             ],
             erc721: [
-                '0xaf06e78152d5ba4df6b116fdbca87bc13181e994',
+                '0xaf06e78152d5ba4df6b116fdbca87bc13181e994', // Account 6
                 '0x107eb6166d59350c634b1dcfdffbad4846cccd84', // Account 9
                 '0x8b7ab7c6bb27c7ae707f751e444eed4998aaea7b', // Account 10
-                '0xcd3a3d04560b54f9af22a87005aec435d42ddb92',
+                '0xcd3a3d04560b54f9af22a87005aec435d42ddb92', // Account 5
             ]
         },
         mainnet: {
