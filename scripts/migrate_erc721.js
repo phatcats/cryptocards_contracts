@@ -34,6 +34,7 @@ const _migrationState = {
     data: {}
 };
 
+const CryptoCardsLib = contracts.getFromLocal('CryptoCardsLib');
 const CryptoCardsTokenMigrator = contracts.getFromLocal('CryptoCardsTokenMigrator');
 
 Lib.network = process.env.CCC_NETWORK_NAME;
@@ -52,6 +53,9 @@ module.exports = async function() {
     const options = networkOptions[Lib.network];
     const owner = process.env[`${_.toUpper(Lib.network)}_OWNER_ACCOUNT`];
     const accountsToMigrate = migrationAccounts[Lib.network];
+
+    const deployedState = Lib.getDeployedAddresses(Lib.networkProvider);
+    const contractAddresses = _.get(deployedState, 'data', {});
 
     _migrationState.filename = `../migration-state-${Lib.network}.json`;
     _readMigrationStateFile();
@@ -90,6 +94,9 @@ module.exports = async function() {
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Get Deployed Contracts
+        const ddCryptoCardsLib = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsLib');
+        const cryptoCardsLib = await Lib.getContractInstance(CryptoCardsLib, ddCryptoCardsLib.address);
+
         const ddCryptoCardsTokenMigrator = Lib.getDeployDataFor('cryptocardscontracts/CryptoCardsTokenMigrator');
         const cryptoCardsTokenMigrator = await Lib.getContractInstance(CryptoCardsTokenMigrator, ddCryptoCardsTokenMigrator.address);
 
@@ -197,6 +204,7 @@ module.exports = async function() {
 
                     // Mint New Pack with New Cards
                     Lib.verbose && Lib.log({msg: `Minting Pack...`, indent: 1});
+                    Lib.verbose && Lib.log({msg: `Old Token ID: "${oldTokenId}"`, indent: 2});
                     Lib.verbose && Lib.log({msg: `Old Pack-Hash: "${oldHash}"`, indent: 2});
                     Lib.verbose && Lib.log({msg: `New Pack-Hash: "${newHash}"`, indent: 2});
                     gasPrice = await _getCurrentGasPrice();
@@ -285,6 +293,44 @@ module.exports = async function() {
                 _setBatchPass({type: 'cards', account, batchPass: batchPass + 1});
                 _writeMigrationStateFile();
             }
+        }
+
+        if (migrationPhase.migratePurchasedPacks) {
+            // Lib: Set Controller to Owner Account
+            Lib.log({separator: true});
+            Lib.log({spacer: true});
+            Lib.log({msg: 'Linking Lib to Owner as Controller...'});
+            Lib.verbose && Lib.log({msg: `Owner: ${owner}`, indent: 1});
+            gasPrice = await _getCurrentGasPrice();
+            receipt = await cryptoCardsLib.setContractController(owner, _getTxOptions(gasPrice));
+            Lib.logTxResult(receipt);
+            Lib.trackTotalGasCosts(receipt, gasPrice.actual);
+
+            // Lib: Increment Purchased Pack Count for each Account
+            Lib.log({separator: true});
+            Lib.log({spacer: true});
+            Lib.log({msg: `# of Pack Purchasers: ${accountsToMigrate.packPurchasers.length}`});
+            for (let i = 0; i < accountsToMigrate.packPurchasers.length; i++) {
+                account = accountsToMigrate.packPurchasers[i].account;
+                tokenCount = accountsToMigrate.packPurchasers[i].count;
+
+                Lib.verbose && Lib.log({spacer: true});
+                Lib.verbose && Lib.log({msg: `Updating Pack Purchases for "${account}"`, indent: 1});
+                gasPrice = await _getCurrentGasPrice();
+                receipt = await cryptoCardsLib.incrementPurchasedPackCount(account, tokenCount, _getTxOptions(gasPrice));
+                Lib.logTxResult(receipt);
+                Lib.trackTotalGasCosts(receipt, gasPrice.actual);
+            }
+
+            // Lib: Set Controller back to Controller Contract
+            Lib.log({separator: true});
+            Lib.log({spacer: true});
+            Lib.log({msg: 'Linking Lib to Controller Contract...'});
+            Lib.verbose && Lib.log({msg: `Controller: ${contractAddresses.controller}`, indent: 1});
+            gasPrice = await _getCurrentGasPrice();
+            receipt = await cryptoCardsLib.setContractController(contractAddresses.controller, _getTxOptions(gasPrice));
+            Lib.logTxResult(receipt);
+            Lib.trackTotalGasCosts(receipt, gasPrice.actual);
         }
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -218,6 +218,20 @@ module.exports = async function() {
         Lib.trackTotalGasCosts(receipt, gasPrice.actual);
         Lib.log({spacer: true});
 
+        //
+        // Distribute Initial GUM Tokens
+        //   - Local Only, handled after ERC20 Migration on Ropsten/Mainnet
+        //
+        if (Lib.network === 'local') {
+            Lib.log({separator: true});
+            Lib.log({spacer: true});
+            Lib.log({msg: 'Distributing initial GUM to Reserve Accounts...'});
+            gasPrice = await _getCurrentGasPrice();
+            receipt = await cryptoCardsTokenMigrator.distributeInitialGum(_getTxOptions(gasPrice));
+            Lib.logTxResult(receipt);
+            Lib.trackTotalGasCosts(receipt, gasPrice.actual);
+        }
+
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Linking Complete
         Lib.log({separator: true});

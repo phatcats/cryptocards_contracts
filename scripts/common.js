@@ -119,6 +119,7 @@ Lib.writeStateFile = (stateObj) => {
 };
 
 Lib.getDeployedAddresses = (network) => {
+    if (network === 'dev-5777') { network = 'local'; }
     // Store in parent dir so that other repos can read it
     const stateObj = {filename: `../contract-addresses-${network}.json`, data: {}};
     Lib.readStateFile(stateObj);
@@ -137,7 +138,8 @@ Lib.getContractInstance = async (contract, contractAddress) => {
     //         return contract.currentProvider.send.apply(contract.currentProvider, arguments);
     //     };
     // }
-    return await contract.deployed(); // .at(contractAddress);
+    // return await contract.deployed(); // .at(contractAddress);
+    return await contract.at(contractAddress);
 };
 
 module.exports = { Lib };

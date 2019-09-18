@@ -32,18 +32,18 @@ module.exports = {
             network_id    : 3,                                  // Ropsten
             gas           : networkOptions.ropsten.gas,         // https://ropsten.etherscan.io/blocks
             gasPrice      : networkOptions.ropsten.minGasPrice, // https://ropsten.etherscan.io/gastracker
-            confirmations : 1,                                  // # of confs to wait between deployments. (default: 0)
+            confirmations : 0,                                  // # of confs to wait between deployments. (default: 0)
             timeoutBlocks : 200,                                // # of blocks before a deployment times out  (minimum/default: 50)
-            skipDryRun    : false                               // Skip dry run before migrations? (default: false for public nets)
+            skipDryRun    : true                                // Skip dry run before migrations? (default: false for public nets)
         },
         mainnet: {
-            provider      : new HDWalletProvider(wallets.mainnet.mnemonic[walletMnemonicType], wallets.mainnet.apiEndpoint, wallets.mainnet.accountIndex),
+            provider      : new HDWalletProvider(wallets.mainnet.mnemonic[walletMnemonicType], wallets.mainnet.apiEndpoint),//, wallets.mainnet.accountIndex),
             network_id    : 1,                                  // Mainnet
             gas           : networkOptions.mainnet.gas,         // https://etherscan.io/blocks
             gasPrice      : networkOptions.mainnet.minGasPrice, // https://etherscan.io/gastracker
-            confirmations : 1,                                  // # of confs to wait between deployments. (default: 0)
+            confirmations : 0,                                  // # of confs to wait between deployments. (default: 0)
             timeoutBlocks : 200,                                // # of blocks before a deployment times out  (minimum/default: 50)
-            skipDryRun    : false                               // Skip dry run before migrations? (default: false for public nets)
+            skipDryRun    : true                                // Skip dry run before migrations? (default: false for public nets)
         }
     },
     compilers: {
