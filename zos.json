@@ -7,10 +7,10 @@
     "CryptoCardsPacks": "CryptoCardsPacks",
     "CryptoCardsGum": "CryptoCardsGum",
     "CryptoCardsLib": "CryptoCardsLib",
-    "CryptoCardsTreasury": "CryptoCardsTreasury",
     "CryptoCardsOracle": "CryptoCardsOracle",
     "CryptoCardsController": "CryptoCardsController",
-    "CryptoCardsTokenMigrator": "CryptoCardsTokenMigrator"
+    "CryptoCardsTokenMigrator": "CryptoCardsTokenMigrator",
+    "CryptoCardsTreasury": "CryptoCardsTreasury"
   },
   "dependencies": {
     "openzeppelin-eth": "^2.2.0"

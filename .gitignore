@@ -14,3 +14,4 @@ node_modules/
 .zos.session
 zos.dev-5777.json
 migration-state-*.json
+old/

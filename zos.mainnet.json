@@ -1236,6 +1236,225 @@
         "hasInitialValuesInDeclarations": false,
         "uninitializedBaseContracts": []
       }
+    },
+    "CryptoCardsTreasury": {
+      "address": "0x5a4fc7e398dF006A8A07DA61a2784839597e077D",
+      "constructorCode": "608060405234801561001057600080fd5b50612cea806100206000396000f3fe",
+      "bodyBytecodeHash": "71da8990c7ebeb5f0e704f85523d64ceaf746d89f033a3ed43b02c29e1880f2c",
+      "localBytecodeHash": "aff28f958f6de91d712e1f6364355d07b4504c2b5758fbfa8533eb4464ba9b4c",
+      "deployedBytecodeHash": "aff28f958f6de91d712e1f6364355d07b4504c2b5758fbfa8533eb4464ba9b4c",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_address_payable": {
+          "id": "t_address_payable",
+          "kind": "elementary",
+          "label": "address payable"
+        },
+        "t_mapping<t_uint256>": {
+          "id": "t_mapping<t_uint256>",
+          "valueType": "t_uint256",
+          "label": "mapping(key => uint256)",
+          "kind": "mapping"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initialized",
+          "astId": 14107,
+          "type": "t_bool",
+          "src": "757:24:19"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "876:25:19"
+        },
+        {
+          "contract": "Initializable",
+          "path": "zos-lib/contracts/Initializable.sol",
+          "label": "______gap",
+          "astId": 14165,
+          "type": "t_array:50<t_uint256>",
+          "src": "1951:29:19"
+        },
+        {
+          "contract": "Ownable",
+          "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
+          "label": "_owner",
+          "astId": 13951,
+          "type": "t_address",
+          "src": "302:22:17"
+        },
+        {
+          "contract": "Ownable",
+          "path": "openzeppelin-eth/contracts/ownership/Ownable.sol",
+          "label": "______gap",
+          "astId": 14062,
+          "type": "t_array:50<t_uint256>",
+          "src": "2262:29:17"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_contractController",
+          "astId": 4567,
+          "type": "t_address",
+          "src": "2548:36:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_inHouseAccount",
+          "astId": 4569,
+          "type": "t_address_payable",
+          "src": "2665:40:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_inHouseEscrow_paid",
+          "astId": 4571,
+          "type": "t_uint256",
+          "src": "2711:36:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_inHouseEscrow_unpaid",
+          "astId": 4573,
+          "type": "t_uint256",
+          "src": "2753:38:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_outSourcePool_total",
+          "astId": 4575,
+          "type": "t_uint256",
+          "src": "2841:37:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_outSourcePool_limit",
+          "astId": 4577,
+          "type": "t_uint256",
+          "src": "2919:37:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_outSourcePool_interval",
+          "astId": 4579,
+          "type": "t_uint256",
+          "src": "2987:40:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_outSourcePool_unpaid",
+          "astId": 4581,
+          "type": "t_uint256",
+          "src": "3056:38:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_outSourcePool_paid",
+          "astId": 4583,
+          "type": "t_uint256",
+          "src": "3128:36:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_outSourcePool_memberCount",
+          "astId": 4585,
+          "type": "t_uint256",
+          "src": "3197:43:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_outSourcePool_percentOnDeposit",
+          "astId": 4587,
+          "type": "t_uint256",
+          "src": "3246:48:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_outsourcedMembers_payoutIndex",
+          "astId": 4591,
+          "type": "t_mapping<t_uint256>",
+          "src": "3301:67:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_outsourcedMembers_limit",
+          "astId": 4595,
+          "type": "t_mapping<t_uint256>",
+          "src": "3374:61:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_outsourcedMembers_paid",
+          "astId": 4599,
+          "type": "t_mapping<t_uint256>",
+          "src": "3441:60:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_referrals_unpaid",
+          "astId": 4603,
+          "type": "t_mapping<t_uint256>",
+          "src": "3540:54:10"
+        },
+        {
+          "contract": "CryptoCardsTreasury",
+          "path": "contracts/CryptoCardsTreasury.sol",
+          "label": "_referrals_paid",
+          "astId": 4607,
+          "type": "t_mapping<t_uint256>",
+          "src": "3600:52:10"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
     }
   },
   "solidityLibs": {},

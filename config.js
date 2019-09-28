@@ -52,9 +52,9 @@ module.exports = {
             // For contract deployments
             // gas                 : 4500000,  // https://etherscan.io/blocks
             // For contract interactions
-            gas                 : 60000,  // https://etherscan.io/blocks
-            minGasPrice         : 2e9,
-            gasPrice            : 2e9       // Max Gas Price to Pay; https://etherscan.io/gastracker
+            gas                 : 5000000,  // https://etherscan.io/blocks
+            minGasPrice         : 6e9,
+            gasPrice            : 6e9       // Max Gas Price to Pay; https://etherscan.io/gastracker
         }
     },
 
@@ -81,9 +81,9 @@ module.exports = {
 
     migrationPhase: {
         migratePacks : false,
-        migrateCards : false,
+        migrateCards : true,
         migratePurchasedPacks: false,
-        batchSize    : 10,
+        batchSize    : 40,
     },
 
     migrationAccounts: {
@@ -144,9 +144,9 @@ module.exports = {
                 // '0xe9c80eebb0376e8775abd56823154fadb5710505', //  27 /  27
                 // '0x164168afa4c1c40216ae4cfee9702b8dc947683b', //  39 /  39
                 // '0x398a20f8a91a7406343e75f4ac1eaad6902d3862', //  40 /  40
-                // '0x55b4dc1873b2b2d54e75fabcde78160a37498a06', //   0 / 176
-                // '0xba0e95a462905d45e819cdcba3a43b30f778e8cf', //   0 / 184
-                // '0x690e88867b1eab78ac51366fa2ff61880182a7e9', //  10 / 472
+                // '0x55b4dc1873b2b2d54e75fabcde78160a37498a06', // 176 / 176
+                // '0xba0e95a462905d45e819cdcba3a43b30f778e8cf', // 184 / 184
+                // '0x690e88867b1eab78ac51366fa2ff61880182a7e9', // 472 / 472
             ],
             packPurchasers: [
                 // {account: '0x5864745720a6c4b577f07ac3fe5d39ea20f050b1', count: '1'},
@@ -154,22 +154,22 @@ module.exports = {
                 // {account: '0xfe5a65645f2dc8fa5fbcdb7a578ee65dbaa3476d', count: '1'},
                 // {account: '0x6f5256bd895cdac8c8c2bc5a90da1d8b93f3dfd5', count: '4'},
                 // {account: '0xf8cfe7dff8528dfc98cec446335ec6e40b902ebc', count: '6'},
-                {account: '0x49c094b9738af66e75e3170a81bf46ffc2bf0bdd', count: '14'},
-                {account: '0x611b009b4100e311e16c3d56557024691ea461c9', count: '16'},
-                {account: '0x025e0bfa4624ad504b39223a5674424b39145f2a', count: '2'},
+                // {account: '0x49c094b9738af66e75e3170a81bf46ffc2bf0bdd', count: '14'},
+                // {account: '0x611b009b4100e311e16c3d56557024691ea461c9', count: '16'},
+                // {account: '0x025e0bfa4624ad504b39223a5674424b39145f2a', count: '2'},
                 // {account: '0x25f10d30fcaaf00d6e3e8560bfcff720dbe554bd', count: '0'},
-                {account: '0xb0c4adeb9b23a6512bea47d1a479bc33afbfe283', count: '1'},
-                {account: '0xbe292285df36aefc0a464800755498abf19e4052', count: '1'},
-                {account: '0x50c5e398267465dcbc19c512ed7ca8e345e35d67', count: '2'},
-                {account: '0xd02ae906edc339872b8300020fc4411c4f4036e1', count: '4'},
-                {account: '0x7c0d842f6857d9feacc7b1500488b9d0d3c3d8ad', count: '7'},
-                {account: '0x5c0bcf0c97643bd9f0066734d261bdc58b564e42', count: '10'},
-                {account: '0xe9c80eebb0376e8775abd56823154fadb5710505', count: '4'},
-                {account: '0x164168afa4c1c40216ae4cfee9702b8dc947683b', count: '19'},
-                {account: '0x398a20f8a91a7406343e75f4ac1eaad6902d3862', count: '5'},
-                {account: '0x55b4dc1873b2b2d54e75fabcde78160a37498a06', count: '104'},
-                {account: '0xba0e95a462905d45e819cdcba3a43b30f778e8cf', count: '43'},
-                {account: '0x690e88867b1eab78ac51366fa2ff61880182a7e9', count: '60'},
+                // {account: '0xb0c4adeb9b23a6512bea47d1a479bc33afbfe283', count: '1'},
+                // {account: '0xbe292285df36aefc0a464800755498abf19e4052', count: '1'},
+                // {account: '0x50c5e398267465dcbc19c512ed7ca8e345e35d67', count: '2'},
+                // {account: '0xd02ae906edc339872b8300020fc4411c4f4036e1', count: '4'},
+                // {account: '0x7c0d842f6857d9feacc7b1500488b9d0d3c3d8ad', count: '7'},
+                // {account: '0x5c0bcf0c97643bd9f0066734d261bdc58b564e42', count: '10'},
+                // {account: '0xe9c80eebb0376e8775abd56823154fadb5710505', count: '4'},
+                // {account: '0x164168afa4c1c40216ae4cfee9702b8dc947683b', count: '19'},
+                // {account: '0x398a20f8a91a7406343e75f4ac1eaad6902d3862', count: '5'},
+                // {account: '0x55b4dc1873b2b2d54e75fabcde78160a37498a06', count: '104'},
+                // {account: '0xba0e95a462905d45e819cdcba3a43b30f778e8cf', count: '43'},
+                // {account: '0x690e88867b1eab78ac51366fa2ff61880182a7e9', count: '60'},
             ]
         }
     },
