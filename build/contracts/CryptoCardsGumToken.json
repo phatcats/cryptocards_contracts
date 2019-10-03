@@ -69,14 +69,14 @@
     "absolutePath": "/Users/robsecord/workspace/Ethereum/CryptoCards/cryptocards_contracts/contracts/CryptoCardsGumToken.sol",
     "exportedSymbols": {
       "CryptoCardsGumToken": [
-        1965
+        1970
       ]
     },
-    "id": 1966,
+    "id": 1971,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1943,
+        "id": 1948,
         "literals": [
           "solidity",
           "0.5",
@@ -91,9 +91,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 1965,
+        "id": 1970,
         "linearizedBaseContracts": [
-          1965
+          1970
         ],
         "name": "CryptoCardsGumToken",
         "nodeType": "ContractDefinition",
@@ -101,22 +101,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1952,
+            "id": 1957,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "transfer",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1948,
+              "id": 1953,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1945,
+                  "id": 1950,
                   "name": "to",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1952,
+                  "scope": 1957,
                   "src": "225:10:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -125,7 +125,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1944,
+                    "id": 1949,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "225:7:4",
@@ -140,10 +140,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1947,
+                  "id": 1952,
                   "name": "value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1952,
+                  "scope": 1957,
                   "src": "237:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -152,7 +152,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1946,
+                    "id": 1951,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "237:7:4",
@@ -168,15 +168,15 @@
               "src": "224:27:4"
             },
             "returnParameters": {
-              "id": 1951,
+              "id": 1956,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1950,
+                  "id": 1955,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1952,
+                  "scope": 1957,
                   "src": "270:4:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -185,7 +185,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 1949,
+                    "id": 1954,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "270:4:4",
@@ -200,7 +200,7 @@
               ],
               "src": "269:6:4"
             },
-            "scope": 1965,
+            "scope": 1970,
             "src": "207:69:4",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -209,28 +209,28 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1957,
+            "id": 1962,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "totalSupply",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1953,
+              "id": 1958,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "301:2:4"
             },
             "returnParameters": {
-              "id": 1956,
+              "id": 1961,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1955,
+                  "id": 1960,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1957,
+                  "scope": 1962,
                   "src": "327:7:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -239,7 +239,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1954,
+                    "id": 1959,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "327:7:4",
@@ -254,7 +254,7 @@
               ],
               "src": "326:9:4"
             },
-            "scope": 1965,
+            "scope": 1970,
             "src": "281:55:4",
             "stateMutability": "view",
             "superFunction": null,
@@ -263,22 +263,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1964,
+            "id": 1969,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "balanceOf",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1960,
+              "id": 1965,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1959,
+                  "id": 1964,
                   "name": "who",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1964,
+                  "scope": 1969,
                   "src": "360:11:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -287,7 +287,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1958,
+                    "id": 1963,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "360:7:4",
@@ -304,15 +304,15 @@
               "src": "359:13:4"
             },
             "returnParameters": {
-              "id": 1963,
+              "id": 1968,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1962,
+                  "id": 1967,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1964,
+                  "scope": 1969,
                   "src": "396:7:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -321,7 +321,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1961,
+                    "id": 1966,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "396:7:4",
@@ -336,14 +336,14 @@
               ],
               "src": "395:9:4"
             },
-            "scope": 1965,
+            "scope": 1970,
             "src": "341:64:4",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 1966,
+        "scope": 1971,
         "src": "159:248:4"
       }
     ],
@@ -353,14 +353,14 @@
     "absolutePath": "/Users/robsecord/workspace/Ethereum/CryptoCards/cryptocards_contracts/contracts/CryptoCardsGumToken.sol",
     "exportedSymbols": {
       "CryptoCardsGumToken": [
-        1965
+        1970
       ]
     },
-    "id": 1966,
+    "id": 1971,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1943,
+        "id": 1948,
         "literals": [
           "solidity",
           "0.5",
@@ -375,9 +375,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 1965,
+        "id": 1970,
         "linearizedBaseContracts": [
-          1965
+          1970
         ],
         "name": "CryptoCardsGumToken",
         "nodeType": "ContractDefinition",
@@ -385,22 +385,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1952,
+            "id": 1957,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "transfer",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1948,
+              "id": 1953,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1945,
+                  "id": 1950,
                   "name": "to",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1952,
+                  "scope": 1957,
                   "src": "225:10:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -409,7 +409,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1944,
+                    "id": 1949,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "225:7:4",
@@ -424,10 +424,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1947,
+                  "id": 1952,
                   "name": "value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1952,
+                  "scope": 1957,
                   "src": "237:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -436,7 +436,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1946,
+                    "id": 1951,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "237:7:4",
@@ -452,15 +452,15 @@
               "src": "224:27:4"
             },
             "returnParameters": {
-              "id": 1951,
+              "id": 1956,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1950,
+                  "id": 1955,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1952,
+                  "scope": 1957,
                   "src": "270:4:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -469,7 +469,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 1949,
+                    "id": 1954,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "270:4:4",
@@ -484,7 +484,7 @@
               ],
               "src": "269:6:4"
             },
-            "scope": 1965,
+            "scope": 1970,
             "src": "207:69:4",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -493,28 +493,28 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1957,
+            "id": 1962,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "totalSupply",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1953,
+              "id": 1958,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "301:2:4"
             },
             "returnParameters": {
-              "id": 1956,
+              "id": 1961,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1955,
+                  "id": 1960,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1957,
+                  "scope": 1962,
                   "src": "327:7:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -523,7 +523,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1954,
+                    "id": 1959,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "327:7:4",
@@ -538,7 +538,7 @@
               ],
               "src": "326:9:4"
             },
-            "scope": 1965,
+            "scope": 1970,
             "src": "281:55:4",
             "stateMutability": "view",
             "superFunction": null,
@@ -547,22 +547,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1964,
+            "id": 1969,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "balanceOf",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1960,
+              "id": 1965,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1959,
+                  "id": 1964,
                   "name": "who",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1964,
+                  "scope": 1969,
                   "src": "360:11:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -571,7 +571,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1958,
+                    "id": 1963,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "360:7:4",
@@ -588,15 +588,15 @@
               "src": "359:13:4"
             },
             "returnParameters": {
-              "id": 1963,
+              "id": 1968,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1962,
+                  "id": 1967,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1964,
+                  "scope": 1969,
                   "src": "396:7:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -605,7 +605,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1961,
+                    "id": 1966,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "396:7:4",
@@ -620,14 +620,14 @@
               ],
               "src": "395:9:4"
             },
-            "scope": 1965,
+            "scope": 1970,
             "src": "341:64:4",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 1966,
+        "scope": 1971,
         "src": "159:248:4"
       }
     ],
@@ -639,7 +639,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-09-18T20:40:17.513Z",
+  "updatedAt": "2019-10-03T03:28:19.954Z",
   "devdoc": {
     "methods": {}
   },
