@@ -138,8 +138,8 @@ Lib.getContractInstance = async (contract, contractAddress) => {
     //         return contract.currentProvider.send.apply(contract.currentProvider, arguments);
     //     };
     // }
-    // return await contract.deployed(); // .at(contractAddress);
-    return await contract.at(contractAddress);
+    return await contract.deployed();
+    // return await contract.at(contractAddress);
 };
 
 module.exports = { Lib };

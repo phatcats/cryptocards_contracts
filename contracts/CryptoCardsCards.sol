@@ -105,7 +105,7 @@ contract CryptoCardsCards is Initializable, Ownable {
     function meltCard(uint256 tokenId, bytes16 uuid) public {
         uint wrappedGum = _cardToken.meltFor(msg.sender, tokenId, uuid);
         _resetCardValue(tokenId);
-        _gum.transferCardGum(msg.sender, wrappedGum);
+        _gum.transferCardGum(msg.sender, wrappedGum * (10**18));
     }
 
     function printCard(uint256 tokenId, bytes16 uuid) public {

@@ -31,14 +31,14 @@ module.exports = {
     networkOptions: {
         local: {
             oracleApiEndpoint   : 'BEJLg+4QyJdFu5IeCfdZrVnurkh/GB9aEY6rGDuyHSBLtOs1BsPdo0/aTr6qaIVvLlPZUku8TT7PEFY6OwbQqa6l/+ATw2Uf+iWkhjsg5seU31FHvahFHELYm1Kuu5B46g0h1biap3OtXDzys4RZgQ6HDNbF3eq9Xw4Zwi2vzQlt/LSp3lJHpmuYWu78y/Ed5Ov4OiAaoVhPIkRFN+8rDpcQIXEXdzlHTZBAACWJ6gE=',
-            gumPerPack          : 60,
+            gumPerPack          : '60000000000000000000',
             gas                 : 6721975,
             minGasPrice         : 10e9,
             gasPrice            : 90e9
         },
         ropsten: {
             oracleApiEndpoint   : 'BI33RiqK+ljYzlRuu0pdF23DTia8iiC+TCCbqCmQzZdpIH/WrKr8x1w92VNZgTzptK9HwbMQCBXH69bA0bVuo1O4PIRCDbXJdYp78VDKp1s4lFE8+W4q2X2w3nzB+dgcjEGC2GVyvqihLOwH0o7E1HEtlgeLdapzLcWeNwmIVtGHGpfk30i/qD14vwXnPT7lO9ndbwEHlb4w5Q2YkUDKrWyF3g10IgrBk1Wp8fYyTg4bji4=',
-            gumPerPack          : 60,
+            gumPerPack          : '60000000000000000000',
             // For contract deployments
             gas                 : 4500000,  // https://ropsten.etherscan.io/blocks
             // For contract interactions
@@ -48,7 +48,7 @@ module.exports = {
         },
         mainnet: {
             oracleApiEndpoint   : 'BLOCEBTvc+CkbkM3HFDelDmZn8z+GBw+K2TRHqf2FF1G2VZHxkAUc/ShHisEI9KyJGkfyqa2kUs2fiXCrwF8l2TYDjHcByZ0szQttEz3W/5Yd5Tv4fdOdkm9h2XXPJu+bRBByLj+HqXDttXOTOzSbH/d2RezvRSyoLrA3hSmN1NjWsA93aGcSg4NCfrHUDU0jP3/xrfnlDF499xc+0/d7ZUy+tVN53zYqVF2ws32z+4JkwoynFYlr4F8',
-            gumPerPack          : 60,
+            gumPerPack          : '60000000000000000000',
             // For contract deployments
             // gas                 : 4500000,  // https://etherscan.io/blocks
             // For contract interactions

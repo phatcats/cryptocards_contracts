@@ -109,81 +109,80 @@ startSession() {
 deployFresh() {
     startSession "$proxyAdmin"
 
-#    if [[ "$networkName" == "local" ]]; then
-#        echoHeader
-#        echo "NOTE: Be sure to run the Oraclize Ethereum-bridge first!"
-#        echo "CMD: ethereum-bridge -H localhost:7545 -a 1 --dev"
-#    else
-#        echoHeader
-#        echo "NOTE: Be sure to remove the Oraclize Address Resolver from the Oracle Contract!"
-#        echo "LINE: OAR = OraclizeAddrResolverI( ... )"
-#    fi
+    if [[ "$networkName" == "local" ]]; then
+        echoHeader
+        echo "NOTE: Be sure to run the Oraclize Ethereum-bridge first!"
+        echo "CMD: ethereum-bridge -H localhost:7545 -a 1 --dev"
+    else
+        echoHeader
+        echo "NOTE: Be sure to remove the Oraclize Address Resolver from the Oracle Contract!"
+        echo "LINE: OAR = OraclizeAddrResolverI( ... )"
+    fi
 
-#    echoHeader
-#    echo "Clearing previous build..."
-#    rm -rf build/
-#    rm -r "./zos.$networkProvider.json"
-#
-#    echoHeader
-#    if [[ "$networkName" == "local" ]]; then
-#        echo "Deploying with dependencies..."
-#        zos push --deploy-dependencies
-#    else
-#        echo "Deploying without dependencies..."
-#        zos push
-#    fi
+    echoHeader
+    echo "Clearing previous build..."
+    rm -rf build/
+    rm -r "./zos.$networkProvider.json"
 
-#    echoHeader
-#    echo "Creating Contract: CryptoCardsOracle"
-#    oracleAddress=$(zos create CryptoCardsOracle --init initialize --args "$ownerAccount")
-#    sleep 1s
-#
+    echoHeader
+    if [[ "$networkName" == "local" ]]; then
+        echo "Deploying with dependencies..."
+        zos push --deploy-dependencies
+    else
+        echo "Deploying without dependencies..."
+        zos push
+    fi
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsOracle"
+    oracleAddress=$(zos create CryptoCardsOracle --init initialize --args "$ownerAccount")
+    sleep 1s
+
     echoHeader
     echo "Creating Contract: CryptoCardsTreasury"
-#    zos add CryptoCardsTreasury
     treasuryAddress=$(zos create CryptoCardsTreasury --init initialize --args "$ownerAccount")
     sleep 1s
-#
-#    echoHeader
-#    echo "Creating Contract: CryptoCardsLib"
-#    libAddress=$(zos create CryptoCardsLib --init initialize --args "$ownerAccount")
-#    sleep 1s
-#
-#    echoHeader
-#    echo "Creating Contract: CryptoCardsGum"
-#    gumAddress=$(zos create CryptoCardsGum --init initialize --args "$ownerAccount")
-#    sleep 1s
-#
-#    echoHeader
-#    echo "Creating Contract: CryptoCardsCards"
-#    cardsAddress=$(zos create CryptoCardsCards --init initialize --args "$ownerAccount")
-#    sleep 1s
-#
-#    echoHeader
-#    echo "Creating Contract: CryptoCardsPacks"
-#    packsAddress=$(zos create CryptoCardsPacks --init initialize --args "$ownerAccount")
-#    sleep 1s
-#
-#    echoHeader
-#    echo "Creating Contract: CryptoCardsTokenMigrator"
-#    tokenMigrator=$(zos create CryptoCardsTokenMigrator --init initialize --args "$ownerAccount")
-#    sleep 1s
-#
-#    echoHeader
-#    echo "Creating Contract: CryptoCardsController"
-#    controllerAddress=$(zos create CryptoCardsController --init initialize --args "$ownerAccount")
-#    sleep 1s
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsLib"
+    libAddress=$(zos create CryptoCardsLib --init initialize --args "$ownerAccount")
+    sleep 1s
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsGum"
+    gumAddress=$(zos create CryptoCardsGum --init initialize --args "$ownerAccount")
+    sleep 1s
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsCards"
+    cardsAddress=$(zos create CryptoCardsCards --init initialize --args "$ownerAccount")
+    sleep 1s
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsPacks"
+    packsAddress=$(zos create CryptoCardsPacks --init initialize --args "$ownerAccount")
+    sleep 1s
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsTokenMigrator"
+    tokenMigrator=$(zos create CryptoCardsTokenMigrator --init initialize --args "$ownerAccount")
+    sleep 1s
+
+    echoHeader
+    echo "Creating Contract: CryptoCardsController"
+    controllerAddress=$(zos create CryptoCardsController --init initialize --args "$ownerAccount")
+    sleep 1s
 
     echoHeader
     echo "Contract Addresses: "
-#    echo " - controllerAddress: ${controllerAddress:(-42)}"
-#    echo " - oracleAddress:     ${oracleAddress:(-42)}"
+    echo " - controllerAddress: ${controllerAddress:(-42)}"
+    echo " - oracleAddress:     ${oracleAddress:(-42)}"
     echo " - treasuryAddress:   ${treasuryAddress:(-42)}"
-#    echo " - packsAddress:      ${packsAddress:(-42)}"
-#    echo " - cardsAddress:      ${cardsAddress:(-42)}"
-#    echo " - gumAddress:        ${gumAddress:(-42)}"
-#    echo " - tokenMigrator:     ${tokenMigrator:(-42)}"
-#    echo " - libAddress:        ${libAddress:(-42)}"
+    echo " - packsAddress:      ${packsAddress:(-42)}"
+    echo " - cardsAddress:      ${cardsAddress:(-42)}"
+    echo " - gumAddress:        ${gumAddress:(-42)}"
+    echo " - tokenMigrator:     ${tokenMigrator:(-42)}"
+    echo " - libAddress:        ${libAddress:(-42)}"
 
     echoHeader
     echo "Contract Deployment Complete!"
@@ -202,7 +201,7 @@ deployUpdate() {
     zos update CryptoCardsLib
     zos update CryptoCardsGum
     zos update CryptoCardsCards
-    zos update CryptoCardSPacks
+    zos update CryptoCardsPacks
     zos update CryptoCardsTreasury
     zos update CryptoCardsOracle
     zos update CryptoCardsTokenMigrator
