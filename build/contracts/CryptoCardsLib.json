@@ -21421,11 +21421,11 @@
       "links": {},
       "events": {},
       "address": "0xEA1b680FFda06832e8F7F67F33491e68098Aa631",
-      "updated_at": 1570068633773
+      "updated_at": 1570136259631
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-10-03T03:51:25.942Z",
+  "updatedAt": "2019-10-03T20:59:07.094Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

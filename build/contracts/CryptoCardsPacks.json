@@ -15893,11 +15893,11 @@
       "links": {},
       "events": {},
       "address": "0xA51A7dD583669a958059362dF2601197d8eE3B39",
-      "updated_at": 1570068681968
+      "updated_at": 1570136315094
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-10-03T03:51:25.959Z",
+  "updatedAt": "2019-10-03T20:59:07.112Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

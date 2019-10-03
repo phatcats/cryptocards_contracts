@@ -14267,11 +14267,11 @@
       "links": {},
       "events": {},
       "address": "0xD215B4Ab4b63C30C1BA84887864B3d01d170bDC2",
-      "updated_at": 1570068714557
+      "updated_at": 1570136351619
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-10-03T03:51:25.918Z",
+  "updatedAt": "2019-10-03T20:59:07.074Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

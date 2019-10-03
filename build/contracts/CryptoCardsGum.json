@@ -11966,11 +11966,11 @@
       "links": {},
       "events": {},
       "address": "0x22BB50A434E82716773cFF9306c9F1D2FB65bFBC",
-      "updated_at": 1570068649813
+      "updated_at": 1570136277178
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-10-03T03:51:25.932Z",
+  "updatedAt": "2019-10-03T20:59:07.082Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

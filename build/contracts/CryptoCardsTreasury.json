@@ -25147,11 +25147,11 @@
       "links": {},
       "events": {},
       "address": "0xEC0c563acbA3074B72b3365C15164cCbeCED07cB",
-      "updated_at": 1570068617481
+      "updated_at": 1570136241856
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-10-03T03:51:26.026Z",
+  "updatedAt": "2019-10-03T20:59:07.167Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

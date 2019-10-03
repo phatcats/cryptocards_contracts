@@ -23318,11 +23318,11 @@
       "links": {},
       "events": {},
       "address": "0xfBb58f952c6e86DA1719c5257b89E6C07B78c23f",
-      "updated_at": 1570068665856
+      "updated_at": 1570136294742
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-10-03T03:51:25.907Z",
+  "updatedAt": "2019-10-03T20:59:07.054Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

@@ -10702,11 +10702,11 @@
       "links": {},
       "events": {},
       "address": "0x0ac50fE91Df8DCe0d1968421Bb66F37F8380FF00",
-      "updated_at": 1570068601122
+      "updated_at": 1570136222633
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-10-03T03:51:25.951Z",
+  "updatedAt": "2019-10-03T20:59:07.103Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

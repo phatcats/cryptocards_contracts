@@ -21550,11 +21550,11 @@
       "links": {},
       "events": {},
       "address": "0xeE09F9b736d151732740Db085eD31E59bbFffD15",
-      "updated_at": 1570068698272
+      "updated_at": 1570136333147
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-10-03T03:51:26.007Z",
+  "updatedAt": "2019-10-03T20:59:07.154Z",
   "devdoc": {
     "methods": {
       "isOwner()": {
